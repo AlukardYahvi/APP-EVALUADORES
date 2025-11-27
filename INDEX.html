@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Simposio — Evaluación de Carteles</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="left">
+        <img src="logo_ipn.png" alt="IPN" class="logo" />
+        <img src="logo_esm.png" alt="ESM" class="logo" />
+        <img src="logo_licam.png" alt="LICAM" class="logo" />
+      </div>
+      <div class="right">
+        <div class="version">Simposio • Evaluación • 2025</div>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <!-- LOGIN PANEL -->
+      <aside class="login-card card" id="login-card">
+        <h2>Iniciar sesión</h2>
+        <p class="muted">Usa el usuario y contraseña asignado por el organizador.</p>
+
+        <label for="username">Usuario</label>
+        <input id="username" type="text" autocomplete="username" placeholder="ej. araceli.hernandez">
+
+        <label for="password">Contraseña</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="********">
+
+        <div id="login-error" class="error hidden"></div>
+
+        <button id="login-btn" class="btn primary">Entrar</button>
+
+        <small class="muted">Si tiene problemas contacte al administrador.</small>
+      </aside>
+
+      <!-- APP ROOT -->
+      <section id="app-root" class="card hidden"></section>
+    </main>
+
+    <footer class="footer">
+      © Simposio 2025 — Plataforma de Evaluación
+    </footer>
+  </div>
+
+  <!-- Data files (must load before app.js) -->
+  <script src="users.js"></script>
+  <script src="assignments.js"></script>
+  <script src="works.js"></script>
+
+  <!-- Main app -->
+  <script src="app.js"></script>
+</body>
+</html>

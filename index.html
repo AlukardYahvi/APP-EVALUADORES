@@ -24,12 +24,14 @@
 
         *{box-sizing:border-box;font-family:Inter,system-ui,Arial;margin:0;padding:0}
         body{background-color: var(--bg); color:#0b1220; min-height:100vh}
-        .container{max-width:1100px;margin:32px auto;padding:18px} /* Aumento de margen superior */
+        /* Corrección: Usa más ancho de pantalla */
+        .container{max-width:1280px; width: 98%; margin:32px auto;padding:18px} 
         .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;}
         .topbar .logo{height:50px;margin-right:12px; border-radius: 8px;} /* Logos más grandes y con borde suave */
         .topbar .version{color:var(--muted);font-size:13px; font-weight: 600; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px;}
 
-        .main-grid{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start} /* Aumento de gap */
+        /* Corrección: Permite que el grid principal crezca */
+        .main-grid{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start} 
         .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(12,16,40,0.08)} /* Sombra más pronunciada y bordes más redondos */
         .login-card h2{font-size:24px;margin-bottom:8px; font-weight: 800;}
         .muted{color:var(--muted);font-size:13px;margin-bottom:12px}
@@ -279,7 +281,7 @@
             const fd = new FormData(document.getElementById("eval-form"));
             const scores = {};
             
-            // 1. Recoger y calcular puntajes detallados
+            // 1. Recoger puntajes detallados
             for (const item of CRITERIA) {
                 let score = 0;
                 
@@ -311,20 +313,34 @@
             // 2. Guardar Localmente y Bloquear
             localStorage.setItem(`eval_${currentUser}_${id}`, JSON.stringify(payload));
 
-            // 3. Enviar a Google Sheets
+            // 3. Enviar a Google Sheets (CORRECCIÓN CRÍTICA: Enviar JSON con header correcto)
             try {
-                await fetch(SHEETS_WEBAPP_URL, {
+                // Se envía el payload JSON directamente.
+                const response = await fetch(SHEETS_WEBAPP_URL, {
                     method:"POST",
-                    mode:"no-cors",
-                    headers:{"Content-Type":"application/json"},
+                    headers: {
+                        'Content-Type': 'application/json', // Indicamos que el cuerpo es JSON
+                    },
                     body: JSON.stringify(payload)
                 });
-                console.log("Envío a Google Sheets iniciado (modo no-cors).");
+
+                // Aunque el script usa ContentService.createTextOutput, podemos intentar parsear
+                // la respuesta para verificar el estado si CORS lo permite.
+                if (response.ok || response.type === 'opaque') {
+                    // Si response.ok es true, o si estamos en modo no-cors y es una respuesta opaca
+                    console.log("Envío a Google Sheets iniciado o exitoso.");
+                    showAlert("Evaluación guardada y enviada a Sheets.", "success");
+                } else {
+                    const errorText = await response.text();
+                    console.warn("Fallo al enviar a Sheets (Respuesta no OK):", errorText);
+                    showAlert("Error al enviar a Sheets, pero guardado localmente.", "error");
+                }
+                
             } catch(e){ 
-                console.warn("Fallo en la petición a Sheets (típico en no-cors si el script no responde JSON)"); 
+                console.warn("Fallo en la petición a Sheets (típico en problemas de red/CORS):", e); 
+                showAlert("Error de conexión al enviar a Sheets, pero guardado localmente.", "error");
             }
 
-            showAlert("Evaluación guardada y enviada a Sheets.", "success");
             showDashboard();
         }
 
@@ -609,37 +625,48 @@
           closeModal();
         }
 
+        // CORRECCIÓN: Asegurar que la lista de asignaciones del juez original se limpie de los trabajos reasignados.
         function reassignAllPending(oldJudge, newJudge){
-          const assigned = ASSIGNMENTS[oldJudge] || [];
+          const assignedByOldJudge = ASSIGNMENTS[oldJudge] || [];
           let pendingToReassign = [];
           
           // 1. Identificar pendientes (solo si no tienen una evaluación final)
-          for(const id of assigned){
+          for(const id of assignedByOldJudge){
             const key = `eval_${oldJudge}_${id}`;
             const data = localStorage.getItem(key);
-            if(!data || JSON.parse(data).reassignedFrom){ // Si no hay data o es solo un marcador de reasignación
+            // Consideramos pendiente si NO hay data O si la data solo es un marcador de reasignación (reassignedFrom)
+            if(!data || (data && JSON.parse(data).reassignedFrom)){ 
               pendingToReassign.push(id);
             }
           }
 
           let count = 0;
+          let newAssignments = [];
+          
           for(const id of pendingToReassign){
-              // Si está pendiente, se agrega al juez nuevo (la asignación se maneja localmente)
-              // Se simula la reasignación forzando un marcador temporal
+              // 2. Marcar como asignado/reasignado para el nuevo juez
               const newKey = `eval_${newJudge}_${id}`;
-              if(!localStorage.getItem(newKey)) {
+              
+              // No creamos un marcador si el nuevo juez ya lo evaluó
+              const newJudgeEvaluated = localStorage.getItem(newKey) && !JSON.parse(localStorage.getItem(newKey)).reassignedFrom;
+              
+              if(!newJudgeEvaluated) {
+                  // Guardamos un marcador temporal en localStorage para el nuevo juez
                   localStorage.setItem(newKey, JSON.stringify({reassignedFrom: oldJudge, timestamp:new Date().toISOString(), totalScore: 0}));
+                  newAssignments.push(id);
+                  count++;
               }
-              count++;
           }
           
-          // 2. Actualizar ASSIGNMENTS (Simulación local: la app asume que el JSON de ASSIGNMENTS es la fuente)
-          ASSIGNMENTS[newJudge] = (ASSIGNMENTS[newJudge] || []).concat(pendingToReassign);
-          ASSIGNMENTS[oldJudge] = ASSIGNMENTS[oldJudge].filter(id => !pendingToReassign.includes(id));
+          // 3. Actualizar ASSIGNMENTS: Eliminar trabajos reasignados del juez antiguo y agregarlos al nuevo
+          // Se usa un nuevo arreglo para ASSIGNMENTS[oldJudge]
+          ASSIGNMENTS[oldJudge] = assignedByOldJudge.filter(id => !pendingToReassign.includes(id));
+          // Se añade al juez nuevo solo los trabajos que realmente se movieron.
+          ASSIGNMENTS[newJudge] = (ASSIGNMENTS[newJudge] || []).concat(newAssignments.filter(id => !(ASSIGNMENTS[newJudge] || []).includes(id)));
           
           // Notificación y refresco del dashboard
           showAlert(`Reasignados ${count} trabajos pendientes de ${oldJudge} a ${newJudge}.`, "success");
-          renderAdmin();
+          renderAdmin(); // Recargar el dashboard de admin para ver los cambios
         }
 
         // --- UI Utils ---

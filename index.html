@@ -23,7 +23,25 @@
         }
 
         *{box-sizing:border-box;font-family:Inter,system-ui,Arial;margin:0;padding:0}
-        body{background-color: var(--bg); color:#0b1220; min-height:100vh}
+        
+        /* CÓDIGO PARA EL FONDO DE IMAGEN */
+        body{
+            /* 1. Usar la imagen de fondo */
+            background-image: url('simposio_background.jpg');
+            /* 2. Propiedades para cubrir toda la pantalla */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center center;
+            /* 3. Fondo de color sutil para que el texto resalte */
+            background-color: rgba(255, 255, 255, 0.85); 
+            background-blend-mode: lighten; /* Mezcla el color blanco con la imagen */
+            
+            color:#0b1220; 
+            min-height:100vh;
+        }
+        /* FIN CÓDIGO FONDO DE IMAGEN */
+
         /* Corrección: Usa más ancho de pantalla */
         .container{max-width:1280px; width: 98%; margin:32px auto;padding:18px} 
         .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;}
@@ -32,7 +50,15 @@
 
         /* Corrección: Permite que el grid principal crezca */
         .main-grid{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start} 
-        .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(12,16,40,0.08)} /* Sombra más pronunciada y bordes más redondos */
+        
+        /* AJUSTE PARA VISIBILIDAD DE TARJETAS SOBRE EL FONDO */
+        .card{
+            background: rgba(255, 255, 255, 0.95); /* Fondo blanco semitransparente */
+            backdrop-filter: blur(2px); /* Un pequeño blur para un efecto más limpio */
+            border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(12,16,40,0.08)
+        } 
+        /* FIN AJUSTE VISIBILIDAD */
+
         .login-card h2{font-size:24px;margin-bottom:8px; font-weight: 800;}
         .muted{color:var(--muted);font-size:13px;margin-bottom:12px}
         label{display:block;font-weight:600;margin-bottom:6px;font-size:13px}
@@ -60,8 +86,16 @@
         .small{font-size:13px;color:var(--muted)}
 
         .work-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px} /* Ajuste a 250px */
-        .work-card{padding:15px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fbfbff);border:1px solid #eef2ff; transition: all .2s}
+        /* AJUSTE PARA VISIBILIDAD DE TARJETAS DE TRABAJO */
+        .work-card{
+            padding:15px;border-radius:12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(251,251,255,0.9));
+            border:1px solid #eef2ff; 
+            transition: all .2s
+        }
         .work-card:hover{box-shadow: 0 4px 15px rgba(0,0,0,0.1)}
+        /* FIN AJUSTE VISIBILIDAD */
+
         .work-card strong{display:block;font-size:16px;margin-bottom:8px; color: #1f2937;}
         .work-meta{font-size:14px;color:#4b5563;}
 
@@ -127,7 +161,7 @@
         // URL de tu Web App Google Apps Script
         const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzatgCyA9JOC5NGiaVhyWzBG9V69-jzlyPAW03HtI-_pMKd3K5N8zxai1dUuKNcf_s0/exec";
 
-        // --- users.js ---
+        // --- users.js (Contraseñas corregidas a 2025) ---
         const USERS = [
           { user: "admin", pass: "Admin2025", name: "Administrador General", role: "admin" },
           { user: "araceli.hernandez", pass: "Simposio2025", name: "Araceli Hernández Zavala", role: "juez" },
@@ -145,6 +179,7 @@
           { user: "javier.flores", pass: "Simposio2025", name: "Javier Flores Estrada", role: "juez" },
           { user: "araceli.montoya", pass: "Simposio2025", name: "Araceli Montoya Estrada", role: "juez" }
         ];
+        // --- FIN users.js (Contraseñas corregidas a 2025) ---
 
         // --- works.js ---
         const WORKS = {
@@ -313,7 +348,7 @@
             // 2. Guardar Localmente y Bloquear
             localStorage.setItem(`eval_${currentUser}_${id}`, JSON.stringify(payload));
 
-            // 3. Enviar a Google Sheets (CORRECCIÓN CRÍTICA: Enviar JSON con header correcto)
+            // 3. Enviar a Google Sheets (Enviar JSON con header correcto)
             try {
                 // Se envía el payload JSON directamente.
                 const response = await fetch(SHEETS_WEBAPP_URL, {
@@ -324,10 +359,8 @@
                     body: JSON.stringify(payload)
                 });
 
-                // Aunque el script usa ContentService.createTextOutput, podemos intentar parsear
-                // la respuesta para verificar el estado si CORS lo permite.
+                // Se chequea la respuesta
                 if (response.ok || response.type === 'opaque') {
-                    // Si response.ok es true, o si estamos en modo no-cors y es una respuesta opaca
                     console.log("Envío a Google Sheets iniciado o exitoso.");
                     showAlert("Evaluación guardada y enviada a Sheets.", "success");
                 } else {
@@ -661,7 +694,6 @@
           // 3. Actualizar ASSIGNMENTS: Eliminar trabajos reasignados del juez antiguo y agregarlos al nuevo
           // Se usa un nuevo arreglo para ASSIGNMENTS[oldJudge]
           ASSIGNMENTS[oldJudge] = assignedByOldJudge.filter(id => !pendingToReassign.includes(id));
-          // Se añade al juez nuevo solo los trabajos que realmente se movieron.
           ASSIGNMENTS[newJudge] = (ASSIGNMENTS[newJudge] || []).concat(newAssignments.filter(id => !(ASSIGNMENTS[newJudge] || []).includes(id)));
           
           // Notificación y refresco del dashboard
@@ -805,8 +837,9 @@
             document.getElementById("login-btn").addEventListener("click", tryLogin);
             
             // Simular carga de datos para el login card
-            document.getElementById("username").value = "araceli.hernandez";
-            document.getElementById("password").value = "Simposio2024";
+            // Usar una de las nuevas contraseñas 2025 para prellenar
+            document.getElementById("username").value = "USUARIO";
+            document.getElementById("password").value = "*****"; 
         });
     </script>
 </head>
@@ -820,7 +853,7 @@
       <div class="left">
         <!-- Logos reales de Github -->
         <img src="logo_ipn.png" onerror="this.src='https://placehold.co/50x50/5b21b6/FFFFFF/png?text=IPN'" alt="IPN" class="logo" />
-        <img src="logo_esm.png" onerror="this.src='https://placehold.co/50x50/059669/FFFFFF/png?text=ESM'" alt="ESM" class="logo" />
+        <img src="logo_esm.jpg" onerror="this.src='https://placehold.co/50x50/059669/FFFFFF/png?text=ESM'" alt="ESM" class="logo" />
         <img src="logo_licam.png" onerror="this.src='https://placehold.co/50x50/34d399/000000/png?text=LICAM'" alt="LICAM" class="logo" />
       </div>
       <div class="right">
@@ -862,4 +895,3 @@
   </div>
 </body>
 </html>
-

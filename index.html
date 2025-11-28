@@ -1,23 +1,650 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Simposio — Evaluación de Carteles</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Evaluación de Carteles - Simposio Médico</title>
+    
+    <!-- Enlaces a archivos CSS/Librerías (Simulados localmente) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Base (styles.css integrado) */
+        :root{
+            --bg:#0f172a;
+            --card:#ffffff;
+            --muted:#6b7280;
+            --primary-1:#5b21b6;
+            --primary-2:#8b5cf6;
+            --accent:#7c3aed;
+            --success:#16a34a;
+            --danger:#ef4444;
+        }
 
-<link rel="stylesheet" href="styles.css">
+        *{box-sizing:border-box;font-family:Inter,system-ui,Arial;margin:0;padding:0}
+        body{background:linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%);color:#0b1220;min-height:100vh}
+        .container{max-width:1100px;margin:28px auto;padding:18px}
+        .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+        .topbar .logo{height:44px;margin-right:10px}
+        .topbar .version{color:var(--muted);font-size:13px}
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+        .main-grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+        .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(12,16,40,0.06)}
+        .login-card h2{font-size:20px;margin-bottom:8px}
+        .muted{color:var(--muted);font-size:13px;margin-bottom:12px}
+        label{display:block;font-weight:600;margin-bottom:6px;font-size:13px}
+        input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-bottom:12px;font-size:14px}
+        .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+        .btn.primary{width:100%;color:white;background:linear-gradient(90deg,var(--primary-1),var(--primary-2))}
+        .btn.ghost{background:transparent;border:1px solid #e6e9ef;color:var(--muted)}
+        .error{color:var(--danger);margin-bottom:8px}
+        .hidden{display:none}
 
+        .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+        .welcome{font-size:20px;font-weight:800}
+        .small{font-size:13px;color:var(--muted)}
+
+        .work-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+        .work-card{padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#fbfbff);border:1px solid #eef2ff; transition: all .2s}
+        .work-card:hover{box-shadow: 0 4px 15px rgba(0,0,0,0.1)}
+        .work-card strong{display:block;font-size:15px;margin-bottom:6px}
+        .work-meta{font-size:13px;color:var(--muted)}
+
+        .top-actions{display:flex;gap:8px;align-items:center}
+
+        .evaluated-badge{display:inline-block;background:rgba(34,197,94,0.12);color:var(--success);padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
+
+        .form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+        .form-row .full{grid-column:1/-1}
+
+        /* Modal Styles */
+        .modal-bg{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:flex;align-items:center;justify-content:center;z-index:9999}
+        .modal{background:white;padding:18px;border-radius:12px;max-width:720px;width:96%;box-shadow:0 12px 40px rgba(8,10,30,0.2)}
+        
+        .progress{height:10px;background:#eef2ff;border-radius:999px;overflow:hidden}
+        .progress > div{height:100%;background:linear-gradient(90deg,var(--primary-1),var(--primary-2))}
+
+        .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+
+        .footer{margin-top:16px;text-align:center;color:var(--muted);font-size:13px}
+        
+        /* Evaluation specific styles */
+        .eval-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px;margin-bottom:20px}
+        .eval-card{border:1px solid #e6e9ef; padding:12px; border-radius:8px;}
+        .eval-card h4{font-weight:700; color:var(--primary-1); font-size:15px; margin-bottom: 4px;}
+        .score-row{display:flex; justify-content:space-between; align-items:center; margin-top: 8px;}
+        .score-input-custom{border:1px solid #ccc; padding: 4px 8px; width: 60px; text-align: center; border-radius: 4px;}
+        .deduction{color:var(--danger);}
+        .bonus{color:var(--success);}
+
+        /* responsive */
+        @media (max-width:900px){
+            .main-grid{grid-template-columns:1fr; padding-bottom:60px}
+            .login-card{order:2}
+        }
+
+    </style>
+
+    <script type="module">
+        // ============================================================
+        //  CONFIGURACIÓN Y DATOS DE LA APLICACIÓN (Archivos fusionados)
+        // ============================================================
+
+        // URL de tu Web App Google Apps Script
+        const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzatgCyA9JOC5NGiaVhyWzBG9V69-jzlyPAW03HtI-_pMKd3K5N8zxai1dUuKNcf_s0/exec";
+
+        // --- users.js ---
+        const USERS = [
+          { user: "admin", pass: "Admin2024", name: "Administrador General", role: "admin" },
+          { user: "araceli.hernandez", pass: "Simposio2024", name: "Araceli Hernández Zavala", role: "juez" },
+          { user: "marycarmen.godinez", pass: "Simposio2024", name: "Marycarmen Godinez Victoria", role: "juez" },
+          { user: "claudia.calzada", pass: "Simposio2024", name: "Claudia Camelia Calzada Mendoza", role: "juez" },
+          { user: "paola.zarate", pass: "Simposio2024", name: "Paola Berenice Zarate Segura", role: "juez" },
+          { user: "ivonne.maciel", pass: "Simposio2024", name: "Ivonne Maciel Arciniega Martínez", role: "juez" },
+          { user: "aldo.resendiz", pass: "Simposio2024", name: "Aldo Arturo Reséndiz Albor", role: "juez" },
+          { user: "javier.perez", pass: "Simposio2024", name: "Javier Pérez Durán", role: "juez" },
+          { user: "paula.saldana", pass: "Simposio2024", name: "Paula Saldaña", role: "juez" },
+          { user: "elena.cruz", pass: "Simposio2024", name: "Elena de La Cruz Herrera Cogco", role: "juez" },
+          { user: "nury.perez", pass: "Simposio2024", name: "Nury Pérez Hernández", role: "juez" },
+          { user: "enrique.mendez", pass: "Simposio2024", name: "Enrique Méndez-Bolaina", role: "juez" },
+          { user: "edgar.cano", pass: "Simposio2024", name: "Edgar Cano Europa", role: "juez" },
+          { user: "javier.flores", pass: "Simposio2024", name: "Javier Flores Estrada", role: "juez" },
+          { user: "araceli.montoya", pass: "Simposio2024", name: "Araceli Montoya Estrada", role: "juez" }
+        ];
+
+        // --- works.js ---
+        const WORKS = {
+          "II-008-PL-MC":"Monserrat Andrea Ortiz Cortes", "II-009-PL-MC":"Castillo Olvera Itzel Jimena", "II-010-PL-NT":"Edgar Valeria de la Cruz", "II-012-PL-MC":"Marisol Garay Contreras",
+          "II-016-PL-NT":"Natalia Valeria Sillerico Illanes", "II-020-PL-NT":"Daniela Torres Velasco", "II-022-PL-NT":"Astrid Adamari De la Rosa Cordero", "II-024-PL-NT":"Sara Gabriela Guadarrama Tovar",
+          "II-025-PL-NT":"Astrid Sophia Careaga Arceo", "II-027-PL-MC":"Elena Abigail Pérez Ham", "II-029-PL-ET":"Fátima Monserrat Ávila Quintero", "II-032-PL-NT":"Paz Peña Dana Paola",
+          "II-033-PL-ET":"Mariana Berenice López Arenas", "II-039-PL-MC":"Ana Camila Ramírez Ortiz", "II-043-PL-NT":"Dilan Rodríguez Lagos", "II-045-PL-NT":"Arianys Carolina Tovar Escobar",
+          "II-048-PL-MC":"Anel Camacho Dorantes", "II-050-PL-NT":"Alberto Jaret Mejía Meza", "II-051-PL-GE":"Yuleny Cervantes Fosado", "II-054-PL-NT":"Monserrat Bracho",
+          "II-058-PL-NT":"Xaris López Solís", "II-059-PL-NT":"Gillian Yazmín Sosa Maldonado", "II-060-PL-GE":"José Julián López Hernández", "II-062-PL-NT":"Laura Alessandra Ramírez Vázquez",
+          "II-064-PL-NT":"Anayeli Panzo Mayahua", "II-066-PL-NT":"Valery Rosales Rojas", "II-068-PL-PG":"María Elizabeth Sánchez Romero", "II-075-PL-NT":"Negrete Chávez Dalia Isamar",
+          "II-076-PL-NT":"Axel Emanuel Moctezuma García", "II-086-PL-ET":"Erick Santiago Mendoza Palacios", "II-089-PL-ET":"Jessamyn Reyna Crespo Sandoval", "II-091-PL-ET":"Joslay Cabrera Caballero",
+          "II-094-PL-NT":"Anaya Herrera Vania", "II-095-PL-ET":"Merary Jael Diaz Espinoza", "II-096-PL-ET":"Nadia Meritxell Vargas Freyre", "II-098-PL-NT":"Valeria Yareli Salazar Segura",
+          "II-001-PP-NT":"Alexis Alejandro García Rivero", "II-002-PP-NT":"Antonio Ávila Guerrero", "II-003-PP-NT":"Yara Irene López Dionicio", "II-004-PP-NT":"Romina María Valladares Ocampo",
+          "II-006-PP-GE":"Juan Pablo González Domínguez", "II-007-PP-NT":"Israel Lara Vega", "II-011-PP-PG":"Ivonne del Socorro Gutiérrez Ruiz", "II-013-PP-GE":"Giselle Barrera Zárate",
+          "II-014-PP-GE":"José Luis Marroquín Caratachea", "II-015-PP-PG":"Ramón López Ocampo", "II-019-PP-ET":"Rogelio Iván Gómez Escobedo", "II-023-PP-GE":"Itzel Feria Figueroa",
+          "II-036-PP-NT":"Luis José Pinto García", "II-044-PP-ET":"Luis Mario Sánchez Palestino", "II-047-PP-NT":"Víctor Jesús Escudero Huerta", "II-049-PP-ET":"Ernesto Santillán Arcos",
+          "II-053-PP-GE":"Sally Silva Castro", "II-055-PP-MC":"Angelica Castañeda de la Fuente", "II-057-PP-NT":"Goretti Araneth López Villafaña", "II-061-PP-NT":"Luis Armando García Pedraza",
+          "II-069-PP-NT":"Guillermina Chavaro Francisco", "II-070-PP-NT":"María de los Ángeles Rodríguez García", "II-072-PP-NT":"Karla Reyes Alvarado", "II-081-PP-NT":"Stefany Alamilla Cuellar",
+          "II-082-PP-NT":"Marcos Uriel González Pérez", "II-083-PP-NT":"Andrea Capaceta Osuna", "II-085-PP-NT":"Citlali Gómez Márquez", "II-088-PP-MC":"Karen Nayeli Hernández Vázquez",
+          "II-092-PP-GE":"Pahola del Carmen Rodríguez Pérez", "II-093-PP-NT":"Miguel Andrés Valdés Guevara", "II-097-PP-ET":"Lourdes Astrid Serrano Quilantán"
+        };
+
+        // --- assignments.js ---
+        const ASSIGNMENTS = {
+          "araceli.hernandez": ["II-008-PL-MC","II-039-PL-MC"],
+          "marycarmen.godinez": ["II-009-PL-MC","II-043-PL-NT","II-047-PP-NT","II-088-PP-MC"],
+          "claudia.calzada": ["II-010-PL-NT","II-045-PL-NT","II-049-PP-ET","II-092-PP-GE"],
+          "paola.zarate": ["II-012-PL-MC","II-048-PL-MC","II-068-PL-PG","II-004-PP-NT","II-053-PP-GE","II-093-PP-NT"],
+          "ivonne.maciel": ["II-016-PL-NT","II-050-PL-NT","II-075-PL-NT","II-006-PP-GE","II-055-PP-MC","II-097-PP-ET"],
+          "aldo.resendiz": ["II-020-PL-NT","II-051-PL-GE","II-076-PL-NT","II-007-PP-NT","II-057-PP-NT"],
+          "javier.perez": ["II-022-PL-NT","II-054-PL-NT","II-086-PL-ET","II-011-PP-PG","II-061-PP-NT"],
+          "paula.saldana": ["II-024-PL-NT","II-058-PL-NT","II-089-PL-ET","II-013-PP-GE","II-069-PP-NT"],
+          "elena.cruz": ["II-025-PL-NT","II-059-PL-NT","II-070-PP-NT","II-091-PL-ET"],
+          "nury.perez": ["II-027-PL-MC","II-060-PL-GE","II-094-PL-NT","II-015-PP-PG","II-072-PP-NT"],
+          "enrique.mendez": ["II-029-PL-ET","II-062-PL-NT","II-095-PL-ET","II-019-PP-ET","II-081-PP-NT"],
+          "edgar.cano": ["II-032-PL-NT","II-064-PL-NT","II-096-PL-ET","II-023-PP-GE","II-082-PP-NT"],
+          "javier.flores": ["II-033-PL-ET","II-066-PL-NT","II-098-PL-NT","II-036-PP-NT","II-083-PP-NT"],
+          "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
+        };
+
+        // --- Criterios de Evaluación (100 Puntos) ---
+        const CRITERIA = [
+            // I. Fondo (Contenido Científico) - Max 55 puntos
+            { id: 'titulo', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point', name: 'Título y Congruencia', desc: 'Claridad, pertinencia, y correcta identificación.' },
+            { id: 'introduccion', category: 'I. Fondo (Contenido Científico)', max: 15, type: 'full', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
+            { id: 'metodologia', category: 'I. Fondo (Contenido Científico)', max: 15, type: 'full', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
+            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: 'full', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
+            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
+            
+            // II. Forma (Diseño y Formato) - Max 35 puntos
+            { id: 'banner', category: 'II. Forma (Diseño y Formato)', max: 5, type: 'yes-no', name: 'Banner y Elementos', desc: 'Inclusión de logos y cumplimiento de requisitos. (0 o 5 puntos)' },
+            { id: 'diseno', category: 'II. Forma (Diseño y Formato)', max: 15, type: 'full', name: 'Diseño y Congruencia Visual', desc: 'Equilibrio, tipografía legible y uso eficiente.' },
+            { id: 'graficas', category: 'II. Forma (Diseño y Formato)', max: 15, type: 'full', name: 'Uso de Tablas y Gráficas', desc: 'Claridad, calidad de figuras y citación.' }, 
+
+            // III. Referencias y Presentación - Max 10 puntos
+            { id: 'referencias', category: 'III. Referencias y Presentación', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
+            { id: 'defensa', category: 'III. Referencias y Presentación', max: 5, type: 'full', name: 'Defensa y Síntesis', desc: 'Dominio del tema y capacidad de síntesis.' },
+
+            // IV. BONIFICACIÓN (Puntos Extra) - Max +15 puntos
+            { id: 'innovacion', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
+
+            // V. DEDUCCIÓN (Restan Puntos) - Max -20 puntos
+            { id: 'tiempo', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Excedió o no utilizó el tiempo. (Máx -10 puntos)' },
+            { id: 'ortografia', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Errores gramaticales o de sintaxis. (Máx -10 puntos)' },
+        ];
+
+
+        let currentUser = null;
+        let currentRole = null;
+        let currentJudge = null;
+        
+        // --- Lógica del Sistema ---
+
+        // Función auxiliar para calcular el puntaje total
+        function calculateScore() {
+            const form = document.getElementById('eval-form');
+            if (!form) return 0;
+
+            let totalScore = 0;
+            let totalBonus = 0;
+            let totalDeduction = 0;
+
+            for (const item of CRITERIA) {
+                let score = 0;
+                // Intentar obtener de radios (3-point, yes-no)
+                const radioValue = document.querySelector(`select[name="${item.id}"]`) ? document.querySelector(`select[name="${item.id}"]`).value : null;
+
+                if (item.type === '3-point' || item.type === 'yes-no') {
+                    score = parseInt(radioValue) || 0;
+                } else {
+                    // Obtener de number input (full, bonus, deduction)
+                    const numberInput = document.getElementById(`${item.id}-score`);
+                    if (numberInput) score = parseInt(numberInput.value) || 0;
+                }
+                
+                const safeScore = Math.min(score, item.max); 
+
+                if (item.type === 'bonus') {
+                    totalBonus += safeScore;
+                } else if (item.type === 'deduction') {
+                    totalDeduction += safeScore;
+                } else {
+                    totalScore += safeScore; // Criterios Base
+                }
+            }
+            
+            totalScore = totalScore + totalBonus - totalDeduction;
+
+            const scoreDisplay = document.getElementById('total-score-display');
+            if (scoreDisplay) scoreDisplay.textContent = totalScore;
+            
+            return totalScore;
+        }
+
+        // --- Manejo de la Evaluación ---
+        async function saveEvaluation(id) {
+            const fd = new FormData(document.getElementById("eval-form"));
+            const scores = {};
+            let totalScore = 0;
+
+            // 1. Recoger y calcular puntajes detallados
+            for (const item of CRITERIA) {
+                let score = 0;
+                
+                if (item.type === '3-point' || item.type === 'yes-no') {
+                     // Leer de SELECT
+                    const select = document.querySelector(`select[name="${item.id}"]`);
+                    score = parseInt(select ? select.value : 0) || 0;
+                } else {
+                    // Leer de INPUT (full, bonus, deduction)
+                    const numberInput = document.getElementById(`${item.id}-score`);
+                    if (numberInput) score = parseInt(numberInput.value) || 0;
+                }
+                scores[item.id] = score; // Guardar el valor ingresado
+            }
+
+            totalScore = calculateScore(); // Obtener el puntaje final calculado
+
+            const payload = {
+                timestamp: new Date().toISOString(),
+                staticJudgeId: currentUser, 
+                judgeName: currentJudge.name,
+                posterId: id,
+                posterTitle: WORKS[id] || "Título Desconocido",
+                totalScore: totalScore,
+                scores: scores,
+                observations: fd.get("comentarios") || ""
+            };
+
+            // 2. Guardar Localmente y Bloquear
+            localStorage.setItem(`eval_${currentUser}_${id}`, JSON.stringify(payload));
+
+            // 3. Enviar a Google Sheets
+            try {
+                await fetch(SHEETS_WEBAPP_URL, {
+                    method:"POST",
+                    mode:"no-cors",
+                    headers:{"Content-Type":"application/json"},
+                    body: JSON.stringify(payload)
+                });
+                console.log("Envío a Google Sheets iniciado (modo no-cors).");
+            } catch(e){ 
+                console.warn("Fallo en la petición a Sheets (típico en no-cors si el script no responde JSON)"); 
+            }
+
+            showAlert("Evaluación guardada y enviada a Sheets.", "success");
+            showDashboard();
+        }
+
+        // --- Funciones de Login y Dashboard ---
+
+        function tryLogin(){
+          const u = document.getElementById("username").value.trim();
+          const p = document.getElementById("password").value.trim();
+          const err = document.getElementById("login-error");
+          err.classList.add("hidden"); err.textContent = "";
+
+          const match = USERS.find(x => x.user === u && x.pass === p);
+          if(!match){
+            err.textContent = "Usuario o contraseña incorrectos.";
+            err.classList.remove("hidden");
+            return;
+          }
+
+          currentUser = match.user; currentRole = match.role; currentJudge = match;
+          localStorage.setItem("simposioUser", currentUser); localStorage.setItem("simposioRole", currentRole);
+
+          showDashboard();
+        }
+
+        window.addEventListener("load", () => {
+          const u = localStorage.getItem("simposioUser");
+          const r = localStorage.getItem("simposioRole");
+          if(u && r){
+            currentUser = u; currentRole = r; currentJudge = USERS.find(x=>x.user===u);
+            showDashboard();
+          }
+        });
+
+        function showDashboard(){
+          const loginCard = document.getElementById("login-card");
+          if(loginCard) loginCard.classList.add("hidden");
+          const root = document.getElementById("app-root");
+          root.classList.remove("hidden");
+          if(currentRole === "admin") renderAdmin();
+          else renderJudge();
+        }
+
+        // --- Render Judge Dashboard ---
+        function renderJudge(){
+          const root = document.getElementById("app-root");
+          const assigned = ASSIGNMENTS[currentUser] || [];
+          let html = `<div class="header-row"><div><div class="welcome">Bienvenido, ${currentJudge.name}</div><div class="small">Juez: ${currentUser}</div></div><div class="top-actions"><button class="btn ghost" onclick="logout()">Cerrar sesión</button></div></div>`;
+
+          html += `<div class="card"><h3 class="small">Mis trabajos asignados</h3>`;
+          if(assigned.length===0) html += `<p class="small">No tiene trabajos asignados.</p>`;
+          html += `<div class="work-list">`;
+          for(const id of assigned){
+            const student = WORKS[id] || "";
+            const doneKey = `eval_${currentUser}_${id}`;
+            const data = localStorage.getItem(doneKey);
+            const done = data ? true : false;
+            let totalScore = "N/A";
+
+            if (done) {
+                try {
+                    const obj = JSON.parse(data);
+                    totalScore = obj.totalScore || 0;
+                } catch (e) { /* silent fail */ }
+            }
+
+            html += `<div class="work-card">
+                        <strong>${id}</strong>
+                        <div class="work-meta">${student}</div>
+                        <div style="margin-top:10px">
+                            ${done ? 
+                                `<span class="evaluated-badge">Finalizado (${totalScore} Pts)</span>` 
+                                : `<button class="btn primary" onclick="openEvaluation('${id}')">Evaluar</button>`}
+                        </div>
+                     </div>`;
+          }
+          html += `</div></div>`;
+          root.innerHTML = html;
+        }
+
+        // --- Render Evaluation Form ---
+        function openEvaluation(id){
+            const student = WORKS[id] || "";
+            const criteriaSet = CRITERIA; 
+            const existingData = localStorage.getItem(`eval_${currentUser}_${id}`);
+            const data = existingData ? JSON.parse(existingData) : {};
+            const scores = data.scores || {};
+
+
+            let criteriaHtml = '';
+            let currentCategory = '';
+
+            criteriaSet.forEach(item => {
+                if (item.category !== currentCategory) {
+                    criteriaHtml += `<h4 style="margin-top:15px; border-bottom:1px solid #eee; padding-bottom:5px;">${item.category}</h4>`;
+                    currentCategory = item.category;
+                }
+
+                let inputField = '';
+                
+                if (item.type === '3-point') {
+                     inputField = `
+                         <div class="score-row">
+                            <label class="small">${item.desc}</label>
+                            <div style="display:flex; gap: 8px;">
+                                <select name="${item.id}" class="score-input-custom" required onchange="calculateScore()">
+                                    <option value="">--</option>
+                                    <option value="0" ${scores[item.id] == 0 ? 'selected' : ''}>0</option>
+                                    <option value="3" ${scores[item.id] == 3 ? 'selected' : ''}>3</option>
+                                    <option value="5" ${scores[item.id] == 5 ? 'selected' : ''}>5</option>
+                                </select>
+                            </div>
+                        </div>
+                     `;
+                } else if (item.type === 'yes-no') {
+                     inputField = `
+                         <div class="score-row">
+                            <label class="small">${item.desc}</label>
+                            <div style="display:flex; gap: 8px;">
+                                <select name="${item.id}" class="score-input-custom" required onchange="calculateScore()">
+                                    <option value="">--</option>
+                                    <option value="0" ${scores[item.id] == 0 ? 'selected' : ''}>No (0)</option>
+                                    <option value="5" ${scores[item.id] == 5 ? 'selected' : ''}>Sí (5)</option>
+                                </select>
+                            </div>
+                        </div>
+                     `;
+                } else {
+                    const classType = item.type === 'deduction' ? 'deduction' : (item.type === 'bonus' ? 'bonus' : '');
+                    const value = scores[item.id] !== undefined ? scores[item.id] : 0;
+
+                    inputField = `
+                        <div class="score-row ${classType}">
+                           <label class="small">${item.desc}</label>
+                           <input type="number" id="${item.id}-score" name="${item.id}" class="score-input-custom" min="0" max="${item.max}" value="${value}" oninput="calculateScore()">
+                        </div>
+                    `;
+                }
+                criteriaHtml += `<div class="eval-card">${inputField}</div>`;
+            });
+
+
+            const root = document.getElementById("app-root");
+            root.innerHTML = `<div class="card"><button class="btn ghost" onclick="showDashboard()">← Volver al Panel</button>
+                <h3>Evaluación de Trabajo</h3>
+                <div class="small">${id} — ${student}</div>
+                <div style="margin-top:15px; font-size: 18px; font-weight: 800;">
+                    Puntuación Total: <span id="total-score-display">${data.totalScore || 0}</span> / 100
+                </div>
+
+                <form id="eval-form" style="margin-top:12px">
+                    <div class="eval-grid">${criteriaHtml}</div>
+                    
+                    <div style="margin-top:12px; border-top: 1px solid #eee; padding-top: 10px;">
+                        <label>Observaciones/Comentarios</label>
+                        <textarea name="comentarios" rows="4">${data.observations || ''}</textarea>
+                    </div>
+
+                    <div style="margin-top:12px;display:flex;gap:8px">
+                        <button class="btn primary" type="submit">Guardar evaluación (Finalizar)</button>
+                        <button type="button" class="btn ghost" onclick="showDashboard()">Cancelar</button>
+                    </div>
+                </form>
+            </div>`;
+
+            // Re-bind events for score calculation on input change
+            document.getElementById("eval-form").addEventListener("input", calculateScore);
+            document.getElementById("eval-form").addEventListener("change", calculateScore);
+
+
+            document.getElementById("eval-form").addEventListener("submit", e=>{
+                e.preventDefault();
+                saveEvaluation(id);
+            });
+            calculateScore(); // Initial calculation
+        }
+
+        // --- Render Admin Dashboard ---
+        function renderAdmin(){
+          const root = document.getElementById("app-root");
+          let html = `<div class="header-row"><div><div class="welcome">Panel de Administración</div><div class="small">Usuario: ${currentJudge.name}</div></div><div class="top-actions"><button class="btn primary" onclick="exportGlobalCSV()">Exportar Global CSV</button><button class="btn ghost" onclick="logout()">Cerrar sesión</button></div></div>`;
+          html += `<div class="card"><h3 class="small">Progreso por juez</h3><div class="admin-grid">`;
+          
+          for(const u of USERS.filter(x=>x.role==="juez")){
+            const assigned = ASSIGNMENTS[u.user] || [];
+            let done = 0;
+            for(const id of assigned) if(localStorage.getItem(`eval_${u.user}_${id}`)) done++;
+            const pct = assigned.length? Math.round(done/assigned.length*100) : 0;
+            
+            html += `<div class="card">
+                        <strong>${u.name}</strong>
+                        <div class="small">${done}/${assigned.length} completados</div>
+                        <div style="margin-top:8px" class="progress"><div style="width:${pct}%"></div></div>
+                        <div style="margin-top:10px">
+                            <button class="btn ghost" onclick="openReassignModal('${u.user}')">Reasignar</button>&nbsp;
+                            <button class="btn primary" onclick="exportJudgeCSV('${u.user}')">Exportar CSV</button>
+                        </div>
+                     </div>`;
+          }
+          html += `</div></div>`;
+          root.innerHTML = html;
+        }
+
+        // --- Reassignment Logic (Modal) ---
+        function openReassignModal(oldJudge){
+          const listaJueces = USERS
+              .filter(u => u.role === "juez" && u.user !== oldJudge)
+              .map(j => `<option value="${j.user}">${j.name} (${j.user})</option>`)
+              .join("");
+
+          openModal(`
+              <h3>Reasignar Trabajos Pendientes</h3>
+              <p class="muted">Transfiere los trabajos *no evaluados* de <strong>${oldJudge}</strong> a otro juez.</p>
+              
+              <label for="newJudgeSelect">Nuevo Juez</label>
+              <select id="newJudgeSelect" style="margin-bottom: 12px; width:100%">
+                  <option value="">Seleccione...</option>
+                  ${listaJueces}
+              </select>
+              
+              <button class="btn primary" style="width:100%" onclick="confirmMassReassign('${oldJudge}')">
+                  Confirmar Reasignación Masiva
+              </button>
+          `);
+        }
+
+        function confirmMassReassign(oldJudge){
+          const newJudge = document.getElementById("newJudgeSelect").value;
+          if(!newJudge){
+            alert("Debe seleccionar un juez válido.");
+            return;
+          }
+          reassignAllPending(oldJudge, newJudge);
+          closeModal();
+        }
+
+        function reassignAllPending(oldJudge, newJudge){
+          const assigned = ASSIGNMENTS[oldJudge] || [];
+          let count = 0;
+          let newAssignments = [];
+
+          // 1. Procesar pendientes
+          for(const id of assigned){
+            const key = `eval_${oldJudge}_${id}`;
+            if(!localStorage.getItem(key)){
+              // Si está pendiente, se marca como reasignado para el juez nuevo
+              const newKey = `eval_${newJudge}_${id}`;
+              localStorage.setItem(newKey, JSON.stringify({reassignedFrom: oldJudge, timestamp:new Date().toISOString()}));
+              newAssignments.push(id);
+              count++;
+            }
+          }
+          
+          // 2. Actualizar ASSIGNMENTS (Simulación local)
+          ASSIGNMENTS[newJudge] = (ASSIGNMENTS[newJudge] || []).concat(newAssignments);
+          ASSIGNMENTS[oldJudge] = ASSIGNMENTS[oldJudge].filter(id => !newAssignments.includes(id));
+          
+          // Forzamos a refrescar el dashboard
+          alert(`Reasignados ${count} trabajos de ${oldJudge} → ${newJudge}. La asignación local ha sido actualizada.`);
+          renderAdmin();
+        }
+
+        // --- UI Utils ---
+        function openModal(html) {
+            const modal = document.createElement("div");
+            modal.className = "modal-bg";
+            modal.innerHTML = `<div class="modal card">${html}<button class="btn ghost" style="margin-top:15px; width:100%" onclick="closeModal()">Cerrar</button></div>`;
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const m = document.querySelector(".modal-bg");
+            if (m) m.remove();
+        }
+
+        function showAlert(message, type = "info") {
+            // Simplificado para esta versión
+            alert(message);
+        }
+
+        // --- CSV Exports ---
+        function exportGlobalCSV(){
+          const headers = ['judge','work','student','totalScore','claridad','metodologia','resultados','comentarios','timestamp'];
+          const rows = [headers];
+          
+          for(const u of USERS.filter(x=>x.role==="juez")){
+            const assigned = ASSIGNMENTS[u.user] || [];
+            for(const id of assigned){
+              const key = `eval_${u.user}_${id}`;
+              const data = localStorage.getItem(key);
+              if(data){
+                const obj = JSON.parse(data);
+                rows.push([
+                  u.user, id, WORKS[id]||"", obj.totalScore||"", 
+                  obj.scores?.claridad||"", obj.scores?.metodologia||"", obj.scores?.resultados||"", 
+                  obj.observations||"", obj.timestamp||""
+                ]);
+              }
+            }
+          }
+          downloadCSV(rows,"evaluaciones_global.csv");
+        }
+
+        function exportJudgeCSV(judge){
+          const headers = ['work','student','totalScore','claridad','metodologia','resultados','comentarios','timestamp'];
+          const rows = [headers];
+          const assigned = ASSIGNMENTS[judge] || [];
+          
+          for(const id of assigned){
+            const key = `eval_${judge}_${id}`;
+            const data = localStorage.getItem(key);
+            if(data){
+              const obj = JSON.parse(data);
+              rows.push([
+                id, WORKS[id]||"", obj.totalScore||"", 
+                obj.scores?.claridad||"", obj.scores?.metodologia||"", obj.scores?.resultados||"", 
+                obj.observations||"", obj.timestamp||""
+              ]);
+            }
+          }
+          downloadCSV(rows,`evaluaciones_${judge}.csv`);
+        }
+
+        function downloadCSV(rows,filename){
+          const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,"'")}"`).join(",")).join("\n");
+          const blob = new Blob([csv],{type:"text/csv"});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a"); a.href=url; a.download=filename; a.click();
+          URL.revokeObjectURL(url);
+        }
+        
+        function logout(){ localStorage.removeItem("simposioUser"); localStorage.removeItem("simposioRole"); location.reload(); }
+
+        // --- Exposición Global de Funciones para HTML (FIX) ---
+        window.showDashboard = showDashboard;
+        window.renderJudge = renderJudge;
+        window.openEvaluation = openEvaluation;
+        window.saveEvaluation = saveEvaluation;
+        window.renderAdmin = renderAdmin;
+        window.openReassignModal = openReassignModal;
+        window.confirmMassReassign = confirmMassReassign;
+        window.reassignAllPending = reassignAllPending;
+        window.exportGlobalCSV = exportGlobalCSV;
+        window.exportJudgeCSV = exportJudgeCSV;
+        window.calculateScore = calculateScore;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.showAlert = showAlert;
+        window.logout = logout;
+
+
+        // Inicializar eventos al cargar la ventana
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("login-btn").addEventListener("click", tryLogin);
+            
+            // Simular carga de datos para el login card
+            document.getElementById("username").value = "araceli.hernandez";
+            document.getElementById("password").value = "Simposio2024";
+        });
+    </script>
 </head>
 <body>
   <div class="container">
     <header class="topbar">
       <div class="left">
-        <img src="logo_ipn.png" alt="IPN" class="logo" />
-        <img src="logo_esm.png" alt="ESM" class="logo" />
-        <img src="logo_licam.png" alt="LICAM" class="logo" />
+        <!-- Reemplazar con logos reales en GitHub/assets -->
+        <img src="assets/logo_ipn.png" onerror="this.src='https://placehold.co/44x44/7e22ce/FFFFFF/png?text=IPN'" alt="IPN" class="logo" />
+        <img src="assets/logo_esm.png" onerror="this.src='https://placehold.co/44x44/059669/FFFFFF/png?text=ESM'" alt="ESM" class="logo" />
+        <img src="assets/logo_licam.png" onerror="this.src='https://placehold.co/44x44/34d399/000000/png?text=LICAM'" alt="LICAM" class="logo" />
       </div>
       <div class="right">
         <div class="version">Simposio • Evaluación • 2025</div>
@@ -51,13 +678,5 @@
       © Simposio 2025 — Plataforma de Evaluación
     </footer>
   </div>
-
-  <!-- Data files (must load before app.js) -->
-  <script src="users.js"></script>
-  <script src="assignments.js"></script>
-  <script src="works.js"></script>
-
-  <!-- Main app -->
-  <script src="app.js"></script>
 </body>
 </html>

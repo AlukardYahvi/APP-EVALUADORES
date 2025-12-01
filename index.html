@@ -221,7 +221,7 @@
         // ============================================================
 
         // URL de tu Web App Google Apps Script
-        const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzatgCyA9JOC5NGiaVhyWzBG9V69-jzlyPAW03HtI-_pMKd3K5N8zxai1dUuKNcf_s0/exec";
+        const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycby9qqSkEhodL44Wk-PsloCY7WDeJI3PVyyAAOymJKBrdBfg6mnl5MKYYfOXNFUg2Kin/exec";
 
         // --- users.js (Añadiendo el nuevo juez) ---
         const USERS = [
@@ -488,6 +488,7 @@
 
             // 3. Enviar a Google Sheets
             try {
+                // CORRECCIÓN FINAL: Usar la nueva URL
                 const response = await fetch(SHEETS_WEBAPP_URL, {
                     method:"POST",
                     body: JSON.stringify(payload)

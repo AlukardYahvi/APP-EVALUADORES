@@ -281,13 +281,20 @@
           "enrique.mendez": ["II-029-PL-ET","II-062-PL-NT","II-095-PL-ET","II-019-PP-ET","II-081-PP-NT"], "edgar.cano": ["II-032-PL-NT","II-064-PL-NT","II-096-PL-ET","II-023-PP-GE","II-082-PP-NT"],
           "javier.flores": ["II-033-PL-ET","II-066-PL-NT","II-098-PL-NT","II-036-PP-NT","II-083-PP-NT"], "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
         };
+        
+        // CORRECCIÓN: Asignaciones Orales basadas en la imagen
         const ORAL_ASSIGNMENTS = {
-            "aldo.resendiz": ["II-017-PL-NT"],
-            "enrique.mendez": ["II-017-PL-NT", "II-037-PP-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"],
-            "elena.cruz": ["II-017-PL-NT"],
-            "claudia.calzada": ["II-037-PP-NT"],
-            "guillermo.ceballos": ["II-037-PP-NT"]
+            // Día 10: Evalúan 8 trabajos (II-017 al II-056)
+            "aldo.resendiz": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT"],
+            "enrique.mendez": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", 
+                               "II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"], // Evalúa todos los 16
+            "elena.cruz": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT"],
+            
+            // Día 11: Evalúan 8 trabajos (II-037 al II-087)
+            "claudia.calzada": ["II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"],
+            "guillermo.ceballos": ["II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"]
         };
+        
         // Combinamos las asignaciones: si un juez existe en ambas listas, sus trabajos se combinan.
         const ASSIGNMENTS = {};
         const allJudges = new Set([...Object.keys(POSTER_ASSIGNMENTS), ...Object.keys(ORAL_ASSIGNMENTS)]);
@@ -1081,7 +1088,7 @@
 
         <label for="password">Contraseña</label>
         <div class="password-container">
-            <input id="password" type="password" autocomplete="current-password" placeholder="******">
+            <input id="password" type="password" autocomplete="current-password" placeholder="********">
             <button type="button" class="toggle-btn" id="toggle-password-btn" onclick="togglePasswordVisibility()">
                 👁️
             </button>

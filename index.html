@@ -1053,9 +1053,9 @@
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("login-btn").addEventListener("click", tryLogin);
             
-            // Simular carga de datos para el login card
-            document.getElementById("username").value = "araceli.hernandez";
-            document.getElementById("password").value = "Simposio2025"; 
+            // ELIMINANDO PRELLENADO DE CREDENCIALES para producción
+            // document.getElementById("username").value = "araceli.hernandez";
+            // document.getElementById("password").value = "Simposio2025"; 
         });
     </script>
 </head>
@@ -1084,11 +1084,11 @@
         <p class="muted">Usa el usuario y contraseña asignado para iniciar la evaluación.</p>
 
         <label for="username">Usuario</label>
-        <input id="username" type="text" autocomplete="username" placeholder="ej. USUARIO">
+        <input id="username" type="text" autocomplete="username" placeholder="ej. usuario.juez">
 
         <label for="password">Contraseña</label>
         <div class="password-container">
-            <input id="password" type="password" autocomplete="current-password" placeholder="********">
+            <input id="password" type="password" autocomplete="current-password" placeholder="••••••••••">
             <button type="button" class="toggle-btn" id="toggle-password-btn" onclick="togglePasswordVisibility()">
                 👁️
             </button>

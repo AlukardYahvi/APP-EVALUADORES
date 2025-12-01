@@ -257,7 +257,8 @@
           "II-001-PP-NT":"Alexis Alejandro García Rivero", "II-002-PP-NT":"Antonio Ávila Guerrero", "II-003-PP-NT":"Yara Irene López Dionicio", "II-004-PP-NT":"Romina María Valladares Ocampo",
           "II-006-PP-GE":"Juan Pablo González Domínguez", "II-007-PP-NT":"Israel Lara Vega", "II-011-PP-PG":"Ivonne del Socorro Gutiérrez Ruiz", "II-013-PP-GE":"Giselle Barrera Zárate",
           "II-014-PP-GE":"José Luis Marroquín Caratachea", "II-015-PP-PG":"Ramón López Ocampo", "II-019-PP-ET":"Rogelio Iván Gómez Escobedo", "II-023-PP-GE":"Itzel Feria Figueroa",
-          "II-036-PP-NT":"Luis José Pinto García", "II-044-PP-ET":"Luis Mario Sánchez Palestino", "II-047-PP-NT":"Víctor Jesús Escudero Huerta", "II-049-PP-ET":"Ernesto Santillán Arcos",
+          "II-036-PP-NT":"Luis José Pinto García", // ESTE TRABAJO SE MUEVE A ORAL
+          "II-044-PP-ET":"Luis Mario Sánchez Palestino", "II-047-PP-NT":"Víctor Jesús Escudero Huerta", "II-049-PP-ET":"Ernesto Santillán Arcos",
           "II-053-PP-GE":"Sally Silva Castro", "II-055-PP-MC":"Angelica Castañeda de la Fuente", "II-057-PP-NT":"Goretti Araneth López Villafaña", "II-061-PP-NT":"Luis Armando García Pedraza",
           "II-069-PP-NT":"Guillermina Chavaro Francisco", "II-070-PP-NT":"María de los Ángeles Rodríguez García", "II-072-PP-NT":"Karla Reyes Alvarado", "II-081-PP-NT":"Stefany Alamilla Cuellar",
           "II-082-PP-NT":"Marcos Uriel González Pérez", "II-083-PP-NT":"Andrea Capaceta Osuna", "II-085-PP-NT":"Citlali Gómez Márquez", "II-088-PP-MC":"Karen Nayeli Hernández Vázquez",
@@ -266,12 +267,16 @@
         const ORAL_WORKS = {
             "II-017-PL-NT": "María Fernanda Cordero Mayorga", "II-021-PL-NT": "Anarely Ramírez Hernández", "II-030-PL-ET": "María José Cruz Pérez", "II-034-PL-MC": "Nadia Ortiz Rosales",
             "II-040-PL-NT": "Ana Romina Robles Guzmán", "II-041-PL-NT": "Natalia Edith Ramírez López", "II-042-PL-NT": "Paola Alejandra Regules Cruz", "II-056-PL-NT": "Alan Israel Cruz Bernabé",
-            "II-037-PP-NT": "Zuri Abigail Gaspar Gutiérrez", "II-052-PP-NT": "Yanai Hernández Avendaño", "II-065-PP-MC": "Tahiri Alitzel Mendoza Hernández", "II-073-PP-NT": "Grisle Peñaloza Ramírez",
+            "II-036-PP-NT": "Luis José Pinto García", // TRABAJO SUSTITUTO (Día 11)
+            "II-052-PP-NT": "Yanai Hernández Avendaño", "II-065-PP-MC": "Tahiri Alitzel Mendoza Hernández", "II-073-PP-NT": "Grisle Peñaloza Ramírez",
             "II-074-PP-MC": "Iza Fernanda Pérez Ramírez", "II-079-PP-NT": "Samuel Salinas Ramos", "II-084-PP-MC": "Carla Arceo Cerna", "II-087-PP-NT": "Tabatta Gabriela Orejel Feria",
         };
+        // ELIMINADO: II-037-PP-NT: "Zuri Abigail Gaspar Gutiérrez", 
+        
         const WORKS = {...POSTER_WORKS, ...ORAL_WORKS}; // Fusión de trabajos
 
         // --- ASSIGNMENTS (Combinación de carteles y orales) ---
+        // Se mantiene POSTER_ASSIGNMENTS, excepto la eliminación del II-036-PP-NT si estaba asignado a alguien para póster (solo se asegura que no esté en la lista general de ASSIGNMENTS)
         const POSTER_ASSIGNMENTS = {
           "araceli.hernandez": ["II-008-PL-MC","II-039-PL-MC"], "marycarmen.godinez": ["II-009-PL-MC","II-043-PL-NT","II-047-PP-NT","II-088-PP-MC"],
           "claudia.calzada": ["II-010-PL-NT","II-045-PL-NT","II-049-PP-ET","II-092-PP-GE"], "paola.zarate": ["II-012-PL-MC","II-048-PL-MC","II-068-PL-PG","II-004-PP-NT","II-053-PP-GE","II-093-PP-NT"],
@@ -279,27 +284,31 @@
           "javier.perez": ["II-022-PL-NT","II-054-PL-NT","II-086-PL-ET","II-011-PP-PG","II-061-PP-NT"], "paula.saldana": ["II-024-PL-NT","II-058-PL-NT","II-089-PL-ET","II-013-PP-GE","II-069-PP-NT"],
           "elena.cruz": ["II-025-PL-NT","II-059-PL-NT","II-070-PP-NT","II-091-PL-ET"], "nury.perez": ["II-027-PL-MC","II-060-PL-GE","II-094-PL-NT","II-015-PP-PG","II-072-PP-NT"],
           "enrique.mendez": ["II-029-PL-ET","II-062-PL-NT","II-095-PL-ET","II-019-PP-ET","II-081-PP-NT"], "edgar.cano": ["II-032-PL-NT","II-064-PL-NT","II-096-PL-ET","II-023-PP-GE","II-082-PP-NT"],
-          "javier.flores": ["II-033-PL-ET","II-066-PL-NT","II-098-PL-NT","II-036-PP-NT","II-083-PP-NT"], "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
+          "javier.flores": ["II-033-PL-ET","II-066-PL-NT","II-098-PL-NT","II-036-PP-NT","II-083-PP-NT"], // Se elimina II-036-PP-NT de aquí más tarde si existe.
+          "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
         };
         
-        // CORRECCIÓN: Asignaciones Orales basadas en la imagen
+        // CORRECCIÓN: Asignaciones Orales basadas en la imagen, usando II-036 en lugar de II-037
         const ORAL_ASSIGNMENTS = {
             // Día 10: Evalúan 8 trabajos (II-017 al II-056)
             "aldo.resendiz": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT"],
             "enrique.mendez": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", 
-                               "II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"], // Evalúa todos los 16
+                               "II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"], // Evalúa todos los 16
             "elena.cruz": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT"],
             
-            // Día 11: Evalúan 8 trabajos (II-037 al II-087)
-            "claudia.calzada": ["II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"],
-            "guillermo.ceballos": ["II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"]
+            // Día 11: Evalúan 8 trabajos (II-036 al II-087)
+            "claudia.calzada": ["II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"],
+            "guillermo.ceballos": ["II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"]
         };
         
-        // Combinamos las asignaciones: si un juez existe en ambas listas, sus trabajos se combinan.
+        // 1. COMBINAR ASIGNACIONES
         const ASSIGNMENTS = {};
         const allJudges = new Set([...Object.keys(POSTER_ASSIGNMENTS), ...Object.keys(ORAL_ASSIGNMENTS)]);
         for (const judge of allJudges) {
-            ASSIGNMENTS[judge] = [...(POSTER_ASSIGNMENTS[judge] || []), ...(ORAL_ASSIGNMENTS[judge] || [])];
+            ASSIGNMENTS[judge] = [
+                ...(POSTER_ASSIGNMENTS[judge] || []).filter(id => id !== "II-036-PP-NT"), // Asegurar que II-036 no esté en poster
+                ...(ORAL_ASSIGNMENTS[judge] || [])
+            ].filter((v, i, a) => a.indexOf(v) === i); // Eliminar duplicados
         }
 
 
@@ -329,22 +338,25 @@
             { id: 'ortografia', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Errores gramaticales o de sintaxis. (Máx -10 puntos)' },
         ];
         
-        // --- CRITERIOS PARA EXPOSICIÓN ORAL ---
+        // --- CRITERIOS PARA EXPOSICIÓN ORAL (Actualizados y Divididos) ---
         const ORAL_CRITERIA = [
-            // Criterios 0/5/15 (Max 15)
+            // I. Fondo (Contenido Científico) - Max 45 puntos
             { id: 'introduccion_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
             { id: 'metodologia_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
             { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
             
+            // II. Exposición Oral y Material - Max 50 puntos
+            // Subdivisión del Dominio (30 pts)
+            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura del Mensaje', desc: 'Organización lógica, precisión conceptual y uso de lenguaje adecuado.' },
+            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo y Fluidez', desc: 'Ajuste al tiempo asignado, ritmo adecuado y dicción clara.' },
+            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Capacidad de Respuesta (Q&A)', desc: 'Dominio del tema al responder preguntas y profundidad en las explicaciones.' },
+            // Material Visual (10 pts)
+            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material Visual', desc: 'Diseño, claridad, legibilidad y apoyo visual de las diapositivas.' },
             // Criterios 0/3/5 (Max 5)
             { id: 'titulo_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad y pertinencia.' },
             { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
             
-            // Criterios de Presentación (Max 35)
-            { id: 'dominio', category: 'II. Exposición Oral y Material', max: 35, type: 'full', name: 'Dominio y Claridad Expositiva', desc: 'Manejo de tiempo, fluidez, respuesta a preguntas y claridad del mensaje.' },
-            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: 'full', name: 'Calidad del Material Visual', desc: 'Diseño, claridad y apoyo visual de las diapositivas.' },
-
-            // Criterio de Referencias (Max 5)
+            // III. Referencias y Ética (Max 5)
             { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
 
             // Modificadores (sin cambio)
@@ -596,6 +608,11 @@
                 '0': { emoji: '🔴', label: '0 Pts', tip: '❌ NO CUMPLE: No se presenta la información o la sección es incoherente/faltante. Evaluación nula.' },
                 '5': { emoji: '🟠', label: '5 Pts', tip: '⚠️ BAJO: Cumple mínimamente. La información es básica, incompleta o presenta errores conceptuales/metodológicos.' },
                 '15': { emoji: '🟢', label: '15 Pts', tip: '✅ EXCELENTE: Cumple totalmente los requisitos. Información clara, precisa, completa y bien organizada.' }
+            },
+            '10-point-discrete': {
+                '0': { emoji: '🔴', label: '0 Pts', tip: '❌ NO CUMPLE: Totalmente deficiente en el aspecto evaluado.' },
+                '5': { emoji: '🟠', label: '5 Pts', tip: '⚠️ REGULAR: Presenta deficiencias notables en la organización, claridad, o manejo del tiempo/preguntas.' },
+                '10': { emoji: '🟢', label: '10 Pts', tip: '✅ EXCELENTE: Criterio cubierto con alta calidad. Comunicación efectiva, estructura sólida y dominio total.' }
             },
             '3-point-discrete': {
                 '0': { emoji: '🔴', label: '0 Pts', tip: '❌ NO CUMPLE: La sección es totalmente deficiente o no es adecuada (ej. Título irrelevante).' },

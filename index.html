@@ -20,6 +20,7 @@
             --accent:#7c3aed;
             --success:#16a34a;
             --danger:#ef4444;
+            --info:#3b82f6;
         }
 
         *{box-sizing:border-box;font-family:Inter,system-ui,Arial;margin:0;padding:0}
@@ -98,6 +99,23 @@
 
         .work-card strong{display:block;font-size:16px;margin-bottom:8px; color: #1f2937;}
         .work-meta{font-size:14px;color:#4b5563;}
+        
+        /* Dashboard Tabs */
+        .tabs { display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 16px; }
+        .tab-button { 
+            padding: 10px 15px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: var(--muted);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab-button.active { 
+            color: var(--primary-1); 
+            border-bottom: 3px solid var(--primary-1); 
+        }
+
 
         .top-actions{display:flex;gap:10px;align-items:center}
 
@@ -125,6 +143,50 @@
         .score-input-custom{border:1px solid #ccc; padding: 6px 10px; width: 70px; text-align: center; border-radius: 6px; font-weight: 600;}
         .deduction{color:var(--danger);}
         .bonus{color:var(--success);}
+
+        /* Button Score Styles */
+        .score-buttons { display: flex; gap: 6px; align-items: center; }
+        .score-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.1s;
+            position: relative; /* Para el tooltip */
+        }
+        .score-btn.selected {
+            border-width: 2px;
+            border-color: var(--primary-1);
+            background-color: #eef2ff;
+            box-shadow: 0 0 5px rgba(91, 33, 182, 0.3);
+        }
+        .score-btn:hover { background-color: #f3f4f6; }
+        
+        /* Tooltip (Guía) */
+        .score-btn .tooltip {
+            visibility: hidden;
+            background-color: var(--primary-1);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Posición encima del botón */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            font-size: 12px;
+            line-height: 1.2;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .score-btn:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
 
         /* Custom Alert/Toast Styles */
         #custom-alert {
@@ -161,7 +223,7 @@
         // URL de tu Web App Google Apps Script
         const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzatgCyA9JOC5NGiaVhyWzBG9V69-jzlyPAW03HtI-_pMKd3K5N8zxai1dUuKNcf_s0/exec";
 
-        // --- users.js (Contraseñas corregidas a 2025) ---
+        // --- users.js (Añadiendo el nuevo juez) ---
         const USERS = [
           { user: "admin", pass: "Admin2025", name: "Administrador General", role: "admin" },
           { user: "araceli.hernandez", pass: "Simposio2025", name: "Araceli Hernández Zavala", role: "juez" },
@@ -177,12 +239,12 @@
           { user: "enrique.mendez", pass: "Simposio2025", name: "Enrique Méndez-Bolaina", role: "juez" },
           { user: "edgar.cano", pass: "Simposio2025", name: "Edgar Cano Europa", role: "juez" },
           { user: "javier.flores", pass: "Simposio2025", name: "Javier Flores Estrada", role: "juez" },
-          { user: "araceli.montoya", pass: "Simposio2025", name: "Araceli Montoya Estrada", role: "juez" }
+          { user: "araceli.montoya", pass: "Simposio2025", name: "Araceli Montoya Estrada", role: "juez" },
+          { user: "guillermo.ceballos", pass: "Simposio2025", name: "Guillermo M Ceballos Reyes", role: "juez" } // Nuevo juez oral
         ];
-        // --- FIN users.js (Contraseñas corregidas a 2025) ---
 
-        // --- works.js ---
-        const WORKS = {
+        // --- WORKS (Combinación de carteles y orales) ---
+        const POSTER_WORKS = {
           "II-008-PL-MC":"Monserrat Andrea Ortiz Cortes", "II-009-PL-MC":"Castillo Olvera Itzel Jimena", "II-010-PL-NT":"Edgar Valeria de la Cruz", "II-012-PL-MC":"Marisol Garay Contreras",
           "II-016-PL-NT":"Natalia Valeria Sillerico Illanes", "II-020-PL-NT":"Daniela Torres Velasco", "II-022-PL-NT":"Astrid Adamari De la Rosa Cordero", "II-024-PL-NT":"Sara Gabriela Guadarrama Tovar",
           "II-025-PL-NT":"Astrid Sophia Careaga Arceo", "II-027-PL-MC":"Elena Abigail Pérez Ham", "II-029-PL-ET":"Fátima Monserrat Ávila Quintero", "II-032-PL-NT":"Paz Peña Dana Paola",
@@ -201,49 +263,87 @@
           "II-082-PP-NT":"Marcos Uriel González Pérez", "II-083-PP-NT":"Andrea Capaceta Osuna", "II-085-PP-NT":"Citlali Gómez Márquez", "II-088-PP-MC":"Karen Nayeli Hernández Vázquez",
           "II-092-PP-GE":"Pahola del Carmen Rodríguez Pérez", "II-093-PP-NT":"Miguel Andrés Valdés Guevara", "II-097-PP-ET":"Lourdes Astrid Serrano Quilantán"
         };
-
-        // --- assignments.js ---
-        const ASSIGNMENTS = {
-          "araceli.hernandez": ["II-008-PL-MC","II-039-PL-MC"],
-          "marycarmen.godinez": ["II-009-PL-MC","II-043-PL-NT","II-047-PP-NT","II-088-PP-MC"],
-          "claudia.calzada": ["II-010-PL-NT","II-045-PL-NT","II-049-PP-ET","II-092-PP-GE"],
-          "paola.zarate": ["II-012-PL-MC","II-048-PL-MC","II-068-PL-PG","II-004-PP-NT","II-053-PP-GE","II-093-PP-NT"],
-          "ivonne.maciel": ["II-016-PL-NT","II-050-PL-NT","II-075-PL-NT","II-006-PP-GE","II-055-PP-MC","II-097-PP-ET"],
-          "aldo.resendiz": ["II-020-PL-NT","II-051-PL-GE","II-076-PL-NT","II-007-PP-NT","II-057-PP-NT"],
-          "javier.perez": ["II-022-PL-NT","II-054-PL-NT","II-086-PL-ET","II-011-PP-PG","II-061-PP-NT"],
-          "paula.saldana": ["II-024-PL-NT","II-058-PL-NT","II-089-PL-ET","II-013-PP-GE","II-069-PP-NT"],
-          "elena.cruz": ["II-025-PL-NT","II-059-PL-NT","II-070-PP-NT","II-091-PL-ET"],
-          "nury.perez": ["II-027-PL-MC","II-060-PL-GE","II-094-PL-NT","II-015-PP-PG","II-072-PP-NT"],
-          "enrique.mendez": ["II-029-PL-ET","II-062-PL-NT","II-095-PL-ET","II-019-PP-ET","II-081-PP-NT"],
-          "edgar.cano": ["II-032-PL-NT","II-064-PL-NT","II-096-PL-ET","II-023-PP-GE","II-082-PP-NT"],
-          "javier.flores": ["II-033-PL-ET","II-066-PL-NT","II-098-PL-NT","II-036-PP-NT","II-083-PP-NT"],
-          "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
+        const ORAL_WORKS = {
+            "II-017-PL-NT": "María Fernanda Cordero Mayorga", "II-021-PL-NT": "Anarely Ramírez Hernández", "II-030-PL-ET": "María José Cruz Pérez", "II-034-PL-MC": "Nadia Ortiz Rosales",
+            "II-040-PL-NT": "Ana Romina Robles Guzmán", "II-041-PL-NT": "Natalia Edith Ramírez López", "II-042-PL-NT": "Paola Alejandra Regules Cruz", "II-056-PL-NT": "Alan Israel Cruz Bernabé",
+            "II-037-PP-NT": "Zuri Abigail Gaspar Gutiérrez", "II-052-PP-NT": "Yanai Hernández Avendaño", "II-065-PP-MC": "Tahiri Alitzel Mendoza Hernández", "II-073-PP-NT": "Grisle Peñaloza Ramírez",
+            "II-074-PP-MC": "Iza Fernanda Pérez Ramírez", "II-079-PP-NT": "Samuel Salinas Ramos", "II-084-PP-MC": "Carla Arceo Cerna", "II-087-PP-NT": "Tabatta Gabriela Orejel Feria",
         };
+        const WORKS = {...POSTER_WORKS, ...ORAL_WORKS}; // Fusión de trabajos
 
-        // --- Criterios de Evaluación (100 Puntos) ---
-        const CRITERIA = [
-            // I. Fondo (Contenido Científico) - Max 55 puntos
-            { id: 'titulo', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point', name: 'Título y Congruencia', desc: 'Claridad, pertinencia, y correcta identificación.' },
-            { id: 'introduccion', category: 'I. Fondo (Contenido Científico)', max: 15, type: 'full', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
-            { id: 'metodologia', category: 'I. Fondo (Contenido Científico)', max: 15, type: 'full', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
-            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: 'full', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
-            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
+        // --- ASSIGNMENTS (Combinación de carteles y orales) ---
+        const POSTER_ASSIGNMENTS = {
+          "araceli.hernandez": ["II-008-PL-MC","II-039-PL-MC"], "marycarmen.godinez": ["II-009-PL-MC","II-043-PL-NT","II-047-PP-NT","II-088-PP-MC"],
+          "claudia.calzada": ["II-010-PL-NT","II-045-PL-NT","II-049-PP-ET","II-092-PP-GE"], "paola.zarate": ["II-012-PL-MC","II-048-PL-MC","II-068-PL-PG","II-004-PP-NT","II-053-PP-GE","II-093-PP-NT"],
+          "ivonne.maciel": ["II-016-PL-NT","II-050-PL-NT","II-075-PL-NT","II-006-PP-GE","II-055-PP-MC","II-097-PP-ET"], "aldo.resendiz": ["II-020-PL-NT","II-051-PL-GE","II-076-PL-NT","II-007-PP-NT","II-057-PP-NT"],
+          "javier.perez": ["II-022-PL-NT","II-054-PL-NT","II-086-PL-ET","II-011-PP-PG","II-061-PP-NT"], "paula.saldana": ["II-024-PL-NT","II-058-PL-NT","II-089-PL-ET","II-013-PP-GE","II-069-PP-NT"],
+          "elena.cruz": ["II-025-PL-NT","II-059-PL-NT","II-070-PP-NT","II-091-PL-ET"], "nury.perez": ["II-027-PL-MC","II-060-PL-GE","II-094-PL-NT","II-015-PP-PG","II-072-PP-NT"],
+          "enrique.mendez": ["II-029-PL-ET","II-062-PL-NT","II-095-PL-ET","II-019-PP-ET","II-081-PP-NT"], "edgar.cano": ["II-032-PL-NT","II-064-PL-NT","II-096-PL-ET","II-023-PP-GE","II-082-PP-NT"],
+          "javier.flores": ["II-033-PL-ET","II-066-PL-NT","II-098-PL-NT","II-036-PP-NT","II-083-PP-NT"], "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
+        };
+        const ORAL_ASSIGNMENTS = {
+            "aldo.resendiz": ["II-017-PL-NT"],
+            "enrique.mendez": ["II-017-PL-NT", "II-037-PP-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"],
+            "elena.cruz": ["II-017-PL-NT"],
+            "claudia.calzada": ["II-037-PP-NT"],
+            "guillermo.ceballos": ["II-037-PP-NT"]
+        };
+        // Combinamos las asignaciones: si un juez existe en ambas listas, sus trabajos se combinan.
+        const ASSIGNMENTS = {};
+        const allJudges = new Set([...Object.keys(POSTER_ASSIGNMENTS), ...Object.keys(ORAL_ASSIGNMENTS)]);
+        for (const judge of allJudges) {
+            ASSIGNMENTS[judge] = [...(POSTER_ASSIGNMENTS[judge] || []), ...(ORAL_ASSIGNMENTS[judge] || [])];
+        }
+
+
+        // --- CRITERIOS DE EVALUACIÓN (Modificados para 0/5/15) ---
+        const POSTER_CRITERIA = [
+            // Criterios 0/5/15 (Max 15)
+            { id: 'introduccion', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
+            { id: 'metodologia', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
+            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
             
-            // II. Forma (Diseño y Formato) - Max 35 puntos
+            // Criterios 0/3/5 (Max 5)
+            { id: 'titulo', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad, pertinencia, y correcta identificación.' },
+            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
             { id: 'banner', category: 'II. Forma (Diseño y Formato)', max: 5, type: 'yes-no', name: 'Banner y Elementos', desc: 'Inclusión de logos y cumplimiento de requisitos. (0 o 5 puntos)' },
-            { id: 'diseno', category: 'II. Forma (Diseño y Formato)', max: 15, type: 'full', name: 'Diseño y Congruencia Visual', desc: 'Equilibrio, tipografía legible y uso eficiente.' },
-            { id: 'graficas', category: 'II. Forma (Diseño y Formato)', max: 15, type: 'full', name: 'Uso de Tablas y Gráficas', desc: 'Claridad, calidad de figuras y citación.' }, 
-
-            // III. Referencias y Presentación - Max 10 puntos
             { id: 'referencias', category: 'III. Referencias y Presentación', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
+            
+            // Criterios 0/5/15 (Max 15)
+            { id: 'diseno', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Diseño y Congruencia Visual', desc: 'Equilibrio, tipografía legible y uso eficiente.' },
+            { id: 'graficas', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Uso de Tablas y Gráficas', desc: 'Claridad, calidad de figuras y citación.' }, 
+
+            // Criterios FULL (Max 5, sin cambio)
             { id: 'defensa', category: 'III. Referencias y Presentación', max: 5, type: 'full', name: 'Defensa y Síntesis', desc: 'Dominio del tema y capacidad de síntesis.' },
 
-            // IV. BONIFICACIÓN (Puntos Extra) - Max +15 puntos
+            // Modificadores (sin cambio)
             { id: 'innovacion', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
-
-            // V. DEDUCCIÓN (Restan Puntos) - Max -20 puntos
             { id: 'tiempo', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Excedió o no utilizó el tiempo. (Máx -10 puntos)' },
             { id: 'ortografia', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Errores gramaticales o de sintaxis. (Máx -10 puntos)' },
+        ];
+        
+        // --- CRITERIOS PARA EXPOSICIÓN ORAL ---
+        const ORAL_CRITERIA = [
+            // Criterios 0/5/15 (Max 15)
+            { id: 'introduccion_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
+            { id: 'metodologia_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
+            { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
+            
+            // Criterios 0/3/5 (Max 5)
+            { id: 'titulo_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad y pertinencia.' },
+            { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
+            
+            // Criterios de Presentación (Max 35)
+            { id: 'dominio', category: 'II. Exposición Oral y Material', max: 35, type: 'full', name: 'Dominio y Claridad Expositiva', desc: 'Manejo de tiempo, fluidez, respuesta a preguntas y claridad del mensaje.' },
+            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: 'full', name: 'Calidad del Material Visual', desc: 'Diseño, claridad y apoyo visual de las diapositivas.' },
+
+            // Criterio de Referencias (Max 5)
+            { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
+
+            // Modificadores (sin cambio)
+            { id: 'innovacion_o', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
+            { id: 'tiempo_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Excedió o no utilizó el tiempo. (Máx -10 puntos)' },
+            { id: 'ortografia_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción/Ortografía (Material)', desc: 'Errores en el material visual o verbal. (Máx -10 puntos)' },
         ];
 
 
@@ -265,10 +365,19 @@
                 toggleBtn.textContent = '👁️'; // Ojo
             }
         }
+        
+        // Helper para obtener el set de criterios
+        function getCriteriaSet(workId) {
+            if (ORAL_WORKS.hasOwnProperty(workId)) {
+                return ORAL_CRITERIA;
+            }
+            return POSTER_CRITERIA;
+        }
 
 
         // Función auxiliar para calcular el puntaje total
-        function calculateScore() {
+        function calculateScore(workId) {
+            const criteriaSet = getCriteriaSet(workId);
             const form = document.getElementById('eval-form');
             if (!form) return 0;
 
@@ -276,11 +385,15 @@
             let totalBonus = 0;
             let totalDeduction = 0;
 
-            for (const item of CRITERIA) {
+            for (const item of criteriaSet) {
                 let score = 0;
                 
-                if (item.type === '3-point' || item.type === 'yes-no') {
-                    // Leer de SELECT
+                if (item.type.includes('discrete')) {
+                    // Leer el valor del botón seleccionado (hidden input)
+                    const hiddenInput = document.getElementById(`${item.id}-score-hidden`);
+                    score = parseInt(hiddenInput ? hiddenInput.value : 0) || 0;
+                } else if (item.type === 'yes-no') {
+                    // Leer de SELECT (0 o 5)
                     const select = document.querySelector(`select[name="${item.id}"]`);
                     score = parseInt(select ? select.value : 0) || 0;
                 } else {
@@ -313,14 +426,19 @@
 
         // --- Manejo de la Evaluación ---
         async function saveEvaluation(id) {
+            const criteriaSet = getCriteriaSet(id);
             const fd = new FormData(document.getElementById("eval-form"));
             const scores = {};
             
             // 1. Recoger puntajes detallados
-            for (const item of CRITERIA) {
+            for (const item of criteriaSet) {
                 let score = 0;
                 
-                if (item.type === '3-point' || item.type === 'yes-no') {
+                if (item.type.includes('discrete')) {
+                    // Leer el valor del hidden input
+                    const hiddenInput = document.getElementById(`${item.id}-score-hidden`);
+                    score = parseInt(hiddenInput ? hiddenInput.value : 0) || 0;
+                } else if (item.type === 'yes-no') {
                      // Leer de SELECT
                     const select = document.querySelector(`select[name="${item.id}"]`);
                     score = parseInt(select ? select.value : 0) || 0;
@@ -332,7 +450,7 @@
                 scores[item.id] = score; // Guardar el valor ingresado
             }
 
-            const totalScore = calculateScore(); // Obtener el puntaje final calculado
+            const totalScore = calculateScore(id); // Obtener el puntaje final calculado
 
             const payload = {
                 timestamp: new Date().toISOString(),
@@ -340,6 +458,7 @@
                 judgeName: currentJudge.name,
                 posterId: id,
                 posterTitle: WORKS[id] || "Título Desconocido",
+                type: ORAL_WORKS.hasOwnProperty(id) ? "Oral" : "Poster",
                 totalScore: totalScore,
                 scores: scores,
                 observations: fd.get("comentarios") || ""
@@ -348,36 +467,292 @@
             // 2. Guardar Localmente y Bloquear
             localStorage.setItem(`eval_${currentUser}_${id}`, JSON.stringify(payload));
 
-            // 3. Enviar a Google Sheets (Enviar JSON con header correcto)
+            // 3. Enviar a Google Sheets
             try {
-                // Se envía el payload JSON directamente.
                 const response = await fetch(SHEETS_WEBAPP_URL, {
                     method:"POST",
-                    headers: {
-                        'Content-Type': 'application/json', // Indicamos que el cuerpo es JSON
-                    },
                     body: JSON.stringify(payload)
                 });
 
-                // Se chequea la respuesta
                 if (response.ok || response.type === 'opaque') {
                     console.log("Envío a Google Sheets iniciado o exitoso.");
                     showAlert("Evaluación guardada y enviada a Sheets.", "success");
                 } else {
                     const errorText = await response.text();
                     console.warn("Fallo al enviar a Sheets (Respuesta no OK):", errorText);
-                    showAlert("Error al enviar a Sheets, pero guardado localmente.", "error");
+                    showAlert("Error al enviar a Sheets, pero guardado localmente. (Verificar la URL del Apps Script y el CORS)", "error");
                 }
                 
             } catch(e){ 
-                console.warn("Fallo en la petición a Sheets (típico en problemas de red/CORS):", e); 
-                showAlert("Error de conexión al enviar a Sheets, pero guardado localmente.", "error");
+                console.warn("Fallo en la petición a Sheets (posible problema de red/CORS):", e); 
+                showAlert("Error de conexión al enviar a Sheets, pero guardado localmente. (Verificar la URL del Apps Script y el CORS)", "error");
             }
 
             showDashboard();
         }
 
-        // --- Funciones de Login y Dashboard ---
+        // --- Reiniciar Evaluación (Funciones de soporte) ---
+        function confirmResetEvaluation(id) {
+            const student = WORKS[id] || "Desconocido";
+            openModal(`
+                <h3>🔄 Confirmar Reinicio de Evaluación</h3>
+                <p class="muted">¿Está seguro de que desea reiniciar la evaluación para el trabajo <strong>${id}</strong> (${student})? Esto borrará el puntaje guardado localmente.</p>
+                <button class="btn danger" style="width:100%" onclick="resetEvaluation('${id}')">
+                    🗑️ Sí, Borrar y Reiniciar Evaluación
+                </button>
+            `);
+        }
+        
+        function resetEvaluation(id) {
+            closeModal();
+            const key = `eval_${currentUser}_${id}`;
+            localStorage.removeItem(key);
+            showAlert(`Evaluación del trabajo ${id} reiniciada.`, "info");
+            showDashboard();
+        }
+
+        // --- Render Judge Dashboard ---
+        function renderJudge(){
+          const root = document.getElementById("app-root");
+          const posterWorks = Object.keys(POSTER_WORKS).filter(id => (ASSIGNMENTS[currentUser] || []).includes(id));
+          const oralWorks = Object.keys(ORAL_WORKS).filter(id => (ASSIGNMENTS[currentUser] || []).includes(id));
+
+          // Icono de Juez: 🧑‍⚖️
+          let html = `<div class="header-row"><div><div class="welcome">🧑‍⚖️ Bienvenido, ${currentJudge.name}</div><div class="small">Juez: ${currentUser}</div></div><div class="top-actions"><button class="btn ghost" onclick="logout()">🚪 Cerrar sesión</button></div></div>`;
+          
+          html += `<div class="tabs">
+                       <button class="tab-button active" onclick="showWorkList('poster-list', this)">Trabajos Póster (${posterWorks.length})</button>
+                       <button class="tab-button" onclick="showWorkList('oral-list', this)">Exposiciones Orales (${oralWorks.length})</button>
+                   </div>`;
+
+          // --- Lista de Posters ---
+          html += `<div id="poster-list" class="work-list-container">
+                    <div class="card"><h3 class="small">Mis Trabajos Asignados (Póster)</h3>`;
+          if(posterWorks.length === 0) html += `<p class="small">No tiene trabajos Póster asignados.</p>`;
+          html += `<div class="work-list">`;
+          html += renderWorkCards(posterWorks);
+          html += `</div></div></div>`;
+
+          // --- Lista de Orales (Oculta por defecto) ---
+          html += `<div id="oral-list" class="work-list-container hidden">
+                    <div class="card"><h3 class="small" style="color: var(--info);">Mis Trabajos Asignados (Oral)</h3>`;
+          if(oralWorks.length === 0) html += `<p class="small">No tiene exposiciones Orales asignadas.</p>`;
+          html += `<div class="work-list">`;
+          html += renderWorkCards(oralWorks);
+          html += `</div></div></div>`;
+
+          root.innerHTML = html;
+        }
+
+        function renderWorkCards(workIds) {
+            let html = '';
+            for(const id of workIds){
+                const student = WORKS[id] || "";
+                const doneKey = `eval_${currentUser}_${id}`;
+                const data = localStorage.getItem(doneKey);
+                const done = data ? true : false;
+                let totalScore = "N/A";
+
+                if (done) {
+                    try {
+                        const obj = JSON.parse(data);
+                        totalScore = obj.totalScore || 0;
+                    } catch (e) { /* silent fail */ }
+                }
+
+                html += `<div class="work-card">
+                            <strong>${id}</strong>
+                            <div class="work-meta">${student}</div>
+                            <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+                                ${done ? 
+                                    `<span class="evaluated-badge">✅ Finalizado (${totalScore} Pts)</span>
+                                     <button class="btn ghost" style="width:auto; padding: 8px 10px; font-size:12px; color: var(--danger);" onclick="confirmResetEvaluation('${id}')">🔄 Reiniciar</button>`
+                                    : `<button class="btn primary" onclick="openEvaluation('${id}')">📝 Evaluar</button>`}
+                            </div>
+                         </div>`;
+            }
+            return html;
+        }
+        
+        function showWorkList(listId, buttonElement) {
+            document.querySelectorAll('.work-list-container').forEach(el => el.classList.add('hidden'));
+            document.getElementById(listId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+        }
+
+
+        // --- Componentes de Botones de Evaluación ---
+        const DISCRETE_GUIDANCE = {
+            '15-point-discrete': {
+                '0': { emoji: '🔴', label: '0 Pts', tip: '❌ NO CUMPLE: No se presenta la información o la sección es incoherente/faltante. Evaluación nula.' },
+                '5': { emoji: '🟠', label: '5 Pts', tip: '⚠️ BAJO: Cumple mínimamente. La información es básica, incompleta o presenta errores conceptuales/metodológicos.' },
+                '15': { emoji: '🟢', label: '15 Pts', tip: '✅ EXCELENTE: Cumple totalmente los requisitos. Información clara, precisa, completa y bien organizada.' }
+            },
+            '3-point-discrete': {
+                '0': { emoji: '🔴', label: '0 Pts', tip: '❌ NO CUMPLE: La sección es totalmente deficiente o no es adecuada (ej. Título irrelevante).' },
+                '3': { emoji: '🟠', label: '3 Pts', tip: '⚠️ ADECUADO: Cumple con la función, pero podría ser más conciso o pertinente.' },
+                '5': { emoji: '🟢', label: '5 Pts', tip: '✅ EXCELENTE: Criterio totalmente cubierto con máxima claridad y relevancia.' }
+            }
+        };
+
+        function renderDiscreteScoreButtons(item, currentScore, workId) {
+            const guidance = DISCRETE_GUIDANCE[item.type];
+            if (!guidance) return '';
+
+            let buttonsHtml = '';
+            
+            // Hidden input para almacenar el valor seleccionado
+            buttonsHtml += `<input type="hidden" id="${item.id}-score-hidden" value="${currentScore}" onchange="calculateScore('${workId}')">`;
+
+            for (const value in guidance) {
+                const info = guidance[value];
+                const isSelected = currentScore == value ? 'selected' : '';
+
+                buttonsHtml += `
+                    <button type="button" 
+                        class="score-btn ${isSelected}" 
+                        data-score="${value}" 
+                        onclick="setDiscreteScore('${item.id}', ${value}, '${workId}')">
+                        ${info.emoji} ${info.label}
+                        <span class="tooltip">${value} Pts: ${info.tip}</span>
+                    </button>
+                `;
+            }
+
+            return `<div class="score-buttons">${buttonsHtml}</div>`;
+        }
+
+        window.setDiscreteScore = function(itemId, score, workId) {
+            // 1. Deseleccionar todos los botones y seleccionar el nuevo
+            // Usamos querySelectorAll en el contexto de la tarjeta (eval-card) para evitar conflictos con otros botones
+            document.querySelectorAll(`.eval-card [data-score]`).forEach(btn => btn.classList.remove('selected'));
+
+            // 2. Seleccionar el botón correcto
+            const selectedButton = document.querySelector(`.eval-card [data-score="${score}"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('selected');
+            }
+
+
+            // 3. Actualizar el input hidden
+            const hiddenInput = document.getElementById(`${itemId}-score-hidden`);
+            if (hiddenInput) {
+                hiddenInput.value = score;
+                // Disparar manualmente el evento change para recalcular el puntaje total
+                calculateScore(workId);
+            }
+        }
+
+
+        // --- Render Evaluation Form ---
+        function openEvaluation(id){
+            const student = WORKS[id] || "";
+            const criteriaSet = getCriteriaSet(id); 
+            const existingData = localStorage.getItem(`eval_${currentUser}_${id}`);
+            const data = existingData ? JSON.parse(existingData) : {};
+            const scores = data.scores || {};
+            const modality = ORAL_WORKS.hasOwnProperty(id) ? "Exposición Oral" : "Póster Científico";
+
+
+            let criteriaHtml = '';
+            let currentCategory = '';
+
+            criteriaSet.forEach(item => {
+                if (item.category !== currentCategory) {
+                    criteriaHtml += `<h4 style="margin-top:15px; border-bottom:1px solid #eee; padding-bottom:5px;">${item.category}</h4>`;
+                    currentCategory = item.category;
+                }
+
+                let inputField = '';
+                const currentScore = scores[item.id] !== undefined ? scores[item.id] : 0;
+                
+                if (item.type.includes('discrete')) {
+                    // Usar botones de escala discreta (0/5/15 o 0/3/5)
+                    inputField = renderDiscreteScoreButtons(item, currentScore, id);
+                } else if (item.type === 'yes-no') {
+                     // Mantener select para sí/no (0/5)
+                     inputField = `
+                         <div class="score-row">
+                            <label class="small">${item.desc}</label>
+                            <div style="display:flex; gap: 8px;">
+                                <select name="${item.id}" class="score-input-custom" required onchange="calculateScore('${id}')">
+                                    <option value="">--</option>
+                                    <option value="0" ${currentScore == 0 ? 'selected' : ''}>No (0)</option>
+                                    <option value="5" ${currentScore == 5 ? 'selected' : ''}>Sí (5)</option>
+                                </select>
+                            </div>
+                        </div>
+                     `;
+                } else {
+                    // Input Numérico (Full, Bonus, Deduction)
+                    const classType = item.type === 'deduction' ? 'deduction' : (item.type === 'bonus' ? 'bonus' : '');
+
+                    inputField = `
+                        <div class="score-row ${classType}">
+                           <label class="small">${item.desc} (Máx. ${item.max})</label>
+                           <input type="number" id="${item.id}-score" name="${item.id}" class="score-input-custom" min="0" max="${item.max}" value="${currentScore}" oninput="calculateScore('${id}')">
+                        </div>
+                    `;
+                }
+                
+                criteriaHtml += `<div class="eval-card"><strong>${item.name}</strong>${inputField}</div>`;
+            });
+
+
+            const root = document.getElementById("app-root");
+            root.innerHTML = `<div class="card"><button class="btn ghost" onclick="showDashboard()">← Volver al Panel</button>
+                <h3>📝 Evaluación de ${modality}</h3>
+                <div class="small">${id} — ${student}</div>
+                <div style="margin-top:15px; font-size: 20px; font-weight: 800; color: var(--primary-1);">
+                    Puntuación Total: <span id="total-score-display">${data.totalScore || 0}</span> / 100
+                </div>
+
+                <form id="eval-form" style="margin-top:16px">
+                    <div class="eval-grid">${criteriaHtml}</div>
+                    
+                    <div style="margin-top:20px; border-top: 1px solid #eee; padding-top: 16px;">
+                        <label>✍️ Observaciones/Comentarios</label>
+                        <textarea name="comentarios" rows="4">${data.observations || ''}</textarea>
+                    </div>
+
+                    <div style="margin-top:20px;display:flex;gap:10px">
+                        <button class="btn primary" type="submit">✅ Guardar evaluación (Finalizar)</button>
+                        <button type="button" class="btn ghost" onclick="showDashboard()">❌ Cancelar</button>
+                        <button type="button" class="btn danger" style="width: auto;" onclick="confirmResetEvaluation('${id}')">🗑️ Reiniciar Evaluación</button>
+                    </div>
+                </form>
+            </div>`;
+
+            // Re-bind events for score calculation on input change
+            document.getElementById("eval-form").addEventListener("input", () => calculateScore(id));
+            document.getElementById("eval-form").addEventListener("change", () => calculateScore(id));
+            
+            // Asegurarse de que los botones seleccionados se muestren al cargar la evaluación
+            criteriaSet.forEach(item => {
+                if (item.type.includes('discrete')) {
+                     const currentScore = scores[item.id] !== undefined ? scores[item.id] : 0;
+                     const hiddenInput = document.getElementById(`${item.id}-score-hidden`);
+                     if (hiddenInput && currentScore) {
+                        const selector = `#app-root [data-score="${currentScore}"]`;
+                        const selectedButton = document.querySelector(selector);
+                        if(selectedButton) {
+                            selectedButton.classList.add('selected');
+                        }
+                     }
+                }
+            });
+
+
+            document.getElementById("eval-form").addEventListener("submit", e=>{
+                e.preventDefault();
+                saveEvaluation(id);
+            });
+            calculateScore(id); // Initial calculation
+        }
+        
+        // --- Funciones de Login y Admin Dashboard (sin cambios) ---
 
         function tryLogin(){
           const u = document.getElementById("username").value.trim();
@@ -416,164 +791,7 @@
           else renderJudge();
         }
 
-        // --- Render Judge Dashboard ---
-        function renderJudge(){
-          const root = document.getElementById("app-root");
-          const assigned = ASSIGNMENTS[currentUser] || [];
-          // Icono de Juez: 🧑‍⚖️
-          let html = `<div class="header-row"><div><div class="welcome">🧑‍⚖️ Bienvenido, ${currentJudge.name}</div><div class="small">Juez: ${currentUser}</div></div><div class="top-actions"><button class="btn ghost" onclick="logout()">🚪 Cerrar sesión</button></div></div>`;
-
-          html += `<div class="card"><h3 class="small">Mis trabajos asignados</h3>`;
-          if(assigned.length===0) html += `<p class="small">No tiene trabajos asignados. Por favor contacte al administrador.</p>`;
-          html += `<div class="work-list">`;
-          for(const id of assigned){
-            const student = WORKS[id] || "";
-            const doneKey = `eval_${currentUser}_${id}`;
-            const data = localStorage.getItem(doneKey);
-            const done = data ? true : false;
-            let totalScore = "N/A";
-
-            if (done) {
-                try {
-                    const obj = JSON.parse(data);
-                    totalScore = obj.totalScore || 0;
-                } catch (e) { /* silent fail */ }
-            }
-
-            html += `<div class="work-card">
-                        <strong>${id}</strong>
-                        <div class="work-meta">${student}</div>
-                        <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
-                            ${done ? 
-                                `<span class="evaluated-badge">✅ Finalizado (${totalScore} Pts)</span>
-                                 <button class="btn ghost" style="width:auto; padding: 8px 10px; font-size:12px; color: var(--danger);" onclick="confirmResetEvaluation('${id}')">🔄 Reiniciar</button>`
-                                : `<button class="btn primary" onclick="openEvaluation('${id}')">📝 Evaluar</button>`}
-                        </div>
-                     </div>`;
-          }
-          html += `</div></div>`;
-          root.innerHTML = html;
-        }
-
-        // --- Reiniciar Evaluación (Funciones de soporte) ---
-        function confirmResetEvaluation(id) {
-            const student = WORKS[id] || "Desconocido";
-            openModal(`
-                <h3>🔄 Confirmar Reinicio de Evaluación</h3>
-                <p class="muted">¿Está seguro de que desea reiniciar la evaluación para el trabajo <strong>${id}</strong> (${student})? Esto borrará el puntaje guardado localmente.</p>
-                <button class="btn danger" style="width:100%" onclick="resetEvaluation('${id}')">
-                    🗑️ Sí, Borrar y Reiniciar Evaluación
-                </button>
-            `);
-        }
         
-        function resetEvaluation(id) {
-            closeModal();
-            const key = `eval_${currentUser}_${id}`;
-            localStorage.removeItem(key);
-            showAlert(`Evaluación del trabajo ${id} reiniciada.`, "info");
-            showDashboard();
-        }
-
-        // --- Render Evaluation Form ---
-        function openEvaluation(id){
-            const student = WORKS[id] || "";
-            const criteriaSet = CRITERIA; 
-            const existingData = localStorage.getItem(`eval_${currentUser}_${id}`);
-            const data = existingData ? JSON.parse(existingData) : {};
-            const scores = data.scores || {};
-
-
-            let criteriaHtml = '';
-            let currentCategory = '';
-
-            criteriaSet.forEach(item => {
-                if (item.category !== currentCategory) {
-                    criteriaHtml += `<h4 style="margin-top:15px; border-bottom:1px solid #eee; padding-bottom:5px;">${item.category}</h4>`;
-                    currentCategory = item.category;
-                }
-
-                let inputField = '';
-                
-                if (item.type === '3-point') {
-                     inputField = `
-                         <div class="score-row">
-                            <label class="small">${item.desc}</label>
-                            <div style="display:flex; gap: 8px;">
-                                <select name="${item.id}" class="score-input-custom" required onchange="calculateScore()">
-                                    <option value="">--</option>
-                                    <option value="0" ${scores[item.id] == 0 ? 'selected' : ''}>0</option>
-                                    <option value="3" ${scores[item.id] == 3 ? 'selected' : ''}>3</option>
-                                    <option value="5" ${scores[item.id] == 5 ? 'selected' : ''}>5</option>
-                                </select>
-                            </div>
-                        </div>
-                     `;
-                } else if (item.type === 'yes-no') {
-                     inputField = `
-                         <div class="score-row">
-                            <label class="small">${item.desc}</label>
-                            <div style="display:flex; gap: 8px;">
-                                <select name="${item.id}" class="score-input-custom" required onchange="calculateScore()">
-                                    <option value="">--</option>
-                                    <option value="0" ${scores[item.id] == 0 ? 'selected' : ''}>No (0)</option>
-                                    <option value="5" ${scores[item.id] == 5 ? 'selected' : ''}>Sí (5)</option>
-                                </select>
-                            </div>
-                        </div>
-                     `;
-                } else {
-                    const classType = item.type === 'deduction' ? 'deduction' : (item.type === 'bonus' ? 'bonus' : '');
-                    const value = scores[item.id] !== undefined ? scores[item.id] : 0;
-
-                    inputField = `
-                        <div class="score-row ${classType}">
-                           <label class="small">${item.desc} (Máx. ${item.max})</label>
-                           <input type="number" id="${item.id}-score" name="${item.id}" class="score-input-custom" min="0" max="${item.max}" value="${value}" oninput="calculateScore()">
-                        </div>
-                    `;
-                }
-                criteriaHtml += `<div class="eval-card">${inputField}</div>`;
-            });
-
-
-            const root = document.getElementById("app-root");
-            root.innerHTML = `<div class="card"><button class="btn ghost" onclick="showDashboard()">← Volver al Panel</button>
-                <h3>📝 Evaluación de Trabajo</h3>
-                <div class="small">${id} — ${student}</div>
-                <div style="margin-top:15px; font-size: 20px; font-weight: 800; color: var(--primary-1);">
-                    Puntuación Total: <span id="total-score-display">${data.totalScore || 0}</span> / 100
-                </div>
-
-                <form id="eval-form" style="margin-top:16px">
-                    <div class="eval-grid">${criteriaHtml}</div>
-                    
-                    <div style="margin-top:20px; border-top: 1px solid #eee; padding-top: 16px;">
-                        <label>✍️ Observaciones/Comentarios</label>
-                        <textarea name="comentarios" rows="4">${data.observations || ''}</textarea>
-                    </div>
-
-                    <div style="margin-top:20px;display:flex;gap:10px">
-                        <button class="btn primary" type="submit">✅ Guardar evaluación (Finalizar)</button>
-                        <button type="button" class="btn ghost" onclick="showDashboard()">❌ Cancelar</button>
-                        <button type="button" class="btn danger" style="width: auto;" onclick="confirmResetEvaluation('${id}')">🗑️ Reiniciar Evaluación</button>
-                    </div>
-                </form>
-            </div>`;
-
-            // Re-bind events for score calculation on input change
-            document.getElementById("eval-form").addEventListener("input", calculateScore);
-            document.getElementById("eval-form").addEventListener("change", calculateScore);
-
-
-            document.getElementById("eval-form").addEventListener("submit", e=>{
-                e.preventDefault();
-                saveEvaluation(id);
-            });
-            calculateScore(); // Initial calculation
-        }
-
-        // --- Render Admin Dashboard ---
         function renderAdmin(){
           const root = document.getElementById("app-root");
           // Icono de Admin: ⚙️
@@ -588,7 +806,6 @@
             let done = 0;
             for(const id of assigned) {
                 const data = localStorage.getItem(`eval_${u.user}_${id}`);
-                // Solo cuenta como completado si existe la evaluación y no es solo el placeholder de reasignación
                 if(data && !JSON.parse(data).reassignedFrom) done++; 
             }
             const pct = assigned.length? Math.round(done/assigned.length*100) : 0;
@@ -658,16 +875,13 @@
           closeModal();
         }
 
-        // CORRECCIÓN: Asegurar que la lista de asignaciones del juez original se limpie de los trabajos reasignados.
         function reassignAllPending(oldJudge, newJudge){
           const assignedByOldJudge = ASSIGNMENTS[oldJudge] || [];
           let pendingToReassign = [];
           
-          // 1. Identificar pendientes (solo si no tienen una evaluación final)
           for(const id of assignedByOldJudge){
             const key = `eval_${oldJudge}_${id}`;
             const data = localStorage.getItem(key);
-            // Consideramos pendiente si NO hay data O si la data solo es un marcador de reasignación (reassignedFrom)
             if(!data || (data && JSON.parse(data).reassignedFrom)){ 
               pendingToReassign.push(id);
             }
@@ -677,28 +891,21 @@
           let newAssignments = [];
           
           for(const id of pendingToReassign){
-              // 2. Marcar como asignado/reasignado para el nuevo juez
               const newKey = `eval_${newJudge}_${id}`;
-              
-              // No creamos un marcador si el nuevo juez ya lo evaluó
               const newJudgeEvaluated = localStorage.getItem(newKey) && !JSON.parse(localStorage.getItem(newKey)).reassignedFrom;
               
               if(!newJudgeEvaluated) {
-                  // Guardamos un marcador temporal en localStorage para el nuevo juez
                   localStorage.setItem(newKey, JSON.stringify({reassignedFrom: oldJudge, timestamp:new Date().toISOString(), totalScore: 0}));
                   newAssignments.push(id);
                   count++;
               }
           }
           
-          // 3. Actualizar ASSIGNMENTS: Eliminar trabajos reasignados del juez antiguo y agregarlos al nuevo
-          // Se usa un nuevo arreglo para ASSIGNMENTS[oldJudge]
           ASSIGNMENTS[oldJudge] = assignedByOldJudge.filter(id => !pendingToReassign.includes(id));
           ASSIGNMENTS[newJudge] = (ASSIGNMENTS[newJudge] || []).concat(newAssignments.filter(id => !(ASSIGNMENTS[newJudge] || []).includes(id)));
           
-          // Notificación y refresco del dashboard
           showAlert(`Reasignados ${count} trabajos pendientes de ${oldJudge} a ${newJudge}.`, "success");
-          renderAdmin(); // Recargar el dashboard de admin para ver los cambios
+          renderAdmin(); 
         }
 
         // --- UI Utils ---
@@ -720,11 +927,10 @@
             if (!alertBox) return;
 
             alertBox.textContent = message;
-            alertBox.className = ''; // Limpiar clases existentes
+            alertBox.className = ''; 
             alertBox.classList.add('alert-' + type);
             alertBox.style.display = 'block';
 
-            // Forzar reflow/repaint para asegurar que la transición inicie
             void alertBox.offsetWidth; 
             alertBox.style.opacity = 1;
 
@@ -732,14 +938,16 @@
                 alertBox.style.opacity = 0;
                 setTimeout(() => {
                     alertBox.style.display = 'none';
-                }, 300); // Esperar que termine la transición
-            }, 3000); // Mostrar por 3 segundos
+                }, 300); 
+            }, 3000); 
         }
 
         // --- CSV Exports (Actualizado con todos los criterios) ---
+        // La exportación ahora usa el set completo de criterios (Posters + Orales)
         function exportGlobalCSV(){
-          const baseHeaders = ['judge', 'work', 'student', 'totalScore', 'observations', 'timestamp'];
-          const criteriaHeaders = CRITERIA.map(c => c.id);
+          const allCriteria = [...POSTER_CRITERIA, ...ORAL_CRITERIA.filter(oc => !POSTER_CRITERIA.some(pc => pc.id === oc.id))]; // Combinar sets únicos
+          const baseHeaders = ['judge', 'work', 'student', 'type', 'totalScore', 'observations', 'timestamp'];
+          const criteriaHeaders = allCriteria.map(c => c.id);
           const headers = baseHeaders.concat(criteriaHeaders);
           const rows = [headers];
           
@@ -752,12 +960,12 @@
                 const obj = JSON.parse(data);
                 
                 let row = [
-                    u.user, id, WORKS[id] || "", obj.totalScore || 0, 
+                    u.user, id, WORKS[id] || "", obj.type || (ORAL_WORKS.hasOwnProperty(id) ? "Oral" : "Poster"), obj.totalScore || 0, 
                     obj.observations || "", obj.timestamp || ""
                 ];
 
-                // Agregar todos los puntajes de criterios
-                for (const item of CRITERIA) {
+                // Agregar todos los puntajes de criterios, usando 0 si el ID del criterio no existe en la evaluación guardada
+                for (const item of allCriteria) {
                     row.push(obj.scores?.[item.id] !== undefined ? obj.scores[item.id] : 0);
                 }
                 
@@ -770,8 +978,9 @@
         }
 
         function exportJudgeCSV(judge){
-          const baseHeaders = ['work', 'student', 'totalScore', 'observations', 'timestamp'];
-          const criteriaHeaders = CRITERIA.map(c => c.id);
+          const allCriteria = [...POSTER_CRITERIA, ...ORAL_CRITERIA.filter(oc => !POSTER_CRITERIA.some(pc => pc.id === oc.id))]; 
+          const baseHeaders = ['work', 'student', 'type', 'totalScore', 'observations', 'timestamp'];
+          const criteriaHeaders = allCriteria.map(c => c.id);
           const headers = baseHeaders.concat(criteriaHeaders);
           const rows = [headers];
           const assigned = ASSIGNMENTS[judge] || [];
@@ -783,12 +992,11 @@
               const obj = JSON.parse(data);
 
               let row = [
-                  id, WORKS[id] || "", obj.totalScore || 0, 
+                  id, WORKS[id] || "", obj.type || (ORAL_WORKS.hasOwnProperty(id) ? "Oral" : "Poster"), obj.totalScore || 0, 
                   obj.observations || "", obj.timestamp || ""
               ];
 
-              // Agregar todos los puntajes de criterios
-              for (const item of CRITERIA) {
+              for (const item of allCriteria) {
                   row.push(obj.scores?.[item.id] !== undefined ? obj.scores[item.id] : 0);
               }
 
@@ -830,6 +1038,8 @@
         window.showAlert = showAlert;
         window.logout = logout;
         window.togglePasswordVisibility = togglePasswordVisibility; 
+        window.showWorkList = showWorkList;
+        window.setDiscreteScore = setDiscreteScore;
 
 
         // Inicializar eventos al cargar la ventana
@@ -837,9 +1047,8 @@
             document.getElementById("login-btn").addEventListener("click", tryLogin);
             
             // Simular carga de datos para el login card
-            // Usar una de las nuevas contraseñas 2025 para prellenar
-            document.getElementById("username").value = "USUARIO";
-            document.getElementById("password").value = "*****"; 
+            document.getElementById("username").value = "araceli.hernandez";
+            document.getElementById("password").value = "Simposio2025"; 
         });
     </script>
 </head>
@@ -853,7 +1062,7 @@
       <div class="left">
         <!-- Logos reales de Github -->
         <img src="logo_ipn.png" onerror="this.src='https://placehold.co/50x50/5b21b6/FFFFFF/png?text=IPN'" alt="IPN" class="logo" />
-        <img src="logo_esm.png" onerror="this.src='https://placehold.co/50x50/059669/FFFFFF/png?text=ESM'" alt="ESM" class="logo" />
+        <img src="logo_esm.jpg" onerror="this.src='https://placehold.co/50x50/059669/FFFFFF/png?text=ESM'" alt="ESM" class="logo" />
         <img src="logo_licam.png" onerror="this.src='https://placehold.co/50x50/34d399/000000/png?text=LICAM'" alt="LICAM" class="logo" />
       </div>
       <div class="right">
@@ -868,11 +1077,11 @@
         <p class="muted">Usa el usuario y contraseña asignado para iniciar la evaluación.</p>
 
         <label for="username">Usuario</label>
-        <input id="username" type="text" autocomplete="username" placeholder="ej. araceli.hernandez">
+        <input id="username" type="text" autocomplete="username" placeholder="ej. USUARIO">
 
         <label for="password">Contraseña</label>
         <div class="password-container">
-            <input id="password" type="password" autocomplete="current-password" placeholder="********">
+            <input id="password" type="password" autocomplete="current-password" placeholder="******">
             <button type="button" class="toggle-btn" id="toggle-password-btn" onclick="togglePasswordVisibility()">
                 👁️
             </button>
@@ -895,4 +1104,3 @@
   </div>
 </body>
 </html>
-

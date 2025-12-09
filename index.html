@@ -223,9 +223,118 @@
         // URL de tu Web App Google Apps Script
         const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycby9qqSkEhodL44Wk-PsloCY7WDeJI3PVyyAAOymJKBrdBfg6mnl5MKYYfOXNFUg2Kin/exec";
 
+        // Formato Imprimible Integrado
+        const PRINTABLE_HTML_TEMPLATE = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Hoja de Evaluación Imprimible</title>
+            <style>
+                @page { size: A4; margin: 1cm; }
+                body { font-family: Arial, sans-serif; line-height: 1.4; color: #333; padding: 10px; }
+                h1 { font-size: 16pt; text-align: center; border-bottom: 2px solid #333; padding-bottom: 5px; margin-bottom: 15px; }
+                h2 { font-size: 13pt; margin-top: 20px; border-bottom: 1px solid #999; padding-bottom: 3px; }
+                h3 { font-size: 11pt; margin-top: 15px; margin-bottom: 5px; color: #555; }
+                .header-info { margin-bottom: 15px; font-size: 10pt; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+                .header-info div { margin-bottom: 4px; }
+                .criteria-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+                .criteria-table th, .criteria-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; vertical-align: top; font-size: 9pt; }
+                .criteria-table th { background-color: #f0f0f0; font-weight: bold; }
+                .score-box { width: 50px; text-align: center; }
+                .max-score { width: 50px; text-align: center; font-weight: bold; }
+                .sub-criteria { font-size: 8pt; color: #666; display: block; margin-top: 2px; }
+                .total-box { font-size: 12pt; text-align: right; padding: 10px 0; font-weight: bold; margin-top: 10px; border-top: 2px solid #333; }
+                .signature-area { margin-top: 40px; display: flex; justify-content: space-between; font-size: 10pt; }
+                .signature-area div { border-top: 1px solid #333; width: 45%; text-align: center; padding-top: 5px; }
+                @media print { .no-print { display: none; } button { display: none; } }
+            </style>
+        </head>
+        <body>
+            <div class="no-print" style="text-align:center; padding: 20px;">
+                <button onclick="window.print()" style="padding: 10px 20px; background-color: #5b21b6; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">🖨️ Imprimir Hoja</button>
+            </div>
+
+            <h1>HOJA DE EVALUACIÓN OFICIAL - SIMPOSIO 2025</h1>
+            
+            <div class="header-info">
+                <div><strong>EVALUADOR:</strong> ________________________________________________</div>
+                <div><strong>ID TRABAJO:</strong> ______________________ <strong>FECHA:</strong> _________________</div>
+                <div><strong>EXPOSITOR:</strong> ________________________________________________</div>
+                <div><strong>MODALIDAD:</strong> [ ] PÓSTER [ ] ORAL</div>
+            </div>
+
+            <h2>A. PÓSTER CIENTÍFICO (Máx. 100 pts)</h2>
+            <table class="criteria-table">
+                <thead><tr><th>CRITERIO</th><th>PUNTAJE</th><th>MÁX</th></tr></thead>
+                <tbody>
+                    <tr><td colspan="3"><strong>I. Fondo (55 pts)</strong></td></tr>
+                    <tr><td>Título y Congruencia <span class="sub-criteria">Claridad, pertinencia. (0, 3, 5)</span></td><td></td><td class="max-score">5</td></tr>
+                    <tr><td>Introducción <span class="sub-criteria">Contextualización. (0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td>Metodología <span class="sub-criteria">Diseño y procedimientos. (0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td>Resultados <span class="sub-criteria">Presentación de datos. (0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td>Conclusiones <span class="sub-criteria">Consistencia. (0, 3, 5)</span></td><td></td><td class="max-score">5</td></tr>
+                    <tr><td colspan="3"><strong>II. Forma (35 pts)</strong></td></tr>
+                    <tr><td>Banner y Elementos <span class="sub-criteria">Logos y requisitos. (0 o 5)</span></td><td></td><td class="max-score">5</td></tr>
+                    <tr><td>Diseño Visual <span class="sub-criteria">Equilibrio y tipografía. (0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td>Tablas y Gráficas <span class="sub-criteria">Calidad y citación. (0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td colspan="3"><strong>III. Referencias y Pres. (10 pts)</strong></td></tr>
+                    <tr><td>Referencias <span class="sub-criteria">Formato adecuado. (0 o 5)</span></td><td></td><td class="max-score">5</td></tr>
+                    <tr><td>Defensa <span class="sub-criteria">Dominio y síntesis. (Máx 5)</span></td><td></td><td class="max-score">5</td></tr>
+                </tbody>
+            </table>
+
+            <h2>B. EXPOSICIÓN ORAL (Máx. 100 pts)</h2>
+            <table class="criteria-table">
+                <thead><tr><th>CRITERIO</th><th>PUNTAJE</th><th>MÁX</th></tr></thead>
+                <tbody>
+                    <tr><td colspan="3"><strong>I. Fondo (45 pts)</strong></td></tr>
+                    <tr><td>Introducción <span class="sub-criteria">(0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td>Metodología <span class="sub-criteria">(0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td>Resultados <span class="sub-criteria">(0, 5, 15)</span></td><td></td><td class="max-score">15</td></tr>
+                    <tr><td colspan="3"><strong>II. Exposición y Material (50 pts)</strong></td></tr>
+                    <tr><td>Claridad Mensaje <span class="sub-criteria">Organización lógica. (0, 5, 10)</span></td><td></td><td class="max-score">10</td></tr>
+                    <tr><td>Fluidez y Tiempo <span class="sub-criteria">Ritmo y ajuste. (0, 5, 10)</span></td><td></td><td class="max-score">10</td></tr>
+                    <tr><td>Respuestas (Q&A) <span class="sub-criteria">Dominio del tema. (0, 5, 10)</span></td><td></td><td class="max-score">10</td></tr>
+                    <tr><td>Material Visual <span class="sub-criteria">Diseño diapositivas. (0, 5, 10)</span></td><td></td><td class="max-score">10</td></tr>
+                    <tr><td>Título <span class="sub-criteria">(0, 3, 5)</span></td><td></td><td class="max-score">5</td></tr>
+                    <tr><td>Conclusiones <span class="sub-criteria">(0, 3, 5)</span></td><td></td><td class="max-score">5</td></tr>
+                    <tr><td colspan="3"><strong>III. Referencias (5 pts)</strong></td></tr>
+                    <tr><td>Referencias <span class="sub-criteria">(0 o 5)</span></td><td></td><td class="max-score">5</td></tr>
+                </tbody>
+            </table>
+
+            <h2>C. MODIFICADORES</h2>
+            <table class="criteria-table">
+                <tbody>
+                    <tr><td>Innovación (Bonificación) <span class="sub-criteria">Aporta nuevo conocimiento.</span></td><td class="score-box"></td><td class="max-score" style="color:green">+15</td></tr>
+                    <tr><td>Tiempo (Deducción) <span class="sub-criteria">Excedió el tiempo.</span></td><td class="score-box"></td><td class="max-score" style="color:red">-10</td></tr>
+                    <tr><td>Ortografía (Deducción) <span class="sub-criteria">Errores redacción.</span></td><td class="score-box"></td><td class="max-score" style="color:red">-10</td></tr>
+                </tbody>
+            </table>
+
+            <div class="total-box">PUNTAJE FINAL: ___________ / 100</div>
+
+            <div style="margin-top: 20px;">
+                <strong>Observaciones:</strong>
+                <div style="height: 80px; border: 1px solid #ccc; margin-top: 5px;"></div>
+            </div>
+
+            <div class="signature-area">
+                <div>Firma Evaluador</div>
+                <div>Firma Expositor</div>
+            </div>
+        </body>
+        </html>
+        `;
+
         // --- users.js (Añadiendo el nuevo juez) ---
         const USERS = [
-          { user: "admin", pass: "Admin2025", name: "Administrador General", role: "admin" },
+          // Usuario Administrador corregido
+          { user: "admin", pass: "Admin2025", name: "Administrador General - Edsel Yahvi Méndez Hernández", role: "admin" },
+          
+          // Jueces
           { user: "araceli.hernandez", pass: "Simposio2025", name: "Araceli Hernández Zavala", role: "juez" },
           { user: "marycarmen.godinez", pass: "Simposio2025", name: "Marycarmen Godinez Victoria", role: "juez" },
           { user: "claudia.calzada", pass: "Simposio2025", name: "Claudia Camelia Calzada Mendoza", role: "juez" },
@@ -269,7 +378,7 @@
             "II-040-PL-NT": "Ana Romina Robles Guzmán", "II-041-PL-NT": "Natalia Edith Ramírez López", "II-042-PL-NT": "Paola Alejandra Regules Cruz", "II-056-PL-NT": "Alan Israel Cruz Bernabé",
             "II-036-PP-NT": "Luis José Pinto García", // TRABAJO SUSTITUTO (Día 11)
             "II-052-PP-NT": "Yanai Hernández Avendaño", "II-065-PP-MC": "Tahiri Alitzel Mendoza Hernández", "II-073-PP-NT": "Grisle Peñaloza Ramírez",
-            "II-074-PP-MC": "Iza Fernanda Pérez Ramírez", "II-079-PP-NT": "Samuel Salinas Ramos", "II-087-PP-NT": "Tabatta Gabriela Orejel Feria",
+            "II-074-PP-MC": "Iza Fernanda Pérez Ramírez", "II-079-PP-NT": "Samuel Salinas Ramos", "II-084-PP-MC": "Carla Arceo Cerna", "II-087-PP-NT": "Tabatta Gabriela Orejel Feria",
         };
         // ELIMINADO: II-037-PP-NT: "Zuri Abigail Gaspar Gutiérrez", 
         
@@ -288,17 +397,23 @@
           "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
         };
         
-        // CORRECCIÓN: Asignaciones Orales basadas en la imagen, usando II-036 en lugar de II-037
+        // CORRECCIÓN: Asignaciones Orales
         const ORAL_ASSIGNMENTS = {
-            // Día 10: Evalúan 8 trabajos (II-017 al II-056)
+            // Día 10: Aldo, Enrique, Guillermo (antes Elena)
             "aldo.resendiz": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT"],
             "enrique.mendez": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", 
-                               "II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-087-PP-NT"], // Evalúa todos los 16
-            "elena.cruz": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT"],
+                               "II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"], // Evalúa todos los 16
             
-            // Día 11: Evalúan 8 trabajos (II-036 al II-087)
-            "claudia.calzada": ["II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-087-PP-NT"],
-            "guillermo.ceballos": ["II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-087-PP-NT"]
+            // Guillermo toma los trabajos de Elena (Día 10) + sus asignaciones del Día 11
+            "guillermo.ceballos": [
+                               "II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", // DÍA 10 (Tomado de Elena)
+                               "II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"  // DÍA 11 (Original)
+                            ],
+            
+            // Día 11: Claudia y Guillermo
+            "claudia.calzada": ["II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"],
+            
+            "elena.cruz": [] // Elena ya no tiene asignaciones orales
         };
         
         // 1. COMBINAR ASIGNACIONES
@@ -310,6 +425,10 @@
                 ...(ORAL_ASSIGNMENTS[judge] || [])
             ].filter((v, i, a) => a.indexOf(v) === i); // Eliminar duplicados
         }
+        
+        // 1.1 Combinar y asegurar que el ADMIN tenga acceso a TODOS los trabajos
+        // Si el usuario es "admin", asignarle todas las claves de WORKS
+        ASSIGNMENTS["admin"] = Object.keys(WORKS);
 
 
         // --- CRITERIOS DE EVALUACIÓN (Modificados para 0/5/15) ---
@@ -334,8 +453,10 @@
 
             // Modificadores (sin cambio)
             { id: 'innovacion', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
-            { id: 'tiempo', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Excedió o no utilizó el tiempo. (Máx -10 puntos)' },
-            { id: 'ortografia', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Errores gramaticales o de sintaxis. (Máx -10 puntos)' },
+            
+            // CORRECCIÓN: Descripciones actualizadas para la deducción
+            { id: 'tiempo', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Puntos de penalización (Se RESTAN). (Máx. 10 (Ingresar valor positivo))' },
+            { id: 'ortografia', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Puntos de penalización (Se RESTAN). (Máx. 10 (Ingresar valor positivo))' },
         ];
         
         // --- CRITERIOS PARA EXPOSICIÓN ORAL (Actualizados y Divididos) ---
@@ -361,8 +482,10 @@
 
             // Modificadores (sin cambio)
             { id: 'innovacion_o', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
-            { id: 'tiempo_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Excedió o no utilizó el tiempo. (Máx -10 puntos)' },
-            { id: 'ortografia_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción/Ortografía (Material)', desc: 'Errores en el material visual o verbal. (Máx -10 puntos)' },
+            
+             // CORRECCIÓN: Descripciones actualizadas para la deducción
+            { id: 'tiempo_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Puntos de penalización (Se RESTAN). (Máx. 10 (Ingresar valor positivo))' },
+            { id: 'ortografia_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción/Ortografía (Material)', desc: 'Puntos de penalización (Se RESTAN). (Máx. 10 (Ingresar valor positivo))' },
         ];
 
 
@@ -408,34 +531,38 @@
                 let score = 0;
                 
                 if (item.type.includes('discrete')) {
-                    // Leer el valor del botón seleccionado (hidden input)
                     const hiddenInput = document.getElementById(`${item.id}-score-hidden`);
                     score = parseInt(hiddenInput ? hiddenInput.value : 0) || 0;
                 } else if (item.type === 'yes-no') {
-                    // Leer de SELECT (0 o 5)
                     const select = document.querySelector(`select[name="${item.id}"]`);
                     score = parseInt(select ? select.value : 0) || 0;
                 } else {
-                    // Leer de INPUT (full, bonus, deduction)
                     const numberInput = document.getElementById(`${item.id}-score`);
-                    if (numberInput) score = parseInt(numberInput.value) || 0;
+                    if (numberInput) {
+                        score = parseFloat(numberInput.value) || 0;
+                    }
                 }
                 
-                // Aplicar el límite máximo del criterio, sin importar el tipo
-                const safeScore = Math.min(Math.abs(score), item.max); 
-                
-                if (item.type === 'bonus') {
-                    totalBonus += safeScore;
-                } else if (item.type === 'deduction') {
-                    totalDeduction += safeScore;
-                } else {
-                    totalScore += safeScore; // Criterios Base
+                // Las categorías de deducción deben ser tratadas como valores que restan.
+                if (item.type === 'deduction') {
+                    // Restamos el valor POSITIVO ingresado por el usuario (Math.abs(score))
+                    totalDeduction -= Math.abs(score); 
+                } 
+                else if (item.type === 'bonus') {
+                    // Aseguramos que solo sume valores positivos o cero
+                    totalBonus += Math.max(0, score);
+                } 
+                else {
+                    // Aseguramos que solo sume valores positivos o cero
+                    totalScore += Math.max(0, score);
                 }
             }
             
-            // La deducción se resta, el bonus se suma
-            let finalScore = totalScore + totalBonus - totalDeduction;
-            if (finalScore < 0) finalScore = 0; // Asegurar que el puntaje no sea negativo.
+            // El cálculo final ahora es simplemente la suma (las deducciones ya están incluidas como negativos)
+            let finalScore = totalScore + totalBonus + totalDeduction;
+
+            // Aseguramos que el puntaje final no sea negativo.
+            if (finalScore < 0) finalScore = 0;
 
             const scoreDisplay = document.getElementById('total-score-display');
             if (scoreDisplay) scoreDisplay.textContent = finalScore;
@@ -454,19 +581,25 @@
                 let score = 0;
                 
                 if (item.type.includes('discrete')) {
-                    // Leer el valor del hidden input
                     const hiddenInput = document.getElementById(`${item.id}-score-hidden`);
                     score = parseInt(hiddenInput ? hiddenInput.value : 0) || 0;
                 } else if (item.type === 'yes-no') {
-                     // Leer de SELECT
                     const select = document.querySelector(`select[name="${item.id}"]`);
                     score = parseInt(select ? select.value : 0) || 0;
-                } else {
-                    // Leer de INPUT (full, bonus, deduction)
+                } else if (item.type === 'deduction') {
+                    // Para deducción, leemos el valor positivo que ingresó el usuario
                     const numberInput = document.getElementById(`${item.id}-score`);
-                    if (numberInput) score = parseInt(numberInput.value) || 0;
+                    let inputVal = parseFloat(numberInput ? numberInput.value : 0) || 0;
+                    
+                    // GUARDAMOS EL VALOR COMO NEGATIVO (Si ingresan 10, guardamos -10)
+                    score = -Math.abs(inputVal); 
+                } else {
+                    // Para full/bonus, aseguramos que sea positivo
+                    const numberInput = document.getElementById(`${item.id}-score`);
+                    score = Math.max(0, parseFloat(numberInput ? numberInput.value : 0) || 0);
                 }
-                scores[item.id] = score; // Guardar el valor ingresado
+                
+                scores[item.id] = score; // Guardar el valor (NEGATIVO para deducción)
             }
 
             const totalScore = calculateScore(id); // Obtener el puntaje final calculado
@@ -488,7 +621,6 @@
 
             // 3. Enviar a Google Sheets
             try {
-                // CORRECCIÓN FINAL: Usar la nueva URL
                 const response = await fetch(SHEETS_WEBAPP_URL, {
                     method:"POST",
                     body: JSON.stringify(payload)
@@ -530,6 +662,28 @@
             showAlert(`Evaluación del trabajo ${id} reiniciada.`, "info");
             showDashboard();
         }
+        
+        // --------------------------------------------------------
+        //  FUNCIONES PARA IMPRIMIR HOJA DE EVALUACIÓN (NUEVO)
+        // --------------------------------------------------------
+        function openPrintModal() {
+             openModal(`
+                <h3>Seleccionar Hoja de Evaluación</h3>
+                <p class="muted">Elige el formato de hoja de evaluación que deseas imprimir (se abrirá una nueva ventana).</p>
+                <button class="btn primary" style="width: 100%; margin-top: 15px;" onclick="printEvaluationSheet()">
+                    🖨️ Imprimir Formato (Póster/Oral)
+                </button>
+            `);
+        }
+        
+        function printEvaluationSheet() {
+            // Abrimos una ventana nueva y escribimos el contenido HTML imprimible en ella
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(PRINTABLE_HTML_TEMPLATE);
+            printWindow.document.close();
+            closeModal();
+        }
+        // --------------------------------------------------------
 
         // --- Render Judge Dashboard ---
         function renderJudge(){
@@ -538,7 +692,9 @@
           const oralWorks = Object.keys(ORAL_WORKS).filter(id => (ASSIGNMENTS[currentUser] || []).includes(id));
 
           // Icono de Juez: 🧑‍⚖️
-          let html = `<div class="header-row"><div><div class="welcome">🧑‍⚖️ Bienvenido, ${currentJudge.name}</div><div class="small">Juez: ${currentUser}</div></div><div class="top-actions"><button class="btn ghost" onclick="logout()">🚪 Cerrar sesión</button></div></div>`;
+          let html = `<div class="header-row"><div><div class="welcome">🧑‍⚖️ Bienvenido, ${currentJudge.name}</div><div class="small">Juez: ${currentUser}</div></div><div class="top-actions">
+          <button class="btn ghost" onclick="openPrintModal()">🖨️ Imprimir Hoja</button>
+          <button class="btn ghost" onclick="logout()">🚪 Cerrar sesión</button></div></div>`;
           
           html += `<div class="tabs">
                        <button class="tab-button active" onclick="showWorkList('poster-list', this)">Trabajos Póster (${posterWorks.length})</button>
@@ -691,7 +847,12 @@
                 }
 
                 let inputField = '';
-                const currentScore = scores[item.id] !== undefined ? scores[item.id] : 0;
+                // Recuperamos el score. Si es deducción, Math.abs() nos da el valor positivo para mostrar en la UI.
+                let currentScore = scores[item.id] !== undefined ? scores[item.id] : 0;
+                
+                // Si es deducción, mostramos el valor positivo en el input para que el usuario no se confunda con el signo
+                let displayValue = item.type === 'deduction' ? Math.abs(currentScore) : currentScore;
+                
                 
                 if (item.type.includes('discrete')) {
                     // Usar botones de escala discreta (0/5/15 o 0/3/5)
@@ -713,11 +874,16 @@
                 } else {
                     // Input Numérico (Full, Bonus, Deduction)
                     const classType = item.type === 'deduction' ? 'deduction' : (item.type === 'bonus' ? 'bonus' : '');
+                    const placeholderText = item.type === 'deduction' ? `Máx. ${item.max} (Ingresar valor positivo)` : `Máx. ${item.max}`;
 
                     inputField = `
                         <div class="score-row ${classType}">
-                           <label class="small">${item.desc} (Máx. ${item.max})</label>
-                           <input type="number" id="${item.id}-score" name="${item.id}" class="score-input-custom" min="0" max="${item.max}" value="${currentScore}" oninput="calculateScore('${id}')">
+                           <label class="small">${item.desc} (${placeholderText})</label>
+                           <input type="number" id="${item.id}-score" name="${item.id}" class="score-input-custom" 
+                                   min="${item.type === 'deduction' ? 0 : 0}" 
+                                   max="${item.type === 'deduction' ? item.max : item.max}" 
+                                   value="${displayValue}" 
+                                   oninput="calculateScore('${id}')">
                         </div>
                     `;
                 }
@@ -846,6 +1012,14 @@
                      </div>`;
           }
           html += `</div></div>`;
+          
+          // Agregamos el botón para que el administrador pueda ver el panel de juez y calificar si es necesario
+          html += `<div class="card" style="margin-top: 20px;">
+                      <h3 class="small">Acceso Rápido y Herramientas</h3>
+                      <button class="btn primary" style="width: 100%; margin-top: 10px;" onclick="renderJudge()">📝 Acceder al Panel de Calificación</button>
+                      <button class="btn ghost" style="width: 100%; margin-top: 10px;" onclick="openPrintModal()">🖨️ Imprimir Hoja de Evaluación (Respaldo)</button>
+                   </div>`;
+
           root.innerHTML = html;
         }
 
@@ -1065,6 +1239,8 @@
         window.togglePasswordVisibility = togglePasswordVisibility; 
         window.showWorkList = showWorkList;
         window.setDiscreteScore = setDiscreteScore;
+        window.openPrintModal = openPrintModal; // Expuesto para el botón de impresión
+        window.printEvaluationSheet = printEvaluationSheet;
 
 
         // Inicializar eventos al cargar la ventana
@@ -1087,7 +1263,7 @@
       <div class="left">
         <!-- Logos reales de Github -->
         <img src="logo_ipn.png" onerror="this.src='https://placehold.co/50x50/5b21b6/FFFFFF/png?text=IPN'" alt="IPN" class="logo" />
-        <img src="logo_esm.png" onerror="this.src='https://placehold.co/50x50/059669/FFFFFF/png?text=ESM'" alt="ESM" class="logo" />
+        <img src="logo_esm.jpg" onerror="this.src='https://placehold.co/50x50/059669/FFFFFF/png?text=ESM'" alt="ESM" class="logo" />
         <img src="logo_licam.png" onerror="this.src='https://placehold.co/50x50/34d399/000000/png?text=LICAM'" alt="LICAM" class="logo" />
       </div>
       <div class="right">
@@ -1125,9 +1301,8 @@
 
     <footer class="footer">
       © Simposio 2025 — Plataforma de Evaluación
+      <br><span style="font-size: 11px; opacity: 0.7;">Administrador: Edsel Yahvi Méndez Hernández | Agradecimiento Especial: LICAM</span>
     </footer>
   </div>
 </body>
 </html>
-
-

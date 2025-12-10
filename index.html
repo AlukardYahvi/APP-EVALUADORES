@@ -366,7 +366,6 @@
           "II-001-PP-NT":"Alexis Alejandro García Rivero", "II-002-PP-NT":"Antonio Ávila Guerrero", "II-003-PP-NT":"Yara Irene López Dionicio", "II-004-PP-NT":"Romina María Valladares Ocampo",
           "II-006-PP-GE":"Juan Pablo González Domínguez", "II-007-PP-NT":"Israel Lara Vega", "II-011-PP-PG":"Ivonne del Socorro Gutiérrez Ruiz", "II-013-PP-GE":"Giselle Barrera Zárate",
           "II-014-PP-GE":"José Luis Marroquín Caratachea", "II-015-PP-PG":"Ramón López Ocampo", "II-019-PP-ET":"Rogelio Iván Gómez Escobedo", "II-023-PP-GE":"Itzel Feria Figueroa",
-          // ESTE TRABAJO SE MUEVE A ORAL
           "II-044-PP-ET":"Luis Mario Sánchez Palestino", "II-047-PP-NT":"Víctor Jesús Escudero Huerta", "II-049-PP-ET":"Ernesto Santillán Arcos",
           "II-053-PP-GE":"Sally Silva Castro", "II-055-PP-MC":"Angelica Castañeda de la Fuente", "II-057-PP-NT":"Goretti Araneth López Villafaña", "II-061-PP-NT":"Luis Armando García Pedraza",
           "II-069-PP-NT":"Guillermina Chavaro Francisco", "II-070-PP-NT":"María de los Ángeles Rodríguez García", "II-072-PP-NT":"Karla Reyes Alvarado", "II-081-PP-NT":"Stefany Alamilla Cuellar",
@@ -376,44 +375,53 @@
         const ORAL_WORKS = {
             "II-017-PL-NT": "María Fernanda Cordero Mayorga", "II-021-PL-NT": "Anarely Ramírez Hernández", "II-030-PL-ET": "María José Cruz Pérez", "II-034-PL-MC": "Nadia Ortiz Rosales",
             "II-040-PL-NT": "Ana Romina Robles Guzmán", "II-041-PL-NT": "Natalia Edith Ramírez López", "II-042-PL-NT": "Paola Alejandra Regules Cruz", "II-056-PL-NT": "Alan Israel Cruz Bernabé",
-            "II-036-PP-NT": "Luis José Pinto García", // TRABAJO SUSTITUTO (Día 11)
+            "II-037-PP-NT": "Luis José Pinto García", // CAMBIADO DE 036 a 037
             "II-052-PP-NT": "Yanai Hernández Avendaño", "II-065-PP-MC": "Tahiri Alitzel Mendoza Hernández", "II-073-PP-NT": "Grisle Peñaloza Ramírez",
-            "II-074-PP-MC": "Iza Fernanda Pérez Ramírez", "II-079-PP-NT": "Samuel Salinas Ramos", "II-084-PP-MC": "Carla Arceo Cerna", "II-087-PP-NT": "Tabatta Gabriela Orejel Feria",
+            "II-074-PP-MC": "Iza Fernanda Pérez Ramírez", "II-079-PP-NT": "Samuel Salinas Ramos", "II-084-PP-MC": "Tabatta Gabriela Orejel Feria", 
         };
         // ELIMINADO: II-037-PP-NT: "Zuri Abigail Gaspar Gutiérrez", 
         
         const WORKS = {...POSTER_WORKS, ...ORAL_WORKS}; // Fusión de trabajos
 
-        // --- ASSIGNMENTS (Combinación de carteles y orales) ---
-        // Se mantiene POSTER_ASSIGNMENTS, excepto la eliminación del II-036-PP-NT si estaba asignado a alguien para póster (solo se asegura que no esté en la lista general de ASSIGNMENTS)
+        // --- ASSIGNMENTS (Actualizados con la nueva lista) ---
         const POSTER_ASSIGNMENTS = {
-          "araceli.hernandez": ["II-008-PL-MC","II-039-PL-MC"], "marycarmen.godinez": ["II-009-PL-MC","II-043-PL-NT","II-047-PP-NT","II-088-PP-MC"],
-          "claudia.calzada": ["II-010-PL-NT","II-045-PL-NT","II-049-PP-ET","II-092-PP-GE"], "paola.zarate": ["II-012-PL-MC","II-048-PL-MC","II-068-PL-PG","II-004-PP-NT","II-053-PP-GE","II-093-PP-NT"],
-          "ivonne.maciel": ["II-016-PL-NT","II-050-PL-NT","II-075-PL-NT","II-006-PP-GE","II-055-PP-MC","II-097-PP-ET"], "aldo.resendiz": ["II-020-PL-NT","II-051-PL-GE","II-076-PL-NT","II-007-PP-NT","II-057-PP-NT"],
-          "javier.perez": ["II-022-PL-NT","II-054-PL-NT","II-086-PL-ET","II-011-PP-PG","II-061-PP-NT"], "paula.saldana": ["II-024-PL-NT","II-058-PL-NT","II-089-PL-ET","II-013-PP-GE","II-069-PP-NT"],
-          "elena.cruz": ["II-025-PL-NT","II-059-PL-NT","II-070-PP-NT","II-091-PL-ET"], "nury.perez": ["II-027-PL-MC","II-060-PL-GE","II-094-PL-NT","II-015-PP-PG","II-072-PP-NT"],
-          "enrique.mendez": ["II-029-PL-ET","II-062-PL-NT","II-095-PL-ET","II-019-PP-ET","II-081-PP-NT"], "edgar.cano": ["II-032-PL-NT","II-064-PL-NT","II-096-PL-ET","II-023-PP-GE","II-082-PP-NT"],
-          "javier.flores": ["II-033-PL-ET","II-066-PL-NT","II-098-PL-NT","II-083-PP-NT"], // Se elimina II-036-PP-NT de aquí más tarde si existe.
-          "araceli.montoya": ["II-001-PP-NT","II-044-PP-ET","II-085-PP-NT"]
+          "araceli.hernandez": ["II-008-PL-MC", "II-039-PL-MC", "II-091-PL-ET"],
+          "marycarmen.godinez": ["II-009-PL-MC", "II-043-PL-NT", "II-059-PL-NT", "II-002-PP-NT", "II-047-PP-NT", "II-088-PP-MC"],
+          "claudia.calzada": ["II-010-PL-NT", "II-025-PL-NT", "II-045-PL-NT", "II-003-PP-NT", "II-049-PP-ET", "II-092-PP-GE"],
+          "paola.zarate": ["II-012-PL-MC", "II-048-PL-MC", "II-068-PL-PG", "II-004-PP-NT", "II-053-PP-GE", "II-093-PP-NT"],
+          "ivonne.maciel": ["II-016-PL-NT", "II-050-PL-NT", "II-075-PL-NT", "II-006-PP-GE", "II-055-PP-MC", "II-097-PP-ET"],
+          "aldo.resendiz": ["II-020-PL-NT", "II-051-PL-GE", "II-076-PL-NT", "II-007-PP-NT", "II-057-PP-NT"],
+          "javier.perez": ["II-022-PL-NT", "II-054-PL-NT", "II-086-PL-ET", "II-011-PP-PG", "II-061-PP-NT"],
+          "paula.saldana": ["II-024-PL-NT", "II-058-PL-NT", "II-089-PL-ET", "II-013-PP-GE", "II-069-PP-NT"],
+          "nury.perez": ["II-027-PL-MC", "II-060-PL-GE", "II-094-PL-NT", "II-015-PP-PG", "II-072-PP-NT"],
+          "enrique.mendez": ["II-029-PL-ET", "II-062-PL-NT", "II-095-PL-ET", "II-019-PP-ET", "II-081-PP-NT"],
+          "edgar.cano": ["II-032-PL-NT", "II-064-PL-NT", "II-096-PL-ET", "II-023-PP-GE", "II-082-PP-NT"],
+          "javier.flores": ["II-033-PL-ET", "II-066-PL-NT", "II-098-PL-NT", "II-014-PP-GE", "II-070-PP-NT", "II-083-PP-NT"],
+          "araceli.montoya": ["II-001-PP-NT", "II-044-PP-ET", "II-085-PP-NT"],
+          "elena.cruz": [] // Sin asignaciones en la lista nueva
         };
         
-        // CORRECCIÓN: Asignaciones Orales
+        // CORRECCIÓN: Asignaciones Orales (Día 10 y Día 11)
         const ORAL_ASSIGNMENTS = {
-            // Día 10: Aldo, Enrique, Guillermo (antes Elena)
+            // Día 10: Aldo, Enrique, Guillermo (017, 021, 030, 034, 040, 041, 042, 056)
             "aldo.resendiz": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT"],
-            "enrique.mendez": ["II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", 
-                               "II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"], // Evalúa todos los 16
             
-            // Guillermo toma los trabajos de Elena (Día 10) + sus asignaciones del Día 11
+            // Enrique está en Día 10 y Día 11
+            "enrique.mendez": [
+                "II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", // Día 10
+                "II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC" // Día 11
+            ], 
+            
+            // Guillermo está en Día 10 y Día 11
             "guillermo.ceballos": [
-                               "II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", // DÍA 10 (Tomado de Elena)
-                               "II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"  // DÍA 11 (Original)
-                            ],
+                 "II-017-PL-NT", "II-021-PL-NT", "II-030-PL-ET", "II-034-PL-MC", "II-040-PL-NT", "II-041-PL-NT", "II-042-PL-NT", "II-056-PL-NT", // DÍA 10
+                 "II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC"  // DÍA 11
+            ],
             
-            // Día 11: Claudia y Guillermo
-            "claudia.calzada": ["II-036-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC", "II-087-PP-NT"],
+            // Día 11: Claudia (037, 052, 065, 073, 074, 079, 084)
+            "claudia.calzada": ["II-037-PP-NT", "II-052-PP-NT", "II-065-PP-MC", "II-073-PP-NT", "II-074-PP-MC", "II-079-PP-NT", "II-084-PP-MC"],
             
-            "elena.cruz": [] // Elena ya no tiene asignaciones orales
+            "elena.cruz": []
         };
         
         // 1. COMBINAR ASIGNACIONES
@@ -421,7 +429,7 @@
         const allJudges = new Set([...Object.keys(POSTER_ASSIGNMENTS), ...Object.keys(ORAL_ASSIGNMENTS)]);
         for (const judge of allJudges) {
             ASSIGNMENTS[judge] = [
-                ...(POSTER_ASSIGNMENTS[judge] || []).filter(id => id !== "II-036-PP-NT"), // Asegurar que II-036 no esté en poster
+                ...(POSTER_ASSIGNMENTS[judge] || []),
                 ...(ORAL_ASSIGNMENTS[judge] || [])
             ].filter((v, i, a) => a.indexOf(v) === i); // Eliminar duplicados
         }
@@ -703,7 +711,7 @@
 
           // --- Lista de Posters ---
           html += `<div id="poster-list" class="work-list-container">
-                    <div class="card"><h3 class="small">Mis Trabajos Asignados (Póster)</h3>`;
+                     <div class="card"><h3 class="small">Mis Trabajos Asignados (Póster)</h3>`;
           if(posterWorks.length === 0) html += `<p class="small">No tiene trabajos Póster asignados.</p>`;
           html += `<div class="work-list">`;
           html += renderWorkCards(posterWorks);
@@ -711,7 +719,7 @@
 
           // --- Lista de Orales (Oculta por defecto) ---
           html += `<div id="oral-list" class="work-list-container hidden">
-                    <div class="card"><h3 class="small" style="color: var(--info);">Mis Trabajos Asignados (Oral)</h3>`;
+                     <div class="card"><h3 class="small" style="color: var(--info);">Mis Trabajos Asignados (Oral)</h3>`;
           if(oralWorks.length === 0) html += `<p class="small">No tiene exposiciones Orales asignadas.</p>`;
           html += `<div class="work-list">`;
           html += renderWorkCards(oralWorks);
@@ -1306,4 +1314,3 @@
   </div>
 </body>
 </html>
-

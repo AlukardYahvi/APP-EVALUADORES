@@ -26,7 +26,7 @@
                         serif: ['Playfair Display', 'serif']
                     },
                     colors: {
-                        // Paleta basada en IPN/ESM (Guinda, Morado oscuro, acentos dorados)
+                        // Paleta basada en IPN/ESM
                         brand: {
                             50: '#f8f5fa',
                             100: '#efe6f3',
@@ -37,7 +37,7 @@
                             600: '#754381',
                             700: '#613669',
                             800: '#512f57',
-                            900: '#442848', // Dark Mode background
+                            900: '#442848', 
                             950: '#2b142f',
                         },
                         accent: {
@@ -58,7 +58,6 @@
             overflow-x: hidden;
         }
 
-        /* Glassmorphism utilities */
         .glass {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(16px);
@@ -73,17 +72,14 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Animations */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* Evaluation Buttons */
         .score-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
@@ -104,19 +100,16 @@
             pointer-events: none;
         }
 
-        /* Tooltip */
         .tooltip-group:hover .tooltip-content {
             visibility: visible;
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Background for Auth */
         .auth-bg {
             background: linear-gradient(135deg, rgba(43,20,47,0.95) 0%, rgba(97,54,105,0.9) 100%), url('https://images.unsplash.com/photo-1576091160550-2173ff9e81b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
         }
 
-        /* Toast */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast {
             min-width: 320px; padding: 16px; border-radius: 12px; background: white;
@@ -126,11 +119,10 @@
         }
         .toast.show { transform: translateX(0); }
 
-        /* Loader */
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #90579e; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Print Styles */
+        /* Print Styles para tabla de resultados */
         @media print {
             body { background-color: white !important; }
             #mobile-sidebar, header, .no-print { display: none !important; }
@@ -149,8 +141,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =========================================================================
         // CONFIGURACIÓN OFICIAL FIREBASE - SIMPOSIO LIICAM 2026
@@ -173,12 +165,8 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // Rutas estrictas (Rule 1)
         const basePath = `artifacts/${appId}/public/data/`;
 
-        // =========================================================================
-        // SUPER ADMINISTRADORES
-        // =========================================================================
         const ADMIN_EMAILS = [
             "nnajerag@ipn.mx",
             "simposioinvestigacionmedicina@gmail.com",
@@ -188,9 +176,6 @@
             "angelito_coa@hotmail.com"
         ].map(e => e.toLowerCase());
 
-        // =========================================================================
-        // DATOS DEL SIMPOSIO 2026
-        // =========================================================================
         const THEMATIC_AXES = [
             "Mujer y ciencia: enfermedades de la mujer y salud perinatal",
             "Investigación en biomedicina con perspectiva de género",
@@ -257,9 +242,24 @@
             }, 4000);
         };
 
+        // SISTEMA DE NAVEGACIÓN CENTRALIZADO
         window.switchView = (viewId) => {
+            // Ocultar todas las vistas principales
+            document.getElementById('view-auth').classList.add('hidden');
+            document.getElementById('view-pending').classList.add('hidden');
+            document.getElementById('app-layout').classList.add('hidden');
+            
+            // Ocultar subvistas internas
             document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
+            
+            // Determinar qué mostrar
+            if (viewId === 'view-auth' || viewId === 'view-pending') {
+                document.getElementById(viewId).classList.remove('hidden');
+            } else {
+                document.getElementById('app-layout').classList.remove('hidden');
+                const targetView = document.getElementById(viewId);
+                if (targetView) targetView.classList.remove('hidden');
+            }
             window.scrollTo(0,0);
         };
 
@@ -269,27 +269,57 @@
 
         async function initAuth() {
             try {
-                if (!auth.currentUser) {
-                    await signInAnonymously(auth);
-                }
+                if (!auth.currentUser) await signInAnonymously(auth);
             } catch (e) { 
                 console.warn("Auth init (Anónimo):", e.message);
             }
         }
 
+        // FUNCION ROBUSTA PARA CREAR USUARIO EN FIRESTORE (Evita Race Conditions)
+        async function getOrCreateUserDoc(user) {
+            const userRef = doc(db, basePath + 'users', user.uid);
+            const snap = await getDoc(userRef);
+            
+            if (snap.exists()) {
+                return snap.data();
+            }
+            
+            // Si el doc no existe, lo creamos
+            const email = user.email ? user.email.toLowerCase() : '';
+            const isAdmin = ADMIN_EMAILS.includes(email);
+            // Tomamos el nombre del registro por correo (si existe) o de Google
+            const displayName = window.tempRegisterName || user.displayName || 'Usuario ' + email.split('@')[0];
+            window.tempRegisterName = null; // Limpiar
+
+            const newUser = {
+                email: email,
+                name: displayName,
+                role: isAdmin ? 'admin' : 'juez',
+                approved: isAdmin,
+                assignedWorks: [],
+                createdAt: new Date().toISOString()
+            };
+            
+            await setDoc(userRef, newUser);
+            return newUser;
+        }
+
+        // CONTROLADOR PRINCIPAL DE AUTENTICACIÓN
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
                 if (!user.isAnonymous) {
-                    const docSnap = await getDoc(doc(db, basePath + 'users', user.uid));
-                    if (docSnap.exists()) {
-                        currentUserDoc = docSnap.data();
+                    try {
+                        // Aquí se asegura de que el documento se cree ANTES de intentar enrutar
+                        currentUserDoc = await getOrCreateUserDoc(user);
                         setupDataListeners();
                         routeUser();
-                    } else {
+                        showToast(`Bienvenido, ${currentUserDoc.name}`, "success");
+                    } catch(e) {
+                        console.error("Error validando usuario en Firestore:", e);
+                        showToast("Error de Firestore. Verifica tus Reglas de Seguridad.", "error", "fa-triangle-exclamation");
                         await signOut(auth);
                         switchView('view-auth');
-                        populateParticipantForm();
                     }
                 } else {
                     switchView('view-auth');
@@ -333,7 +363,7 @@
             btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
             try {
                 await signInWithEmailAndPassword(auth, document.getElementById('l-email').value, document.getElementById('l-pass').value);
-                showToast("Acceso correcto", "success", "fa-check-circle");
+                // onAuthStateChanged se encarga del resto
             } catch (e) {
                 showToast("Credenciales incorrectas", "error", "fa-triangle-exclamation");
             } finally {
@@ -341,55 +371,33 @@
             }
         };
 
+        window.tempRegisterName = null;
         window.registerWithEmail = async (e) => {
             e.preventDefault();
             const email = document.getElementById('r-email').value.toLowerCase();
+            const pass = document.getElementById('r-pass').value;
+            window.tempRegisterName = document.getElementById('r-name').value;
+            
             const btn = document.getElementById('btn-register');
             btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
             
             try {
-                const isAdmin = ADMIN_EMAILS.includes(email);
-                const cred = await createUserWithEmailAndPassword(auth, email, document.getElementById('r-pass').value);
-                
-                await setDoc(doc(db, basePath + 'users', cred.user.uid), {
-                    email: email,
-                    name: document.getElementById('r-name').value,
-                    role: isAdmin ? 'admin' : 'juez',
-                    approved: isAdmin, // Admins auto-approved
-                    assignedWorks: [],
-                    createdAt: new Date().toISOString()
-                });
-                showToast(isAdmin ? "Cuenta Admin creada" : "Cuenta creada. Esperando aprobación", "success", "fa-check-circle");
+                await createUserWithEmailAndPassword(auth, email, pass);
+                // onAuthStateChanged se encarga de crear el documento y enrutar
             } catch (e) {
                 showToast("Error: " + e.message, "error", "fa-circle-xmark");
-            } finally {
                 btn.innerHTML = 'Crear Cuenta'; btn.disabled = false;
             }
         };
 
         window.loginWithGoogle = async () => {
             try {
-                const res = await signInWithPopup(auth, provider);
-                const email = res.user.email.toLowerCase();
-                const userRef = doc(db, basePath + 'users', res.user.uid);
-                const snap = await getDoc(userRef);
-                
-                if (!snap.exists()) {
-                    const isAdmin = ADMIN_EMAILS.includes(email);
-                    await setDoc(userRef, {
-                        email: email,
-                        name: res.user.displayName || 'Usuario Google',
-                        role: isAdmin ? 'admin' : 'juez',
-                        approved: isAdmin,
-                        assignedWorks: [],
-                        createdAt: new Date().toISOString()
-                    });
-                    showToast("Cuenta configurada correctamente", "success", "fa-check");
-                } else {
-                    showToast("Acceso correcto", "success", "fa-check");
-                }
+                await signInWithPopup(auth, provider);
+                // onAuthStateChanged se encarga de crear el documento y enrutar automáticamente
             } catch (e) {
-                if (e.code !== 'auth/popup-closed-by-user') showToast("Error con Google", "error", "fa-xmark");
+                if (e.code !== 'auth/popup-closed-by-user') {
+                    showToast("Error de Google: " + e.message, "error", "fa-xmark");
+                }
             }
         };
 
@@ -401,7 +409,6 @@
 
         function setupDataListeners() {
             cleanupListeners();
-            // Works
             unsubscribes.push(onSnapshot(collection(db, basePath + 'works'), snap => {
                 allWorks = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 if (currentUserDoc?.role === 'admin') {
@@ -409,17 +416,15 @@
                     if(!document.getElementById('view-results').classList.contains('hidden')) renderResults();
                 }
                 if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
-            }));
+            }, e => console.error(e)));
             
-            // Users
             if (currentUserDoc?.role === 'admin') {
                 unsubscribes.push(onSnapshot(collection(db, basePath + 'users'), snap => {
                     allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()}));
                     renderAdminJudges();
-                }));
+                }, e => console.error(e)));
             }
             
-            // Evaluations
             unsubscribes.push(onSnapshot(collection(db, basePath + 'evaluations'), snap => {
                 allEvaluations = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 if (currentUserDoc?.role === 'admin') {
@@ -427,7 +432,7 @@
                     if(!document.getElementById('view-results').classList.contains('hidden')) renderResults();
                 }
                 if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
-            }));
+            }, e => console.error(e)));
         }
 
         function cleanupListeners() {
@@ -437,13 +442,14 @@
 
         function populateParticipantForm() {
             const select = document.getElementById('p-axis');
-            select.innerHTML = '<option value="">Selecciona el tema eje...</option>';
-            THEMATIC_AXES.forEach(a => select.innerHTML += `<option value="${a}">${a}</option>`);
+            if (select) {
+                select.innerHTML = '<option value="">Selecciona el tema eje...</option>';
+                THEMATIC_AXES.forEach(a => select.innerHTML += `<option value="${a}">${a}</option>`);
+            }
         }
 
         window.submitWork = async (e) => {
             e.preventDefault();
-            
             const btn = document.getElementById('btn-submit-work');
             btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
 
@@ -456,7 +462,7 @@
                     category: document.getElementById('p-cat').value,
                     subModality: document.getElementById('p-submod').value,
                     axis: document.getElementById('p-axis').value,
-                    type: document.getElementById('p-type').value, // 'poster' o 'oral'
+                    type: document.getElementById('p-type').value,
                     imageUrl: document.getElementById('p-url').value || '',
                     submittedBy: submitterId,
                     submittedAt: new Date().toISOString()
@@ -466,7 +472,7 @@
                 showToast("¡Trabajo registrado con éxito!", "success", "fa-file-circle-check");
                 e.target.reset();
             } catch (error) {
-                showToast("Error al registrar: " + error.message, "error");
+                showToast("Error al registrar (Revisa reglas de Firestore): " + error.message, "error");
             } finally {
                 btn.innerHTML = 'Registrar Trabajo'; btn.disabled = false;
             }
@@ -657,17 +663,14 @@
             currentEvalWork = allWorks.find(w => w.id === workId);
             currentCriteria = currentEvalWork.type === 'poster' ? POSTER_CRITERIA : ORAL_CRITERIA;
             
-            // Header
             document.getElementById('ev-type').textContent = currentEvalWork.type === 'poster' ? 'Póster Científico' : 'Exposición Oral';
             document.getElementById('ev-title').textContent = currentEvalWork.title;
             document.getElementById('ev-author').textContent = currentEvalWork.author;
             
-            // Previous Data
             const existing = allEvaluations.find(e => e.workId === workId && e.judgeUid === currentUser.uid);
             const scores = existing ? existing.scores : {};
             document.getElementById('ev-obs').value = existing ? existing.observations : '';
 
-            // Render Form
             const formContainer = document.getElementById('ev-form-container');
             formContainer.innerHTML = '';
             let currentCat = '';
@@ -784,7 +787,7 @@
                 showToast("Evaluación Guardada", "success", "fa-check");
                 switchView('view-judge');
             } catch (error) {
-                showToast("Error", "error");
+                showToast("Error guardando en BD.", "error");
             } finally {
                 btn.innerHTML = 'Guardar Evaluación'; btn.disabled = false;
             }
@@ -794,28 +797,19 @@
             const container = document.getElementById('results-content');
             document.getElementById('print-date').textContent = "Generado el: " + new Date().toLocaleString();
             
-            // Función para agrupar y promediar
             const generateTable = (works, title, colorTheme) => {
                 if (works.length === 0) return '';
                 
-                // Array final procesado
                 let processedWorks = works.map(w => {
-                    // Filtrar evaluaciones para este trabajo específico
                     const workEvals = allEvaluations.filter(e => e.workId === w.id);
                     const evalCount = workEvals.length;
-                    
-                    // Sumar calificaciones
                     const sum = workEvals.reduce((acc, curr) => acc + curr.totalScore, 0);
-                    // Calcular promedio (0 si no hay evaluaciones)
                     const avg = evalCount > 0 ? (sum / evalCount).toFixed(2) : 0;
-                    
                     return { ...w, evalCount, average: parseFloat(avg) };
                 });
 
-                // Ordenar de mayor a menor promedio
                 processedWorks.sort((a, b) => b.average - a.average);
 
-                // Crear HTML
                 let html = `
                 <div class="mb-10 page-break-after">
                     <h3 class="text-2xl font-bold font-serif mb-4 flex items-center gap-3 text-${colorTheme}-700">
@@ -835,7 +829,7 @@
                 `;
                 
                 processedWorks.forEach((w, index) => {
-                    const isTop = w.average > 0 && index < 3; // Highlight top 3 if evaluated
+                    const isTop = w.average > 0 && index < 3;
                     html += `
                         <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                             <td class="py-4 px-6">
@@ -1108,7 +1102,7 @@
                     </div>
                 </div>
 
-                <!-- VIEW: RESULTS & PDF (NUEVO MODULO AÑADIDO AQUI) -->
+                <!-- VIEW: RESULTS & PDF -->
                 <div id="view-results" class="app-view hidden max-w-6xl mx-auto animate-fade-in pb-12">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 no-print gap-4">
                         <div>
@@ -1219,63 +1213,5 @@
         </div>
     </div>
 
-    <!-- Modal: Assign -->
-    <div id="modal-assign" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in">
-            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-xl font-serif font-bold text-gray-900">Asignar a <span id="modal-assign-name" class="text-brand-600"></span></h3>
-                <button onclick="this.closest('#modal-assign').classList.add('hidden')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto max-h-[50vh] bg-white custom-scrollbar space-y-2" id="modal-assign-list"></div>
-            <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex gap-3">
-                <button onclick="this.closest('#modal-assign').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-colors">Cancelar</button>
-                <button id="btn-save-assign" class="flex-1 py-3 font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-lg transition-colors">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Preview Work (Admin) -->
-    <div id="modal-preview" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[90vh]">
-            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-start gap-4">
-                <h3 id="pw-title" class="text-xl font-serif font-bold text-gray-900 leading-tight"></h3>
-                <button onclick="this.closest('#modal-preview').classList.add('hidden')" class="shrink-0 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto bg-gray-50 custom-scrollbar flex flex-col gap-6">
-                <div id="pw-meta" class="grid grid-cols-2 gap-4 text-sm text-gray-600 bg-white p-4 rounded-xl border border-gray-100"></div>
-                <div class="bg-white rounded-xl border border-gray-200 p-2 min-h-[200px] flex items-center justify-center relative">
-                    <img id="pw-img" src="" class="w-full h-auto object-contain rounded-lg max-h-[60vh] hidden">
-                    <p class="text-sm text-gray-400 italic absolute">Sin material de apoyo.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Check local setup & hide layout if not logged in initially
-        document.getElementById('view-auth').classList.remove('hidden');
-        
-        // Custom overriding for switchView to manage layout shell
-        const originalSwitch = window.switchView;
-        window.switchView = (viewId) => {
-            if (viewId === 'view-auth' || viewId === 'view-pending') {
-                document.getElementById('app-layout').classList.add('hidden');
-                originalSwitch(viewId);
-            } else {
-                document.getElementById('view-auth').classList.add('hidden');
-                document.getElementById('view-pending').classList.add('hidden');
-                document.getElementById('app-layout').classList.remove('hidden');
-                
-                // Hide only internal views
-                document.getElementById('view-admin').classList.add('hidden');
-                document.getElementById('view-judge').classList.add('hidden');
-                document.getElementById('view-eval').classList.add('hidden');
-                document.getElementById('view-results').classList.add('hidden');
-                
-                document.getElementById(viewId).classList.remove('hidden');
-                window.scrollTo(0,0);
-            }
-        };
-    </script>
 </body>
 </html>

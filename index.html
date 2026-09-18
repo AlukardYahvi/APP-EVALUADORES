@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>3er Simposio de Investigación en Medicina 2026</title>
     
     <!-- Tailwind CSS -->
@@ -51,8 +51,8 @@
     </script>
 
     <style>
-        body { background-color: #f8fafc; color: #231f20; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        body { background-color: #f8fafc; color: #231f20; overflow-x: hidden; -webkit-tap-highlight-color: transparent;}
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid #f8fafc; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
@@ -64,18 +64,26 @@
             position: relative;
         }
 
-        .score-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; background-color: white; border: 2px solid #e2e8f0; color: #475569; }
+        .score-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; background-color: white; border: 2px solid #e2e8f0; color: #475569; touch-action: manipulation;}
         .score-btn:hover { background-color: #f8fafc; border-color: #cbd5e1; }
-        .score-btn.selected { background-color: #f9f2f5; border-color: #6f1d46; color: #6f1d46; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(111, 29, 70, 0.15); }
+        .score-btn.selected { background-color: #f9f2f5; border-color: #6f1d46; color: #6f1d46; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(111, 29, 70, 0.15); z-index: 10;}
         .score-btn .tooltip { visibility: hidden; background-color: #231f20; color: #fff; text-align: center; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 50; bottom: 125%; left: 50%; transform: translateX(-50%); width: 280px; font-size: 12px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         .score-btn .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #231f20 transparent transparent transparent; }
-        .score-btn:hover .tooltip { visibility: visible; opacity: 1; }
+        @media (min-width: 640px) { .score-btn:hover .tooltip { visibility: visible; opacity: 1; } } /* Solo tooltips en PC */
 
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { min-width: 320px; padding: 16px; border-radius: 12px; background: white; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); display: flex; align-items: flex-start; gap: 12px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #6f1d46; }
-        .toast.show { transform: translateX(0); }
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px;}
+        @media (min-width: 640px) { #toast-container { right: 20px; left: auto; transform: none; width: auto; max-width: none;} }
+        .toast { width: 100%; padding: 16px; border-radius: 12px; background: white; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); display: flex; align-items: flex-start; gap: 12px; transform: translateY(-150%); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #6f1d46; }
+        @media (min-width: 640px) { .toast { transform: translateX(120%); opacity: 1; min-width: 320px; } }
+        .toast.show { transform: translateY(0); opacity: 1;}
+        @media (min-width: 640px) { .toast.show { transform: translateX(0); } }
+        
         .loader { border: 3px solid #f3f4f6; border-top: 3px solid #6f1d46; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Scroll horizontal suave para pestañas móviles */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
         @media print {
             body { background-color: white !important; color: black !important; }
@@ -198,7 +206,7 @@
         let allEvaluations = [];
         let pendingConfirmAction = null;
         let currentEvalWork = null;
-        let currentCriteria = []; // Added to fix missing variable scope issue
+        let currentCriteria = []; 
 
         // =========================================================================
         // UTILIDADES Y UI
@@ -473,19 +481,19 @@
                 const isComodin = j.name.includes('(Suplente)');
                 
                 return `
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                <div class="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
                     <div>
                         <div class="flex items-center gap-2">
                             <h4 class="font-bold text-brand-900">${j.name}</h4>
                             ${isComodin ? `<span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Suplente</span>` : ''}
                         </div>
-                        <p class="text-xs text-gray-500">${j.email}</p>
+                        <p class="text-xs text-gray-500 truncate max-w-[200px] sm:max-w-full">${j.email}</p>
                         <p class="text-xs font-semibold text-brand-600 mt-1">Progreso: ${completed}/${assigned} evaluados</p>
                     </div>
-                    <div class="flex gap-2 w-full sm:w-auto">
-                        <button onclick="toggleApproval('${j.uid}', ${j.approved})" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold ${j.approved ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}">${j.approved ? 'Revocar' : 'Aprobar'}</button>
-                        <button onclick="openAssignModal('${j.uid}', '${j.name}')" ${!j.approved ? 'disabled' : ''} class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-50">Asignar</button>
-                        <button onclick="deleteJudge('${j.uid}')" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-50 text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors" title="Borrar Juez"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                        <button onclick="toggleApproval('${j.uid}', ${j.approved})" class="flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold ${j.approved ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}">${j.approved ? 'Revocar' : 'Aprobar'}</button>
+                        <button onclick="openAssignModal('${j.uid}', '${j.name}')" ${!j.approved ? 'disabled' : ''} class="flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-50">Asignar</button>
+                        <button onclick="deleteJudge('${j.uid}')" class="px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold bg-gray-50 text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors" title="Borrar Juez"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>`;
             }).join('');
@@ -507,26 +515,26 @@
             container.innerHTML = allWorks.map(w => {
                 const workEvals = allEvaluations.filter(e => e.workId === w.id);
                 return `
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative pr-20 flex gap-4">
+                <div class="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm relative pr-2 sm:pr-20 flex gap-4">
                     <div class="w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 hidden sm:block">
                         <img src="${getThumbnailUrl(w.imageUrl)}" onerror="this.src='https://placehold.co/100x100/f8fafc/94a3b8?text=SIM'" class="w-full h-full object-cover">
                     </div>
-                    <div class="flex-1">
-                        <div class="absolute top-4 right-4 flex gap-1">
-                            <button onclick="openWorkModal('${w.id}')" class="w-7 h-7 rounded text-gray-400 hover:text-brand-600 hover:bg-brand-50" title="Editar"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="deleteWork('${w.id}')" class="w-7 h-7 rounded text-gray-400 hover:text-red-600 hover:bg-red-50" title="Borrar"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <div class="flex-1 w-full">
+                        <div class="sm:absolute sm:top-4 sm:right-4 flex justify-end gap-1 mb-2 sm:mb-0">
+                            <button onclick="openWorkModal('${w.id}')" class="w-8 h-8 sm:w-7 sm:h-7 rounded text-gray-400 hover:text-brand-600 hover:bg-brand-50" title="Editar"><i class="fa-solid fa-pen text-sm sm:text-xs"></i></button>
+                            <button onclick="deleteWork('${w.id}')" class="w-8 h-8 sm:w-7 sm:h-7 rounded text-gray-400 hover:text-red-600 hover:bg-red-50" title="Borrar"><i class="fa-solid fa-trash text-sm sm:text-xs"></i></button>
                         </div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-[10px] font-bold uppercase tracking-wider ${w.type === 'poster' ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50'} px-2 py-0.5 rounded">${w.type}</span>
                             <span class="text-xs font-bold text-gray-500">${workEvals.length} Evals</span>
                         </div>
-                        <h4 class="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-1">${w.title}</h4>
-                        <p class="text-xs text-gray-600">${w.author}</p>
+                        <h4 class="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-2 sm:line-clamp-1">${w.title}</h4>
+                        <p class="text-xs text-gray-600 truncate">${w.author}</p>
                         
                         <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                            <button onclick="previewWork('${w.id}')" class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-200 text-gray-600 flex items-center justify-center" title="Ver Info"><i class="fa-solid fa-eye"></i></button>
-                            <button onclick="openEvaluation('${w.id}', true)" class="w-8 h-8 rounded-lg bg-brand-50 hover:bg-brand-200 text-brand-700 flex items-center justify-center" title="Evaluar como Admin"><i class="fa-solid fa-pencil"></i></button>
-                            <button onclick="viewEvalsAdmin('${w.id}')" class="flex-1 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-ranking-star"></i> Ver Calificaciones</button>
+                            <button onclick="previewWork('${w.id}')" class="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-gray-50 hover:bg-gray-200 text-gray-600 flex items-center justify-center" title="Ver Info"><i class="fa-solid fa-eye"></i></button>
+                            <button onclick="openEvaluation('${w.id}', true)" class="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-brand-50 hover:bg-brand-200 text-brand-700 flex items-center justify-center" title="Evaluar como Admin"><i class="fa-solid fa-pencil"></i></button>
+                            <button onclick="viewEvalsAdmin('${w.id}')" class="flex-1 h-9 sm:h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-ranking-star"></i> <span class="hidden sm:inline">Ver Calificaciones</span><span class="sm:hidden">Cals.</span></button>
                         </div>
                     </div>
                 </div>`;
@@ -544,9 +552,9 @@
             document.getElementById('modal-assign-list').innerHTML = allWorks.map(w => `
                 <label class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer border border-transparent hover:border-gray-200">
                     <input type="checkbox" class="assign-cb w-5 h-5 rounded text-brand-600" value="${w.id}" ${assigned.includes(w.id) ? 'checked' : ''}>
-                    <div>
+                    <div class="flex-1 min-w-0">
                         <div class="font-semibold text-sm text-gray-800 line-clamp-1">${w.title}</div>
-                        <div class="text-xs text-gray-500"><span class="uppercase font-bold ${w.type==='poster'?'text-blue-500':'text-orange-500'}">${w.type}</span> • ${w.author}</div>
+                        <div class="text-xs text-gray-500 truncate"><span class="uppercase font-bold ${w.type==='poster'?'text-blue-500':'text-orange-500'}">${w.type}</span> • ${w.author}</div>
                     </div>
                 </label>
             `).join('');
@@ -614,17 +622,17 @@
                             <div class="w-20 h-24 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 hidden sm:block relative">
                                 <img src="${getThumbnailUrl(w.imageUrl)}" onerror="this.src='https://placehold.co/100x150/f8fafc/94a3b8?text=SIM'" class="w-full h-full object-cover">
                             </div>
-                            <div class="flex-1 flex flex-col">
+                            <div class="flex-1 flex flex-col min-w-0">
                                 <div class="flex justify-between items-start mb-2">
                                     <span class="text-[10px] font-black uppercase tracking-widest ${w.type==='poster'?'text-blue-600':'text-orange-600'} bg-gray-50 px-2 py-1 rounded">${w.type}</span>
-                                    ${ev ? `<span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded border border-green-200 shadow-sm">✅ Finalizado (${ev.totalScore} pts)</span>` : ''}
+                                    ${ev ? `<span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded border border-green-200 shadow-sm">✅ ${ev.totalScore} pts</span>` : ''}
                                 </div>
                                 <h4 class="font-bold text-gray-900 leading-tight mb-1 line-clamp-2">${w.title}</h4>
-                                <p class="text-xs text-gray-600 font-medium"><i class="fa-solid fa-user-graduate w-4"></i> ${w.author}</p>
+                                <p class="text-xs text-gray-600 font-medium truncate"><i class="fa-solid fa-user-graduate w-4"></i> ${w.author}</p>
                                 
                                 <div class="mt-auto pt-4 flex gap-2">
-                                    <button onclick="previewWork('${w.id}')" class="px-4 py-2 bg-gray-50 hover:bg-gray-200 text-gray-700 rounded-xl text-sm transition-colors border border-gray-200"><i class="fa-solid fa-eye"></i></button>
-                                    <button onclick="openEvaluation('${w.id}')" class="flex-1 py-2 ${ev ? 'bg-white border-2 border-brand-500 text-brand-700 hover:bg-brand-50' : 'bg-brand-600 text-white hover:bg-brand-700'} rounded-xl text-sm font-bold shadow-sm transition-all">
+                                    <button onclick="previewWork('${w.id}')" class="px-3 sm:px-4 py-2 bg-gray-50 hover:bg-gray-200 text-gray-700 rounded-xl text-sm transition-colors border border-gray-200"><i class="fa-solid fa-eye"></i></button>
+                                    <button onclick="openEvaluation('${w.id}')" class="flex-1 py-2 ${ev ? 'bg-white border-2 border-brand-500 text-brand-700 hover:bg-brand-50' : 'bg-brand-600 text-white hover:bg-brand-700'} rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all truncate">
                                         ${ev ? 'Ver Respuestas' : '📝 Evaluar Trabajo'}
                                     </button>
                                 </div>
@@ -666,7 +674,7 @@
 
             currentCriteria.forEach(item => {
                 if (item.category !== currentCat) {
-                    formContainer.innerHTML += `<h3 class="text-lg font-serif font-bold text-brand-900 mt-8 mb-4 flex items-center gap-2"><div class="w-1.5 h-5 bg-brand-500 rounded-full"></div> ${item.category}</h3>`;
+                    formContainer.innerHTML += `<h3 class="text-lg font-serif font-bold text-brand-900 mt-6 sm:mt-8 mb-3 sm:mb-4 flex items-center gap-2"><div class="w-1.5 h-5 bg-brand-500 rounded-full"></div> ${item.category}</h3>`;
                     currentCat = item.category;
                 }
 
@@ -679,14 +687,14 @@
                     const is15 = item.type === '15-point-discrete';
                     const opts = is15 ? [0, 5, 15] : [0, 5, 10]; if(item.type === '3-point-discrete') opts.splice(0, opts.length, 0, 3, 5);
 
-                    inputHtml = `<div class="flex gap-2 flex-wrap" ${disabledAttr}>`;
+                    inputHtml = `<div class="flex gap-2 flex-wrap sm:flex-nowrap" ${disabledAttr}>`;
                     opts.forEach(v => {
                         const sel = val == v ? 'selected' : '';
                         const guidance = DISCRETE_GUIDANCE[item.type][v];
                         inputHtml += `
-                            <button type="button" class="score-btn ${sel} px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm" onclick="setDiscrete(this, '${item.id}', ${v})">
-                                ${guidance.emoji} <span class="ml-1">${v} Pts</span>
-                                <div class="tooltip">${guidance.tip}</div>
+                            <button type="button" class="score-btn ${sel} flex-1 sm:flex-none px-2 sm:px-4 py-3 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2" onclick="setDiscrete(this, '${item.id}', ${v})">
+                                <span class="text-lg sm:text-base">${guidance.emoji}</span> <span>${v} Pts</span>
+                                <div class="tooltip hidden sm:block">${guidance.tip}</div>
                             </button>`;
                     });
                     inputHtml += `</div><input type="hidden" id="in-${item.id}" value="${val}">`;
@@ -695,15 +703,15 @@
                 } else {
                     const isDed = item.type === 'deduction';
                     inputHtml = `
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 flex-wrap">
                             <input type="number" id="in-${item.id}" min="0" max="${item.max}" value="${displayVal}" class="w-24 p-3 bg-white border-2 border-gray-200 font-black text-lg text-center rounded-xl outline-none ${isDed ? 'focus:border-red-500 text-red-600' : 'focus:border-green-500 text-green-600'}" oninput="calcTotal()" ${disabledAttr}>
-                            <span class="text-sm font-bold text-gray-400">Máx ${item.max} ${isDed ? '<span class="text-red-400">(Se Restará)</span>' : '<span class="text-green-500">(Bonificación)</span>'}</span>
+                            <span class="text-sm font-bold text-gray-400">Máx ${item.max} ${isDed ? '<span class="text-red-400 block sm:inline">(Se Restará)</span>' : '<span class="text-green-500 block sm:inline">(Bonificación)</span>'}</span>
                         </div>`;
                 }
 
                 formContainer.innerHTML += `
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-3 hover:border-gray-300 transition-colors">
-                        <div class="mb-3"><h4 class="text-md font-bold text-gray-900">${item.name}</h4><p class="text-xs text-gray-500 mt-1">${item.desc}</p></div>
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-3 hover:border-gray-300 transition-colors">
+                        <div class="mb-3"><h4 class="text-sm sm:text-md font-bold text-gray-900">${item.name}</h4><p class="text-xs text-gray-500 mt-1">${item.desc}</p></div>
                         ${inputHtml}
                     </div>`;
             });
@@ -767,10 +775,10 @@
                 let html = `
                 <div class="mb-12 page-break-after">
                     <h3 class="text-2xl font-serif font-bold text-brand-900 mb-4 flex items-center gap-2"><div class="w-1.5 h-6 bg-brand-500 rounded-full no-print"></div> ${title}</h3>
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table class="print-table w-full text-left">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden overflow-x-auto w-full">
+                        <table class="print-table w-full text-left min-w-[600px]">
                             <thead class="bg-brand-50 border-b border-gray-200">
-                                <tr><th class="py-4 px-6 text-brand-900 text-center">Lugar</th><th class="py-4 px-6 text-brand-900">Autor / Institución</th><th class="py-4 px-6 text-brand-900">Título</th><th class="py-4 px-6 text-center">Jueces</th><th class="py-4 px-6 text-center">Promedio</th></tr>
+                                <tr><th class="py-4 px-4 sm:px-6 text-brand-900 text-center">Lugar</th><th class="py-4 px-4 sm:px-6 text-brand-900">Autor / Institución</th><th class="py-4 px-4 sm:px-6 text-brand-900">Título</th><th class="py-4 px-4 sm:px-6 text-center">Jueces</th><th class="py-4 px-4 sm:px-6 text-center">Promedio</th></tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                 `;
@@ -780,11 +788,11 @@
                     if (hasScore) { if (i===0){rank='🥇 1º';rowClass='bg-yellow-50/50';} else if (i===1){rank='🥈 2º';rowClass='bg-gray-50';} else if (i===2){rank='🥉 3º';rowClass='bg-orange-50/30';} }
                     html += `
                         <tr class="${rowClass}">
-                            <td class="py-4 px-6 text-center font-black text-lg">${hasScore ? rank : '-'}</td>
-                            <td class="py-4 px-6"><div class="font-bold">${w.author}</div><div class="text-xs text-gray-500">${w.institution}</div></td>
-                            <td class="py-4 px-6"><div class="text-sm font-semibold line-clamp-2">${w.title}</div></td>
-                            <td class="py-4 px-6 text-center font-bold text-gray-400">${w.evalCount}</td>
-                            <td class="py-4 px-6 text-center"><span class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg font-black text-sm ${!hasScore ? 'bg-gray-100 text-gray-400' : (i < 3 ? 'bg-brand-100 text-brand-800' : 'bg-brand-50 text-brand-700')}">${hasScore ? w.average.toFixed(2) : 'N/A'}</span></td>
+                            <td class="py-4 px-4 sm:px-6 text-center font-black text-base sm:text-lg">${hasScore ? rank : '-'}</td>
+                            <td class="py-4 px-4 sm:px-6"><div class="font-bold text-sm sm:text-base">${w.author}</div><div class="text-xs text-gray-500">${w.institution}</div></td>
+                            <td class="py-4 px-4 sm:px-6"><div class="text-sm font-semibold line-clamp-2">${w.title}</div></td>
+                            <td class="py-4 px-4 sm:px-6 text-center font-bold text-gray-400 text-sm">${w.evalCount}</td>
+                            <td class="py-4 px-4 sm:px-6 text-center"><span class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg font-black text-sm ${!hasScore ? 'bg-gray-100 text-gray-400' : (i < 3 ? 'bg-brand-100 text-brand-800' : 'bg-brand-50 text-brand-700')}">${hasScore ? w.average.toFixed(2) : 'N/A'}</span></td>
                         </tr>`;
                 });
                 return html + `</tbody></table></div></div>`;
@@ -801,18 +809,18 @@
     <!-- VIEW: AUTH / PUBLIC -->
     <div id="view-auth" class="app-view min-h-screen flex flex-col lg:flex-row">
         <!-- Left Side: Branding/Poster -->
-        <div class="poster-bg w-full lg:w-5/12 flex flex-col justify-between p-10 lg:p-14 text-white">
-            <div class="relative z-10 flex flex-wrap items-center gap-4 bg-white/10 p-4 rounded-2xl backdrop-blur-sm w-fit border border-white/20">
-                <img src="logo_ipn.png" alt="IPN" class="h-10 sm:h-12 object-contain drop-shadow-md">
-                <img src="logo_esm.png" alt="ESM" class="h-10 sm:h-12 object-contain drop-shadow-md border-l border-white/30 pl-4">
-                <img src="logo_licam.png" alt="LICAM" class="h-10 sm:h-12 object-contain drop-shadow-md border-l border-white/30 pl-4">
+        <div class="poster-bg w-full lg:w-5/12 flex flex-col justify-between p-6 sm:p-10 lg:p-14 text-white">
+            <div class="relative z-10 flex flex-wrap items-center gap-2 sm:gap-4 bg-white/10 p-3 sm:p-4 rounded-2xl backdrop-blur-sm w-fit border border-white/20">
+                <img src="logo_ipn.png" alt="IPN" class="h-8 sm:h-12 object-contain drop-shadow-md">
+                <img src="logo_esm.png" alt="ESM" class="h-8 sm:h-12 object-contain drop-shadow-md border-l border-white/30 pl-2 sm:pl-4">
+                <img src="logo_licam.png" alt="LICAM" class="h-8 sm:h-12 object-contain drop-shadow-md border-l border-white/30 pl-2 sm:pl-4">
             </div>
             
-            <div class="relative z-10 mt-16 lg:mt-0">
-                <div class="inline-block px-3 py-1 mb-6 border border-white/30 rounded-full text-xs font-bold tracking-widest uppercase bg-white/10 backdrop-blur-sm">Edición 2026</div>
-                <h2 class="text-5xl lg:text-6xl font-black font-serif leading-tight mb-6">3er Simposio de<br><span class="text-accent-400">Investigación</span><br>en Medicina.</h2>
-                <p class="text-lg text-brand-50 font-medium mb-8 max-w-md border-l-4 border-accent-400 pl-4">Plataforma oficial para la recepción de trabajos libres y evaluación por jurado calificador.</p>
-                <div class="flex flex-wrap gap-4 text-sm font-bold text-white/90 bg-black/30 p-4 rounded-xl backdrop-blur-sm w-fit border border-white/10">
+            <div class="relative z-10 mt-12 lg:mt-0">
+                <div class="inline-block px-3 py-1 mb-4 sm:mb-6 border border-white/30 rounded-full text-[10px] sm:text-xs font-bold tracking-widest uppercase bg-white/10 backdrop-blur-sm">Edición 2026</div>
+                <h2 class="text-4xl sm:text-5xl lg:text-6xl font-black font-serif leading-tight mb-4 sm:mb-6">3er Simposio de<br><span class="text-accent-400">Investigación</span><br>en Medicina.</h2>
+                <p class="text-base sm:text-lg text-brand-50 font-medium mb-6 sm:mb-8 max-w-md border-l-4 border-accent-400 pl-4">Plataforma oficial para la recepción de trabajos libres y evaluación por jurado calificador.</p>
+                <div class="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm font-bold text-white/90 bg-black/30 p-3 sm:p-4 rounded-xl backdrop-blur-sm w-fit border border-white/10">
                     <span class="flex items-center gap-2"><i class="fa-solid fa-microscope text-accent-400"></i> Licenciatura</span>
                     <span class="flex items-center gap-2"><i class="fa-solid fa-user-doctor text-accent-400"></i> Posgrado</span>
                 </div>
@@ -820,114 +828,114 @@
         </div>
 
         <!-- Right Side: Forms -->
-        <div class="w-full lg:w-7/12 p-6 md:p-12 lg:p-20 flex flex-col justify-center bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.05)] z-20">
+        <div class="w-full lg:w-7/12 p-5 sm:p-8 md:p-12 lg:p-20 flex flex-col justify-center bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.05)] z-20">
             <div class="max-w-xl w-full mx-auto">
-                <div class="flex gap-6 border-b-2 border-gray-100 mb-10 overflow-x-auto custom-scrollbar">
-                    <button onclick="document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-brand-600 text-brand-800 font-bold whitespace-nowrap">Jurado/Admin</button>
-                    <button onclick="document.getElementById('form-register').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold whitespace-nowrap hover:text-gray-600">Registro Jurado</button>
-                    <button onclick="document.getElementById('form-submit').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold whitespace-nowrap hover:text-gray-600 text-brand-600 bg-brand-50 px-3 rounded-t-lg">Subir Trabajo</button>
+                <div class="flex gap-4 sm:gap-6 border-b-2 border-gray-100 mb-8 sm:mb-10 overflow-x-auto hide-scroll -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <button onclick="document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-brand-600 text-brand-800 font-bold whitespace-nowrap text-sm sm:text-base">Jurado/Admin</button>
+                    <button onclick="document.getElementById('form-register').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold whitespace-nowrap hover:text-gray-600 text-sm sm:text-base">Registro Jurado</button>
+                    <button onclick="document.getElementById('form-submit').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold whitespace-nowrap hover:text-gray-600 text-brand-600 bg-brand-50 px-3 rounded-t-lg text-sm sm:text-base">Subir Trabajo</button>
                 </div>
 
                 <!-- LOGIN -->
-                <form id="form-login" onsubmit="loginWithEmail(event)" class="space-y-5 animate-fade-in">
-                    <div><h3 class="text-3xl font-black font-serif text-brand-900">Bienvenido</h3><p class="text-gray-500 font-medium">Ingresa a tu panel de control o evaluación.</p></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="l-email" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Contraseña</label><input type="password" id="l-pass" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                    <button type="submit" id="btn-login" class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all text-lg">Iniciar Sesión</button>
-                    <div class="relative py-4 flex items-center"><div class="flex-grow border-t border-gray-200"></div><span class="mx-4 text-xs font-bold text-gray-400 uppercase tracking-widest">o mediante</span><div class="flex-grow border-t border-gray-200"></div></div>
-                    <button type="button" onclick="loginWithGoogle()" class="w-full py-4 bg-white border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors">
+                <form id="form-login" onsubmit="loginWithEmail(event)" class="space-y-4 sm:space-y-5 animate-fade-in">
+                    <div><h3 class="text-2xl sm:text-3xl font-black font-serif text-brand-900">Bienvenido</h3><p class="text-sm sm:text-base text-gray-500 font-medium">Ingresa a tu panel de control o evaluación.</p></div>
+                    <div><label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="l-email" required class="w-full p-3.5 sm:p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <div><label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1">Contraseña</label><input type="password" id="l-pass" required class="w-full p-3.5 sm:p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <button type="submit" id="btn-login" class="w-full py-3.5 sm:py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all text-base sm:text-lg">Iniciar Sesión</button>
+                    <div class="relative py-3 sm:py-4 flex items-center"><div class="flex-grow border-t border-gray-200"></div><span class="mx-4 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">o mediante</span><div class="flex-grow border-t border-gray-200"></div></div>
+                    <button type="button" onclick="loginWithGoogle()" class="w-full py-3.5 sm:py-4 bg-white border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors text-sm sm:text-base">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Continuar con Google
                     </button>
                 </form>
 
                 <!-- REGISTER -->
-                <form id="form-register" onsubmit="registerWithEmail(event)" class="hidden space-y-5 animate-fade-in">
-                    <div><h3 class="text-3xl font-black font-serif text-brand-900">Registro (Jurado)</h3><p class="text-gray-500 font-medium">Crea tu cuenta. El administrador validará tu acceso.</p></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Nombre con Título (Ej. Dr. Juan Pérez)</label><input type="text" id="r-name" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="r-email" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Contraseña (Min 6 caracteres)</label><input type="password" id="r-pass" required minlength="6" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                    <button type="submit" id="btn-register" class="w-full py-4 bg-brand-900 hover:bg-black text-white rounded-xl font-bold shadow-lg transition-all text-lg">Crear Cuenta</button>
-                    <button type="button" onclick="loginWithGoogle()" class="w-full py-4 bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors">
+                <form id="form-register" onsubmit="registerWithEmail(event)" class="hidden space-y-4 sm:space-y-5 animate-fade-in">
+                    <div><h3 class="text-2xl sm:text-3xl font-black font-serif text-brand-900">Registro (Jurado)</h3><p class="text-sm sm:text-base text-gray-500 font-medium">Crea tu cuenta. El administrador validará tu acceso.</p></div>
+                    <div><label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1">Nombre con Título (Ej. Dr. Juan Pérez)</label><input type="text" id="r-name" required class="w-full p-3.5 sm:p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <div><label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="r-email" required class="w-full p-3.5 sm:p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <div><label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1">Contraseña (Min 6 caracteres)</label><input type="password" id="r-pass" required minlength="6" class="w-full p-3.5 sm:p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <button type="submit" id="btn-register" class="w-full py-3.5 sm:py-4 bg-brand-900 hover:bg-black text-white rounded-xl font-bold shadow-lg transition-all text-base sm:text-lg">Crear Cuenta</button>
+                    <button type="button" onclick="loginWithGoogle()" class="w-full py-3.5 sm:py-4 bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors text-sm sm:text-base">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Registrarse con Google
                     </button>
                 </form>
 
                 <!-- SUBMIT WORK (STUDENT) -->
                 <form id="form-submit" onsubmit="submitWork(event)" class="hidden space-y-4 animate-fade-in">
-                    <div class="bg-brand-50 border border-brand-100 p-6 rounded-2xl mb-4">
-                        <h3 class="text-2xl font-black font-serif text-brand-900 mb-1">Recepción de Trabajos</h3>
-                        <p class="text-brand-700 text-sm font-medium">Llena los datos para generar tu perfil oficial. El jurado evaluará con base en esta información y el enlace a tu material.</p>
+                    <div class="bg-brand-50 border border-brand-100 p-5 sm:p-6 rounded-2xl mb-4">
+                        <h3 class="text-xl sm:text-2xl font-black font-serif text-brand-900 mb-1">Recepción de Trabajos</h3>
+                        <p class="text-brand-700 text-xs sm:text-sm font-medium">Llena los datos para generar tu perfil oficial. El jurado evaluará con base en esta información y el enlace a tu material.</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Título del Trabajo</label><input type="text" id="p-title" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Nombre del Expositor (1er Autor)</label><input type="text" id="p-author" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Institución de Procedencia</label><input type="text" id="p-inst" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Categoría</label><select id="p-cat" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tipo de Investigación</label><select id="p-submod" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"><option value="Básica">Investigación Básica</option><option value="Clínica">Investigación Clínica</option></select></div>
-                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tema Eje</label><select id="p-axis" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"></select></div>
-                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Formato de Presentación</label>
-                            <div class="flex gap-4">
-                                <label class="flex-1 cursor-pointer"><input type="radio" name="ptype" value="poster" id="p-type" checked class="peer sr-only"><div class="p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:text-brand-800 font-bold transition-all"><i class="fa-solid fa-image text-xl mb-1 block"></i> Cartel Científico</div></label>
-                                <label class="flex-1 cursor-pointer"><input type="radio" name="ptype" value="oral" onclick="document.getElementById('p-type').value = this.value" class="peer sr-only"><div class="p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 font-bold transition-all"><i class="fa-solid fa-microphone text-xl mb-1 block"></i> Exposición Oral</div></label>
+                        <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Título del Trabajo</label><input type="text" id="p-title" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Nombre del Expositor</label><input type="text" id="p-author" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Institución de Procedencia</label><input type="text" id="p-inst" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Categoría</label><select id="p-cat" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tipo de Investigación</label><select id="p-submod" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"><option value="Básica">Investigación Básica</option><option value="Clínica">Investigación Clínica</option></select></div>
+                        <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tema Eje</label><select id="p-axis" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"></select></div>
+                        <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Formato de Presentación</label>
+                            <div class="flex gap-2 sm:gap-4">
+                                <label class="flex-1 cursor-pointer"><input type="radio" name="ptype" value="poster" id="p-type" checked class="peer sr-only"><div class="p-3 sm:p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:text-brand-800 font-bold transition-all text-xs sm:text-sm"><i class="fa-solid fa-image text-lg sm:text-xl mb-1 block"></i> Cartel Científico</div></label>
+                                <label class="flex-1 cursor-pointer"><input type="radio" name="ptype" value="oral" onclick="document.getElementById('p-type').value = this.value" class="peer sr-only"><div class="p-3 sm:p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 font-bold transition-all text-xs sm:text-sm"><i class="fa-solid fa-microphone text-lg sm:text-xl mb-1 block"></i> Exposición Oral</div></label>
                             </div>
                         </div>
                         <div class="col-span-full mt-2">
-                            <label class="block text-xs font-bold text-brand-700 mb-1 uppercase tracking-wider"><i class="fa-solid fa-link"></i> Enlace al Material</label>
-                            <p class="text-xs text-gray-500 mb-2 font-medium">Enlace de Google Drive, OneDrive o Dropbox con tu cartel/presentación. Asegúrate de que sea público.</p>
-                            <input type="url" id="p-url" required placeholder="https://..." class="w-full p-4 bg-brand-50 border-2 border-brand-200 rounded-xl focus:border-brand-600 outline-none text-brand-900 font-bold">
+                            <label class="block text-[10px] sm:text-xs font-bold text-brand-700 mb-1 uppercase tracking-wider"><i class="fa-solid fa-link"></i> Enlace al Material</label>
+                            <p class="text-[10px] sm:text-xs text-gray-500 mb-2 font-medium">Enlace de Google Drive, OneDrive o Dropbox con tu cartel/presentación. Asegúrate de que sea público.</p>
+                            <input type="url" id="p-url" required placeholder="https://..." class="w-full p-3.5 sm:p-4 bg-brand-50 border-2 border-brand-200 rounded-xl focus:border-brand-600 outline-none text-brand-900 font-bold text-sm">
                         </div>
                     </div>
-                    <button type="submit" id="btn-submit-work" class="w-full py-5 mt-6 bg-brand-900 hover:bg-black text-white rounded-xl font-black shadow-xl shadow-brand-900/20 transition-all text-lg uppercase tracking-widest"><i class="fa-solid fa-paper-plane mr-2"></i> Enviar Registro</button>
+                    <button type="submit" id="btn-submit-work" class="w-full py-4 sm:py-5 mt-4 sm:mt-6 bg-brand-900 hover:bg-black text-white rounded-xl font-black shadow-xl shadow-brand-900/20 transition-all text-base sm:text-lg uppercase tracking-widest"><i class="fa-solid fa-paper-plane mr-2"></i> Enviar Registro</button>
                 </form>
             </div>
         </div>
     </div>
 
     <!-- VIEW: PENDING APPROVAL -->
-    <div id="view-pending" class="app-view hidden min-h-screen flex items-center justify-center bg-gray-50 p-6">
-        <div class="bg-white p-12 rounded-3xl shadow-2xl max-w-md w-full text-center border border-gray-100">
-            <div class="w-24 h-24 bg-accent-50 text-accent-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-6"><i class="fa-solid fa-shield-halved"></i></div>
-            <h2 class="text-3xl font-serif font-black text-brand-900 mb-4">Cuenta en Revisión</h2>
-            <p class="text-gray-600 mb-8 font-medium leading-relaxed">Tu cuenta ha sido creada exitosamente. El Coordinador debe aprobar tu acceso como jurado.</p>
-            <button onclick="logout()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-bold transition-colors">Cerrar sesión</button>
+    <div id="view-pending" class="app-view hidden min-h-screen flex items-center justify-center bg-gray-50 p-4 sm:p-6">
+        <div class="bg-white p-8 sm:p-12 rounded-3xl shadow-2xl max-w-md w-full text-center border border-gray-100 w-[95%] sm:w-full">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-accent-50 text-accent-500 rounded-full flex items-center justify-center text-4xl sm:text-5xl mx-auto mb-6"><i class="fa-solid fa-shield-halved"></i></div>
+            <h2 class="text-2xl sm:text-3xl font-serif font-black text-brand-900 mb-4">Cuenta en Revisión</h2>
+            <p class="text-sm sm:text-base text-gray-600 mb-8 font-medium leading-relaxed">Tu cuenta ha sido creada exitosamente. El Coordinador debe aprobar tu acceso como jurado.</p>
+            <button onclick="logout()" class="px-5 sm:px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-bold transition-colors text-sm sm:text-base">Cerrar sesión</button>
         </div>
     </div>
 
     <!-- MAIN APP LAYOUT -->
     <div id="app-layout" class="hidden min-h-screen flex">
         <!-- Sidebar -->
-        <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-brand-950 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.1)] flex flex-col border-r border-white/5 relative overflow-hidden">
+        <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-brand-950 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.1)] flex flex-col border-r border-white/5 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-32 bg-brand-800 opacity-20 blur-3xl"></div>
             
-            <div class="p-6 flex items-center justify-center gap-2 border-b border-white/10 bg-white relative z-10">
-                <img src="logo_ipn.png" alt="IPN" class="h-12 object-contain">
-                <img src="logo_esm.png" alt="ESM" class="h-12 object-contain border-l border-gray-200 pl-2">
+            <div class="p-4 sm:p-6 flex items-center justify-center gap-2 border-b border-white/10 bg-white relative z-10">
+                <img src="logo_ipn.png" alt="IPN" class="h-10 sm:h-12 object-contain">
+                <img src="logo_esm.png" alt="ESM" class="h-10 sm:h-12 object-contain border-l border-gray-200 pl-2">
             </div>
             
-            <div class="p-6 pb-2 relative z-10 flex justify-between items-start">
+            <div class="p-5 sm:p-6 pb-2 relative z-10 flex justify-between items-start">
                 <div>
-                    <h2 class="font-bold font-serif leading-tight text-xl">Simposio 2026</h2>
+                    <h2 class="font-bold font-serif leading-tight text-lg sm:text-xl">Simposio 2026</h2>
                     <span class="text-[10px] uppercase tracking-widest text-brand-300 font-bold user-role-display"></span>
                 </div>
                  <button onclick="toggleSidebar()" class="lg:hidden w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div class="flex-1 overflow-y-auto p-5 flex flex-col gap-2 relative z-10" id="sidebar-nav"></div>
+            <div class="flex-1 overflow-y-auto p-4 sm:p-5 flex flex-col gap-2 relative z-10" id="sidebar-nav"></div>
 
-            <div class="p-6 border-t border-white/10 bg-black/20 relative z-10 backdrop-blur-md">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-full bg-brand-700 flex items-center justify-center text-sm font-bold shadow-inner"><i class="fa-solid fa-user-doctor"></i></div>
-                    <div class="overflow-hidden"><p class="text-[10px] text-brand-300 font-bold uppercase tracking-widest mb-0.5">Sesión Activa</p><p class="font-bold text-sm truncate user-name-display text-white"></p></div>
+            <div class="p-5 sm:p-6 border-t border-white/10 bg-black/20 relative z-10 backdrop-blur-md">
+                <div class="flex items-center gap-3 mb-4 sm:mb-5">
+                    <div class="w-10 h-10 rounded-full bg-brand-700 flex items-center justify-center text-sm font-bold shadow-inner shrink-0"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div class="overflow-hidden"><p class="text-[10px] text-brand-300 font-bold uppercase tracking-widest mb-0.5">Sesión Activa</p><p class="font-bold text-xs sm:text-sm truncate user-name-display text-white"></p></div>
                 </div>
-                <button onclick="logout()" class="w-full py-3 bg-brand-900 hover:bg-black text-brand-100 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 border border-brand-700 shadow-sm"><i class="fa-solid fa-right-from-bracket text-accent-400"></i> Cerrar Sesión</button>
+                <button onclick="logout()" class="w-full py-2.5 sm:py-3 bg-brand-900 hover:bg-black text-brand-100 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 border border-brand-700 shadow-sm"><i class="fa-solid fa-right-from-bracket text-accent-400"></i> Cerrar Sesión</button>
             </div>
         </aside>
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col min-h-screen h-screen overflow-hidden bg-gray-50">
             <header class="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 shrink-0 shadow-sm relative z-20">
-                <div class="font-serif font-black text-lg text-brand-900 flex items-center gap-2"><i class="fa-solid fa-microscope text-brand-500"></i> SIMPOSIO 2026</div>
+                <div class="font-serif font-black text-base sm:text-lg text-brand-900 flex items-center gap-2"><i class="fa-solid fa-microscope text-brand-500"></i> SIMPOSIO 2026</div>
                 <button onclick="toggleSidebar()" class="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center text-brand-700"><i class="fa-solid fa-bars"></i></button>
             </header>
 
@@ -935,86 +943,86 @@
                 
                 <!-- VIEW: ADMIN DASHBOARD -->
                 <div id="view-admin" class="app-view hidden max-w-7xl mx-auto animate-fade-in pb-10">
-                    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div class="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div>
-                            <h2 class="text-3xl lg:text-4xl font-serif font-black text-brand-900">Panel de Control General</h2>
-                            <p class="text-gray-500 font-medium mt-1">Supervisión, asignación y control total del Simposio.</p>
+                            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-brand-900">Panel de Control General</h2>
+                            <p class="text-sm sm:text-base text-gray-500 font-medium mt-1">Supervisión, asignación y control total del Simposio.</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-folder-open"></i></div>
-                            <div><p class="text-4xl font-black text-gray-900 leading-none" id="stat-works">0</p><p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Trabajos</p></div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl sm:text-2xl shadow-inner"><i class="fa-solid fa-folder-open"></i></div>
+                            <div><p class="text-2xl sm:text-4xl font-black text-gray-900 leading-none" id="stat-works">0</p><p class="text-[10px] sm:text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Trabajos</p></div>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-users-viewfinder"></i></div>
-                            <div><p class="text-4xl font-black text-gray-900 leading-none" id="stat-judges">0</p><p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Jurados</p></div>
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl sm:text-2xl shadow-inner"><i class="fa-solid fa-users-viewfinder"></i></div>
+                            <div><p class="text-2xl sm:text-4xl font-black text-gray-900 leading-none" id="stat-judges">0</p><p class="text-[10px] sm:text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Jurados</p></div>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-clipboard-check"></i></div>
-                            <div><p class="text-4xl font-black text-gray-900 leading-none" id="stat-evals">0</p><p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Evaluaciones</p></div>
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 col-span-2 md:col-span-1">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-xl sm:text-2xl shadow-inner"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <div><p class="text-2xl sm:text-4xl font-black text-gray-900 leading-none" id="stat-evals">0</p><p class="text-[10px] sm:text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Evaluaciones</p></div>
                         </div>
                     </div>
 
-                    <div class="grid lg:grid-cols-[1fr_1.3fr] gap-8">
-                        <div class="flex flex-col h-[700px]">
-                            <div class="flex items-center justify-between mb-5 px-1">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa-solid fa-gavel text-brand-500 text-xl"></i><h3 class="text-2xl font-bold text-gray-900 font-serif">Gestión de Jurados</h3>
+                    <div class="grid lg:grid-cols-[1fr_1.3fr] gap-6 sm:gap-8">
+                        <div class="flex flex-col h-[500px] sm:h-[700px]">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-5 px-1 gap-2">
+                                <div class="flex items-center gap-2 sm:gap-3">
+                                    <i class="fa-solid fa-gavel text-brand-500 text-lg sm:text-xl"></i><h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Gestión de Jurados</h3>
                                 </div>
-                                <button onclick="document.getElementById('modal-suplente').classList.remove('hidden')" class="px-4 py-2 bg-brand-900 hover:bg-black text-white text-sm font-bold rounded-xl shadow-md transition-colors"><i class="fa-solid fa-user-plus"></i> Crear Suplente</button>
+                                <button onclick="document.getElementById('modal-suplente').classList.remove('hidden')" class="w-full sm:w-auto px-4 py-2 bg-brand-900 hover:bg-black text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition-colors"><i class="fa-solid fa-user-plus"></i> Crear Suplente</button>
                             </div>
-                            <div id="admin-judges-list" class="flex-1 overflow-y-auto pr-3 space-y-4 pb-8 custom-scrollbar"></div>
+                            <div id="admin-judges-list" class="flex-1 overflow-y-auto pr-2 sm:pr-3 space-y-3 sm:space-y-4 pb-8 custom-scrollbar"></div>
                         </div>
                         
-                        <div class="flex flex-col h-[700px]">
-                            <div class="flex items-center justify-between mb-5 px-1">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa-solid fa-file-medical text-brand-500 text-xl"></i><h3 class="text-2xl font-bold text-gray-900 font-serif">Base de Trabajos</h3>
+                        <div class="flex flex-col h-[500px] sm:h-[700px]">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-5 px-1 gap-2">
+                                <div class="flex items-center gap-2 sm:gap-3">
+                                    <i class="fa-solid fa-file-medical text-brand-500 text-lg sm:text-xl"></i><h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Base de Trabajos</h3>
                                 </div>
-                                <button onclick="openWorkModal()" class="px-4 py-2 bg-brand-900 hover:bg-black text-white text-sm font-bold rounded-xl shadow-md transition-colors"><i class="fa-solid fa-plus"></i> Añadir Manual</button>
+                                <button onclick="openWorkModal()" class="w-full sm:w-auto px-4 py-2 bg-brand-900 hover:bg-black text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition-colors"><i class="fa-solid fa-plus"></i> Añadir Manual</button>
                             </div>
-                            <div id="admin-works-list" class="flex-1 overflow-y-auto pr-3 space-y-4 pb-8 custom-scrollbar"></div>
+                            <div id="admin-works-list" class="flex-1 overflow-y-auto pr-2 sm:pr-3 space-y-3 sm:space-y-4 pb-8 custom-scrollbar"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- VIEW: JUDGE DASHBOARD -->
                 <div id="view-judge" class="app-view hidden max-w-6xl mx-auto animate-fade-in pb-10">
-                    <div class="mb-10 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between gap-6 flex-wrap">
+                    <div class="mb-6 sm:mb-10 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between gap-4 sm:gap-6 flex-wrap">
                         <div>
-                            <h2 class="text-3xl md:text-4xl font-serif font-black text-brand-900">Panel de Evaluación</h2>
-                            <p class="text-gray-500 font-medium mt-2">Bienvenido, <span class="font-bold text-brand-700 user-name-display"></span>. Trabajos asignados:</p>
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-serif font-black text-brand-900">Panel de Evaluación</h2>
+                            <p class="text-sm sm:text-base text-gray-500 font-medium mt-1 sm:mt-2">Bienvenido, <span class="font-bold text-brand-700 user-name-display"></span>.</p>
                         </div>
-                        <div class="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center text-3xl text-brand-500"><i class="fa-solid fa-list-check"></i></div>
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-brand-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl text-brand-500"><i class="fa-solid fa-list-check"></i></div>
                     </div>
 
-                    <div class="mb-12">
-                        <div class="flex items-center gap-3 mb-6">
-                            <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg shadow-inner"><i class="fa-solid fa-image"></i></span>
-                            <h3 class="text-2xl font-bold text-gray-900 font-serif">Pósters Científicos (<span id="cnt-poster">0</span>)</h3>
+                    <div class="mb-8 sm:mb-12">
+                        <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                            <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-base sm:text-lg shadow-inner"><i class="fa-solid fa-image"></i></span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Pósters Científicos (<span id="cnt-poster">0</span>)</h3>
                         </div>
-                        <div id="judge-posters" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                        <div id="judge-posters" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
                     </div>
 
                     <div>
-                        <div class="flex items-center gap-3 mb-6">
-                            <span class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-lg shadow-inner"><i class="fa-solid fa-microphone"></i></span>
-                            <h3 class="text-2xl font-bold text-gray-900 font-serif">Exposiciones Orales (<span id="cnt-oral">0</span>)</h3>
+                        <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                            <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-base sm:text-lg shadow-inner"><i class="fa-solid fa-microphone"></i></span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Exposiciones Orales (<span id="cnt-oral">0</span>)</h3>
                         </div>
-                        <div id="judge-orals" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                        <div id="judge-orals" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
                     </div>
                 </div>
 
                 <!-- VIEW: RESULTS & PDF -->
                 <div id="view-results" class="app-view hidden max-w-6xl mx-auto animate-fade-in pb-12">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 no-print gap-4 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-10 no-print gap-4 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100">
                         <div>
-                            <h2 class="text-3xl md:text-4xl font-serif font-black text-brand-900">Resultados Finales</h2>
-                            <p class="text-gray-500 font-medium mt-2">Suma y promedio automático en tiempo real.</p>
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-serif font-black text-brand-900">Resultados Finales</h2>
+                            <p class="text-sm sm:text-base text-gray-500 font-medium mt-1 sm:mt-2">Suma y promedio automático en tiempo real.</p>
                         </div>
-                        <button onclick="window.print()" class="shrink-0 px-8 py-4 bg-brand-900 hover:bg-black text-white rounded-2xl font-black shadow-xl transition-all flex items-center gap-3 text-lg"><i class="fa-solid fa-print"></i> Generar PDF / Imprimir</button>
+                        <button onclick="window.print()" class="w-full md:w-auto shrink-0 px-6 sm:px-8 py-3 sm:py-4 bg-brand-900 hover:bg-black text-white rounded-xl sm:rounded-2xl font-black shadow-xl transition-all flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-lg"><i class="fa-solid fa-print"></i> Generar PDF / Imprimir</button>
                     </div>
 
                     <div class="print-header">
@@ -1033,36 +1041,36 @@
 
                 <!-- VIEW: EVALUATION FORM -->
                 <div id="view-eval" class="app-view hidden max-w-5xl mx-auto animate-fade-in pb-12">
-                    <button id="btn-back-eval" onclick="switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge')" class="mb-6 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-700 shadow-sm flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Volver a mi panel</button>
+                    <button id="btn-back-eval" onclick="switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge')" class="mb-4 sm:mb-6 px-4 py-2 sm:px-5 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-700 shadow-sm flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Volver a mi panel</button>
 
-                    <div class="bg-brand-950 rounded-3xl p-8 md:p-10 text-white mb-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                        <div class="relative z-10 flex-1">
-                            <div class="inline-block px-3 py-1.5 bg-white/10 border border-white/20 rounded-lg text-xs font-bold uppercase tracking-widest text-accent-400 mb-4" id="ev-type"></div>
-                            <h2 id="ev-title" class="text-2xl md:text-3xl font-serif font-black leading-tight mb-4 text-white"></h2>
-                            <p class="text-brand-100 font-medium flex items-center gap-3 text-lg"><i class="fa-solid fa-user-graduate opacity-70"></i> <strong id="ev-author" class="text-white"></strong></p>
+                    <div class="bg-brand-950 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-white mb-6 sm:mb-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 sm:gap-8">
+                        <div class="relative z-10 flex-1 w-full">
+                            <div class="inline-block px-2 sm:px-3 py-1 sm:py-1.5 bg-white/10 border border-white/20 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest text-accent-400 mb-3 sm:mb-4" id="ev-type"></div>
+                            <h2 id="ev-title" class="text-xl sm:text-2xl md:text-3xl font-serif font-black leading-tight mb-3 sm:mb-4 text-white"></h2>
+                            <p class="text-brand-100 font-medium flex items-center gap-2 sm:gap-3 text-sm sm:text-lg"><i class="fa-solid fa-user-graduate opacity-70"></i> <strong id="ev-author" class="text-white truncate"></strong></p>
                         </div>
                         
-                        <div class="relative z-10 flex flex-col items-end gap-4 w-full md:w-auto shrink-0">
-                            <div class="text-center bg-white p-5 rounded-2xl shadow-xl min-w-[160px] border border-brand-800 transform rotate-1">
-                                <div class="text-[11px] uppercase font-black text-gray-400 tracking-widest mb-1">Puntaje Total</div>
-                                <div class="text-5xl font-black text-brand-700 flex items-baseline justify-center gap-1" id="ev-total-container"><span id="ev-total">0</span><span class="text-xl text-gray-300 font-bold">/100</span></div>
+                        <div class="relative z-10 flex flex-col items-end gap-3 sm:gap-4 w-full md:w-auto shrink-0">
+                            <div class="text-center bg-white p-4 sm:p-5 rounded-2xl shadow-xl w-full md:min-w-[160px] border border-brand-800 md:transform md:rotate-1">
+                                <div class="text-[10px] sm:text-[11px] uppercase font-black text-gray-400 tracking-widest mb-1">Puntaje Total</div>
+                                <div class="text-4xl sm:text-5xl font-black text-brand-700 flex items-baseline justify-center gap-1" id="ev-total-container"><span id="ev-total">0</span><span class="text-lg sm:text-xl text-gray-300 font-bold">/100</span></div>
                             </div>
-                            <a href="#" id="ev-material-btn" target="_blank" class="w-full bg-accent-400 hover:bg-accent-500 text-brand-950 font-black py-4 px-6 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-sm uppercase tracking-wider"><i class="fa-solid fa-link text-lg"></i> Abrir Material</a>
+                            <a href="#" id="ev-material-btn" target="_blank" class="w-full bg-accent-400 hover:bg-accent-500 text-brand-950 font-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm uppercase tracking-wider"><i class="fa-solid fa-link text-base sm:text-lg"></i> Abrir Material</a>
                         </div>
                     </div>
 
-                    <div id="msg-readonly" class="hidden mb-8 bg-green-50 border-2 border-green-200 p-5 rounded-2xl text-green-800 font-bold flex items-center gap-4 shadow-sm">
-                        <i class="fa-solid fa-circle-check text-3xl text-green-500"></i> 
-                        <div><p class="text-lg">Evaluación Finalizada</p><p class="text-sm font-medium opacity-80">Respuestas bloqueadas por seguridad.</p></div>
+                    <div id="msg-readonly" class="hidden mb-6 sm:mb-8 bg-green-50 border-2 border-green-200 p-4 sm:p-5 rounded-2xl text-green-800 font-bold flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shadow-sm">
+                        <i class="fa-solid fa-circle-check text-2xl sm:text-3xl text-green-500"></i> 
+                        <div><p class="text-base sm:text-lg">Evaluación Finalizada</p><p class="text-xs sm:text-sm font-medium opacity-80">Respuestas bloqueadas por seguridad.</p></div>
                     </div>
 
-                    <form id="eval-form" class="space-y-6">
-                        <div id="ev-form-container" class="space-y-6"></div>
-                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 mt-8">
-                            <label class="block text-xl font-bold text-gray-900 mb-3 font-serif"><i class="fa-solid fa-comment-dots text-brand-500 mr-2"></i> Observaciones Finales</label>
-                            <textarea id="ev-obs" rows="4" class="w-full p-5 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-brand-500 outline-none font-medium text-gray-700"></textarea>
+                    <form id="eval-form" class="space-y-4 sm:space-y-6">
+                        <div id="ev-form-container" class="space-y-4 sm:space-y-6"></div>
+                        <div class="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-200 mt-6 sm:mt-8">
+                            <label class="block text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 font-serif"><i class="fa-solid fa-comment-dots text-brand-500 mr-2"></i> Observaciones Finales</label>
+                            <textarea id="ev-obs" rows="4" class="w-full p-4 sm:p-5 bg-gray-50 border-2 border-gray-100 rounded-xl sm:rounded-2xl focus:border-brand-500 outline-none font-medium text-gray-700 text-sm sm:text-base"></textarea>
                         </div>
-                        <button type="button" id="btn-save-eval" onclick="saveEval()" class="w-full py-6 mt-4 bg-brand-600 hover:bg-brand-700 text-white rounded-3xl font-black shadow-xl transition-all text-xl uppercase tracking-widest flex items-center justify-center gap-3"><i class="fa-solid fa-check-double"></i> Confirmar Evaluación Final</button>
+                        <button type="button" id="btn-save-eval" onclick="saveEval()" class="w-full py-4 sm:py-6 mt-4 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl sm:rounded-3xl font-black shadow-xl transition-all text-base sm:text-xl uppercase tracking-widest flex items-center justify-center gap-2 sm:gap-3"><i class="fa-solid fa-check-double"></i> Confirmar Evaluación</button>
                     </form>
                 </div>
             </main>
@@ -1072,114 +1080,114 @@
     <!-- MODALS -->
     <!-- Custom Confirm -->
     <div id="modal-confirm" class="fixed inset-0 bg-brand-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center animate-fade-in border border-gray-100">
-            <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-5"><i class="fa-solid fa-triangle-exclamation"></i></div>
-            <h3 class="text-2xl font-black font-serif text-gray-900 mb-2">Atención Requerida</h3>
-            <p id="confirm-msg" class="text-gray-600 mb-8 font-medium leading-relaxed"></p>
-            <div class="flex gap-3">
-                <button onclick="closeModal('modal-confirm')" class="flex-1 py-3.5 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="executeConfirm()" class="flex-1 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Confirmar</button>
+        <div class="bg-white w-[95%] sm:w-full max-w-sm rounded-3xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in border border-gray-100">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-3xl sm:text-4xl mx-auto mb-4 sm:mb-5"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h3 class="text-xl sm:text-2xl font-black font-serif text-gray-900 mb-2">Atención Requerida</h3>
+            <p id="confirm-msg" class="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 font-medium leading-relaxed"></p>
+            <div class="flex gap-2 sm:gap-3">
+                <button onclick="closeModal('modal-confirm')" class="flex-1 py-3 sm:py-3.5 bg-gray-50 hover:bg-gray-100 text-gray-600 text-sm sm:text-base font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="executeConfirm()" class="flex-1 py-3 sm:py-3.5 bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base font-bold rounded-xl shadow-md transition-colors">Confirmar</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Create Suplente -->
     <div id="modal-suplente" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in">
-            <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
-                <h3 class="text-xl font-serif font-black text-brand-900">Crear Juez Suplente</h3>
-                <button onclick="closeModal('modal-suplente')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+        <div class="bg-white w-[95%] sm:w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in">
+            <div class="bg-brand-50 px-6 sm:px-8 py-5 sm:py-6 border-b border-brand-100 flex justify-between items-center">
+                <h3 class="text-lg sm:text-xl font-serif font-black text-brand-900">Crear Juez Suplente</h3>
+                <button onclick="closeModal('modal-suplente')" class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form onsubmit="createSuplente(event)" class="p-8 space-y-4">
+            <form onsubmit="createSuplente(event)" class="p-6 sm:p-8 space-y-4">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre del Suplente</label>
-                    <input type="text" id="suplente-name" required placeholder="Ej. Dr. Martínez" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none">
+                    <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1">Nombre del Suplente</label>
+                    <input type="text" id="suplente-name" required placeholder="Ej. Dr. Martínez" class="w-full p-3.5 sm:p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base">
                 </div>
-                <button type="submit" id="btn-create-suplente" class="w-full py-4 font-black uppercase tracking-widest bg-brand-900 hover:bg-black text-white rounded-xl shadow-lg transition-colors">Crear Perfil</button>
+                <button type="submit" id="btn-create-suplente" class="w-full py-3.5 sm:py-4 font-black uppercase tracking-widest bg-brand-900 hover:bg-black text-white rounded-xl shadow-lg transition-colors text-sm sm:text-base">Crear Perfil</button>
             </form>
         </div>
     </div>
 
     <!-- Modal Result Suplente -->
     <div id="modal-suplente-result" class="fixed inset-0 bg-brand-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center animate-fade-in border border-gray-100">
-            <div class="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-5"><i class="fa-solid fa-check-circle"></i></div>
-            <h3 class="text-2xl font-black font-serif text-gray-900 mb-2">Suplente Creado</h3>
-            <p class="text-gray-600 mb-4 font-medium leading-relaxed">Entrega estos datos al juez para que inicie sesión en la plataforma:</p>
+        <div class="bg-white w-[95%] sm:w-full max-w-sm rounded-3xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in border border-gray-100">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-3xl sm:text-4xl mx-auto mb-4 sm:mb-5"><i class="fa-solid fa-check-circle"></i></div>
+            <h3 class="text-xl sm:text-2xl font-black font-serif text-gray-900 mb-2">Suplente Creado</h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-4 font-medium leading-relaxed">Entrega estos datos al juez para que inicie sesión:</p>
             <div class="bg-gray-50 p-4 rounded-xl text-left border border-gray-200 mb-6">
-                <p class="text-xs font-bold text-gray-400 uppercase">Correo (Usuario):</p>
-                <p class="font-bold text-brand-700 mb-2 select-all" id="sup-res-email"></p>
-                <p class="text-xs font-bold text-gray-400 uppercase">Contraseña:</p>
-                <p class="font-bold text-brand-700 select-all" id="sup-res-pass"></p>
+                <p class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase">Correo (Usuario):</p>
+                <p class="font-bold text-brand-700 mb-2 select-all text-sm sm:text-base break-all" id="sup-res-email"></p>
+                <p class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase">Contraseña:</p>
+                <p class="font-bold text-brand-700 select-all text-sm sm:text-base" id="sup-res-pass"></p>
             </div>
-            <button onclick="closeModal('modal-suplente-result')" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-colors">Entendido</button>
+            <button onclick="closeModal('modal-suplente-result')" class="w-full py-3 sm:py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-colors text-sm sm:text-base">Entendido</button>
         </div>
     </div>
 
     <!-- Modal Assign -->
     <div id="modal-assign" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
-            <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
+        <div class="bg-white w-[95%] sm:w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
+            <div class="bg-brand-50 px-5 sm:px-8 py-4 sm:py-6 border-b border-brand-100 flex justify-between items-center">
                 <div>
-                    <h3 class="text-xl font-serif font-black text-brand-900">Panel de Asignación</h3>
-                    <p class="text-sm font-bold text-brand-600 mt-1" id="modal-assign-name"></p>
+                    <h3 class="text-lg sm:text-xl font-serif font-black text-brand-900">Panel de Asignación</h3>
+                    <p class="text-xs sm:text-sm font-bold text-brand-600 mt-0.5 sm:mt-1" id="modal-assign-name"></p>
                 </div>
-                <button onclick="closeModal('modal-assign')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('modal-assign')" class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-white custom-scrollbar flex-1"><div id="modal-assign-list" class="space-y-2"></div></div>
-            <div class="bg-gray-50 px-8 py-6 border-t border-gray-100 flex gap-4">
-                <button onclick="closeModal('modal-assign')" class="flex-1 py-3.5 font-bold text-gray-600 bg-white border-2 border-gray-200 rounded-xl">Cancelar</button>
-                <button id="btn-save-assign" class="flex-[2] py-3.5 font-black uppercase bg-brand-600 text-white rounded-xl shadow-lg">Guardar Tareas</button>
+            <div class="p-4 sm:p-6 overflow-y-auto bg-white custom-scrollbar flex-1"><div id="modal-assign-list" class="space-y-2"></div></div>
+            <div class="bg-gray-50 px-5 sm:px-8 py-4 sm:py-6 border-t border-gray-100 flex gap-3 sm:gap-4">
+                <button onclick="closeModal('modal-assign')" class="flex-1 py-3 sm:py-3.5 font-bold text-gray-600 bg-white border-2 border-gray-200 rounded-xl text-sm sm:text-base">Cancelar</button>
+                <button id="btn-save-assign" class="flex-[2] py-3 sm:py-3.5 font-black uppercase bg-brand-600 text-white rounded-xl shadow-lg text-sm sm:text-base">Guardar Tareas</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Manage Single Work -->
     <div id="modal-manage-work" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[90vh]">
-            <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
-                <h3 id="modal-work-title" class="text-xl font-serif font-black text-brand-900">Editar Trabajo</h3>
-                <button onclick="closeModal('modal-manage-work')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+        <div class="bg-white w-[95%] sm:w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[90vh]">
+            <div class="bg-brand-50 px-5 sm:px-8 py-4 sm:py-6 border-b border-brand-100 flex justify-between items-center">
+                <h3 id="modal-work-title" class="text-lg sm:text-xl font-serif font-black text-brand-900">Editar Trabajo</h3>
+                <button onclick="closeModal('modal-manage-work')" class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-manage-work" onsubmit="saveManagedWork(event)" class="flex flex-col flex-1 overflow-hidden">
                 <input type="hidden" id="mw-id">
-                <div class="p-8 overflow-y-auto bg-white custom-scrollbar space-y-5 flex-1">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Título</label><input type="text" id="mw-title" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Autor</label><input type="text" id="mw-author" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Institución</label><input type="text" id="mw-inst" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Categoría</label><select id="mw-cat" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
-                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Modalidad</label><select id="mw-submod" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="Básica">Básica</option><option value="Clínica">Clínica</option></select></div>
-                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Formato</label><select id="mw-type" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="poster">Cartel</option><option value="oral">Oral</option></select></div>
-                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Eje</label><select id="mw-axis" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></select></div>
-                        <div class="col-span-full"><label class="block text-xs font-bold text-brand-700 mb-1 uppercase"><i class="fa-solid fa-link"></i> URL Drive/Cartel</label><input type="url" id="mw-url" class="w-full p-3.5 bg-brand-50 border-2 border-brand-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-brand-700"></div>
+                <div class="p-5 sm:p-8 overflow-y-auto bg-white custom-scrollbar space-y-4 sm:space-y-5 flex-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                        <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Título</label><input type="text" id="mw-title" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Autor</label><input type="text" id="mw-author" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Institución</label><input type="text" id="mw-inst" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Categoría</label><select id="mw-cat" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
+                        <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Modalidad</label><select id="mw-submod" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="Básica">Básica</option><option value="Clínica">Clínica</option></select></div>
+                        <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Formato</label><select id="mw-type" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="poster">Cartel</option><option value="oral">Oral</option></select></div>
+                        <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Eje</label><select id="mw-axis" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"></select></div>
+                        <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-brand-700 mb-1 uppercase"><i class="fa-solid fa-link"></i> URL Drive/Cartel</label><input type="url" id="mw-url" class="w-full p-3 sm:p-3.5 bg-brand-50 border-2 border-brand-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-brand-700 text-sm sm:text-base"></div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-8 py-6 border-t border-gray-100"><button type="submit" class="w-full py-4 font-black uppercase tracking-widest bg-brand-900 hover:bg-black text-white rounded-xl shadow-lg">Guardar Registro</button></div>
+                <div class="bg-gray-50 px-5 sm:px-8 py-4 sm:py-6 border-t border-gray-100"><button type="submit" class="w-full py-3.5 sm:py-4 font-black uppercase tracking-widest bg-brand-900 hover:bg-black text-white rounded-xl shadow-lg text-sm sm:text-base">Guardar Registro</button></div>
             </form>
         </div>
     </div>
 
     <!-- Modal View Admin Evals & Reset -->
     <div id="modal-reset" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
-            <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
-                <h3 class="text-xl font-serif font-black text-brand-900">Estado de Evaluación</h3>
-                <button onclick="closeModal('modal-reset')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+        <div class="bg-white w-[95%] sm:w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
+            <div class="bg-brand-50 px-5 sm:px-8 py-4 sm:py-6 border-b border-brand-100 flex justify-between items-center">
+                <h3 class="text-lg sm:text-xl font-serif font-black text-brand-900">Estado de Evaluación</h3>
+                <button onclick="closeModal('modal-reset')" class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-white custom-scrollbar flex-1"><div id="modal-reset-list" class="space-y-3"></div></div>
+            <div class="p-4 sm:p-6 overflow-y-auto bg-white custom-scrollbar flex-1"><div id="modal-reset-list" class="space-y-3"></div></div>
         </div>
     </div>
 
     <!-- Modal Preview Work Info -->
     <div id="modal-preview" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
-            <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-start gap-6 bg-brand-50">
-                <h3 id="pw-title" class="text-xl font-serif font-black text-brand-900 leading-tight"></h3>
-                <button onclick="closeModal('modal-preview')" class="shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+        <div class="bg-white w-[95%] sm:w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
+            <div class="px-5 sm:px-8 py-4 sm:py-6 border-b border-gray-100 flex justify-between items-start gap-4 sm:gap-6 bg-brand-50">
+                <h3 id="pw-title" class="text-lg sm:text-xl font-serif font-black text-brand-900 leading-tight"></h3>
+                <button onclick="closeModal('modal-preview')" class="shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-8 overflow-y-auto bg-white custom-scrollbar flex flex-col gap-8 flex-1">
-                <div id="pw-meta" class="grid grid-cols-2 gap-y-6 gap-x-4 text-sm bg-gray-50 p-6 rounded-2xl border border-gray-100"></div>
+            <div class="p-5 sm:p-8 overflow-y-auto bg-white custom-scrollbar flex flex-col gap-6 sm:gap-8 flex-1">
+                <div id="pw-meta" class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-4 text-xs sm:text-sm bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-100"></div>
                 <div id="pw-link-container"></div>
             </div>
         </div>

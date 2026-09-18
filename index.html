@@ -26,25 +26,12 @@
                         serif: ['Playfair Display', 'serif']
                     },
                     colors: {
-                        // Paleta basada en IPN/ESM
                         brand: {
-                            50: '#f8f5fa',
-                            100: '#efe6f3',
-                            200: '#dfcce5',
-                            300: '#c7a7d0',
-                            400: '#ab7cb7',
-                            500: '#90579e', // IPN/ESM Base
-                            600: '#754381',
-                            700: '#613669',
-                            800: '#512f57',
-                            900: '#442848', 
-                            950: '#2b142f',
+                            50: '#f8f5fa', 100: '#efe6f3', 200: '#dfcce5', 300: '#c7a7d0',
+                            400: '#ab7cb7', 500: '#90579e', 600: '#754381', 700: '#613669',
+                            800: '#512f57', 900: '#442848', 950: '#2b142f',
                         },
-                        accent: {
-                            400: '#facc15', // Gold
-                            500: '#eab308',
-                            600: '#ca8a04',
-                        }
+                        accent: { 400: '#facc15', 500: '#eab308', 600: '#ca8a04', }
                     }
                 }
             }
@@ -52,90 +39,26 @@
     </script>
 
     <style>
-        body {
-            background-color: #f1f5f9;
-            color: #0f172a;
-            overflow-x: hidden;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        
-        .glass-dark {
-            background: rgba(43, 20, 47, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
+        body { background-color: #f1f5f9; color: #0f172a; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        .glass-dark { background: rgba(43, 20, 47, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-
-        .score-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-        .score-btn.selected {
-            background-color: #f8f5fa;
-            border-color: #90579e;
-            color: #613669;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(144, 87, 158, 0.2);
-        }
-        .score-btn.selected::after {
-            content: '';
-            position: absolute;
-            top: -1px; right: -1px; bottom: -1px; left: -1px;
-            border-radius: inherit;
-            border: 2px solid #90579e;
-            pointer-events: none;
-        }
-
-        .tooltip-group:hover .tooltip-content {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .auth-bg {
-            background: linear-gradient(135deg, rgba(43,20,47,0.95) 0%, rgba(97,54,105,0.9) 100%), url('https://images.unsplash.com/photo-1576091160550-2173ff9e81b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
-        }
-
+        .score-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .score-btn.selected { background-color: #f8f5fa; border-color: #90579e; color: #613669; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(144, 87, 158, 0.2); }
+        .score-btn.selected::after { content: ''; position: absolute; top: -1px; right: -1px; bottom: -1px; left: -1px; border-radius: inherit; border: 2px solid #90579e; pointer-events: none; }
+        .tooltip-group:hover .tooltip-content { visibility: visible; opacity: 1; transform: translateY(0); }
+        .auth-bg { background: linear-gradient(135deg, rgba(43,20,47,0.95) 0%, rgba(97,54,105,0.9) 100%), url('https://images.unsplash.com/photo-1576091160550-2173ff9e81b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover; }
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            min-width: 320px; padding: 16px; border-radius: 12px; background: white;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            display: flex; align-items: flex-start; gap: 12px;
-            transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .toast { min-width: 320px; padding: 16px; border-radius: 12px; background: white; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); display: flex; align-items: flex-start; gap: 12px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .toast.show { transform: translateX(0); }
-
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #90579e; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Print Styles para tabla de resultados */
-        @media print {
-            body { background-color: white !important; }
-            #mobile-sidebar, header, .no-print { display: none !important; }
-            main { padding: 0 !important; overflow: visible !important; }
-            .app-view { display: none !important; }
-            #view-results { display: block !important; }
-            .print-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-            .print-table th, .print-table td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
-            .print-table th { background-color: #f8f5fa !important; font-weight: bold; -webkit-print-color-adjust: exact; color-adjust: exact; }
-            .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #90579e; padding-bottom: 10px; }
-            .shadow-sm, .rounded-2xl { box-shadow: none !important; border-radius: 0 !important; border: none !important; }
-            .overflow-x-auto { overflow: visible !important; }
-        }
+        @media print { body { background-color: white !important; } #mobile-sidebar, header, .no-print { display: none !important; } main { padding: 0 !important; overflow: visible !important; } .app-view { display: none !important; } #view-results { display: block !important; } .print-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; } .print-table th, .print-table td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; } .print-table th { background-color: #f8f5fa !important; font-weight: bold; -webkit-print-color-adjust: exact; color-adjust: exact; } .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #90579e; padding-bottom: 10px; } .shadow-sm, .rounded-2xl { box-shadow: none !important; border-radius: 0 !important; border: none !important; } .overflow-x-auto { overflow: visible !important; } }
         .print-header { display: none; }
     </style>
 
@@ -143,12 +66,13 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // IMPORTANTE: Nuevos imports para Storage (Subir Archivos)
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // =========================================================================
-        // CONFIGURACIÓN OFICIAL FIREBASE - SIMPOSIO LIICAM 2026
+        // CONFIGURACIÓN OFICIAL FIREBASE
         // =========================================================================
         const appId = 'simposio-liicam-2026';
-        
         const firebaseConfig = {
           apiKey: "AIzaSyAa_UGECUF8_C2TLkpWrF-_3p97o0cr5OU",
           authDomain: "simposio-liicam-2026.firebaseapp.com",
@@ -163,6 +87,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const storage = getStorage(app); // Inicializar Storage
         const provider = new GoogleAuthProvider();
 
         const basePath = `artifacts/${appId}/public/data/`;
@@ -187,33 +112,33 @@
         const POSTER_CRITERIA = [
             { id: 'introduccion', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
             { id: 'metodologia', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
-            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos biológicos.' },
+            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
             { id: 'titulo', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad, pertinencia.' },
-            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados.' },
-            { id: 'banner', category: 'II. Forma (Diseño y Formato)', max: 5, type: 'yes-no', name: 'Formato 90x120cm y Elementos', desc: 'Inclusión de logos, tamaño correcto y cumplimiento de requisitos.' },
-            { id: 'referencias', category: 'III. Referencias y Presentación', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato Vancouver consistente y adecuado.' },
+            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con resultados.' },
+            { id: 'banner', category: 'II. Forma (Diseño y Formato)', max: 5, type: 'yes-no', name: 'Formato 90x120cm y Elementos', desc: 'Inclusión de logos y requisitos.' },
+            { id: 'referencias', category: 'III. Referencias y Presentación', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato Vancouver adecuado.' },
             { id: 'diseno', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Diseño y Congruencia Visual', desc: 'Equilibrio, tipografía legible.' },
             { id: 'graficas', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Uso de Tablas y Gráficas', desc: 'Claridad, calidad de figuras.' }, 
-            { id: 'defensa', category: 'III. Referencias y Presentación', max: 5, type: 'full', name: 'Defensa y Síntesis', desc: 'Dominio del tema presencial (respuestas a jurado).' },
+            { id: 'defensa', category: 'III. Referencias y Presentación', max: 5, type: 'full', name: 'Defensa y Síntesis', desc: 'Dominio del tema presencial.' },
             { id: 'innovacion', category: 'IV. Bonificación', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento.' },
-            { id: 'tiempo', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Ausencia/Retraso', desc: 'No estuvo presente o colocó tarde el cartel (Se RESTAN).' },
+            { id: 'tiempo', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Ausencia/Retraso', desc: 'No estuvo presente o colocó tarde (Se RESTAN).' },
             { id: 'ortografia', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Errores ortográficos evidentes (Se RESTAN).' },
         ];
 
         const ORAL_CRITERIA = [
-            { id: 'introduccion_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
-            { id: 'metodologia_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
-            { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos biológicos.' },
-            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura del Mensaje', desc: 'Organización lógica, precisión.' },
-            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo (10 min)', desc: 'Ajuste estricto al tiempo, ritmo adecuado.' },
-            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Respuestas (5 min Q&A)', desc: 'Dominio del tema al responder al jurado.' },
-            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material Visual', desc: 'Diseño y apoyo visual.' },
+            { id: 'introduccion_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización.' },
+            { id: 'metodologia_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño.' },
+            { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación completa de datos.' },
+            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura', desc: 'Organización lógica, precisión.' },
+            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo', desc: 'Ajuste estricto al tiempo.' },
+            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Respuestas (Q&A)', desc: 'Dominio del tema al responder.' },
+            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material', desc: 'Diseño y apoyo visual.' },
             { id: 'titulo_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad y pertinencia.' },
-            { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados.' },
-            { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias (Vancouver)', desc: 'Formato consistente y adecuado.' },
-            { id: 'innovacion_o', category: 'IV. Bonificación', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento.' },
-            { id: 'tiempo_o', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Exceso de Tiempo', desc: 'Excedió los 10 minutos (Se RESTAN).' },
-            { id: 'ortografia_o', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Redacción/Ortografía', desc: 'Errores en diapositivas (Se RESTAN).' },
+            { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia.' },
+            { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias (Vancouver)', desc: 'Formato consistente.' },
+            { id: 'innovacion_o', category: 'IV. Bonificación', max: 15, type: 'bonus', name: 'Innovación', desc: 'Aporta nuevo conocimiento.' },
+            { id: 'tiempo_o', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Exceso de Tiempo', desc: 'Excedió minutos (Se RESTAN).' },
+            { id: 'ortografia_o', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Redacción', desc: 'Errores en diapositivas (Se RESTAN).' },
         ];
 
         let currentUser = null;
@@ -242,17 +167,12 @@
             }, 4000);
         };
 
-        // SISTEMA DE NAVEGACIÓN CENTRALIZADO
         window.switchView = (viewId) => {
-            // Ocultar todas las vistas principales
             document.getElementById('view-auth').classList.add('hidden');
             document.getElementById('view-pending').classList.add('hidden');
             document.getElementById('app-layout').classList.add('hidden');
-            
-            // Ocultar subvistas internas
             document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
             
-            // Determinar qué mostrar
             if (viewId === 'view-auth' || viewId === 'view-pending') {
                 document.getElementById(viewId).classList.remove('hidden');
             } else {
@@ -263,54 +183,38 @@
             window.scrollTo(0,0);
         };
 
-        window.toggleSidebar = () => {
-            document.getElementById('mobile-sidebar').classList.toggle('-translate-x-full');
-        };
+        window.toggleSidebar = () => { document.getElementById('mobile-sidebar').classList.toggle('-translate-x-full'); };
 
         async function initAuth() {
-            try {
-                if (!auth.currentUser) await signInAnonymously(auth);
-            } catch (e) { 
-                console.warn("Auth init (Anónimo):", e.message);
-            }
+            try { if (!auth.currentUser) await signInAnonymously(auth); } 
+            catch (e) { console.warn("Auth init (Anónimo):", e.message); }
         }
 
-        // FUNCION ROBUSTA PARA CREAR USUARIO EN FIRESTORE (Evita Race Conditions)
         async function getOrCreateUserDoc(user) {
             const userRef = doc(db, basePath + 'users', user.uid);
             const snap = await getDoc(userRef);
+            if (snap.exists()) return snap.data();
             
-            if (snap.exists()) {
-                return snap.data();
-            }
-            
-            // Si el doc no existe, lo creamos
             const email = user.email ? user.email.toLowerCase() : '';
             const isAdmin = ADMIN_EMAILS.includes(email);
-            // Tomamos el nombre del registro por correo (si existe) o de Google
             const displayName = window.tempRegisterName || user.displayName || 'Usuario ' + email.split('@')[0];
-            window.tempRegisterName = null; // Limpiar
+            window.tempRegisterName = null; 
 
             const newUser = {
-                email: email,
-                name: displayName,
+                email: email, name: displayName,
                 role: isAdmin ? 'admin' : 'juez',
-                approved: isAdmin,
-                assignedWorks: [],
+                approved: isAdmin, assignedWorks: [],
                 createdAt: new Date().toISOString()
             };
-            
             await setDoc(userRef, newUser);
             return newUser;
         }
 
-        // CONTROLADOR PRINCIPAL DE AUTENTICACIÓN
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
                 if (!user.isAnonymous) {
                     try {
-                        // Aquí se asegura de que el documento se cree ANTES de intentar enrutar
                         currentUserDoc = await getOrCreateUserDoc(user);
                         setupDataListeners();
                         routeUser();
@@ -361,44 +265,24 @@
             e.preventDefault();
             const btn = document.getElementById('btn-login');
             btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
-            try {
-                await signInWithEmailAndPassword(auth, document.getElementById('l-email').value, document.getElementById('l-pass').value);
-                // onAuthStateChanged se encarga del resto
-            } catch (e) {
-                showToast("Credenciales incorrectas", "error", "fa-triangle-exclamation");
-            } finally {
-                btn.innerHTML = 'Iniciar Sesión'; btn.disabled = false;
-            }
+            try { await signInWithEmailAndPassword(auth, document.getElementById('l-email').value, document.getElementById('l-pass').value); } 
+            catch (e) { showToast("Credenciales incorrectas", "error", "fa-triangle-exclamation"); } 
+            finally { btn.innerHTML = 'Iniciar Sesión'; btn.disabled = false; }
         };
 
-        window.tempRegisterName = null;
         window.registerWithEmail = async (e) => {
             e.preventDefault();
             const email = document.getElementById('r-email').value.toLowerCase();
-            const pass = document.getElementById('r-pass').value;
             window.tempRegisterName = document.getElementById('r-name').value;
-            
             const btn = document.getElementById('btn-register');
             btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
-            
-            try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-                // onAuthStateChanged se encarga de crear el documento y enrutar
-            } catch (e) {
-                showToast("Error: " + e.message, "error", "fa-circle-xmark");
-                btn.innerHTML = 'Crear Cuenta'; btn.disabled = false;
-            }
+            try { await createUserWithEmailAndPassword(auth, email, document.getElementById('r-pass').value); } 
+            catch (e) { showToast("Error: " + e.message, "error", "fa-circle-xmark"); btn.innerHTML = 'Crear Cuenta'; btn.disabled = false; }
         };
 
         window.loginWithGoogle = async () => {
-            try {
-                await signInWithPopup(auth, provider);
-                // onAuthStateChanged se encarga de crear el documento y enrutar automáticamente
-            } catch (e) {
-                if (e.code !== 'auth/popup-closed-by-user') {
-                    showToast("Error de Google: " + e.message, "error", "fa-xmark");
-                }
-            }
+            try { await signInWithPopup(auth, provider); } 
+            catch (e) { if (e.code !== 'auth/popup-closed-by-user') showToast("Error de Google: " + e.message, "error", "fa-xmark"); }
         };
 
         window.logout = async () => {
@@ -448,13 +332,31 @@
             }
         }
 
+        // =========================================================================
+        // REGISTRO DE TRABAJOS Y CARGA DE ARCHIVOS (STORAGE)
+        // =========================================================================
         window.submitWork = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit-work');
-            btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+            btn.innerHTML = '<span class="loader"></span> Subiendo...'; btn.disabled = true;
 
             try {
                 const submitterId = auth.currentUser ? auth.currentUser.uid : 'unauthenticated_user';
+                
+                // Manejo de la subida del archivo PDF/Imagen
+                const fileInput = document.getElementById('p-file');
+                const file = fileInput.files[0];
+                let fileUrl = '';
+
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) throw new Error("El archivo supera los 10MB permitidos.");
+                    const fileRef = ref(storage, `${basePath}works/${Date.now()}_${file.name}`);
+                    await uploadBytes(fileRef, file);
+                    fileUrl = await getDownloadURL(fileRef);
+                } else {
+                    throw new Error("Debes subir tu Cartel o Presentación.");
+                }
+
                 const payload = {
                     title: document.getElementById('p-title').value,
                     author: document.getElementById('p-author').value,
@@ -463,7 +365,7 @@
                     subModality: document.getElementById('p-submod').value,
                     axis: document.getElementById('p-axis').value,
                     type: document.getElementById('p-type').value,
-                    imageUrl: document.getElementById('p-url').value || '',
+                    imageUrl: fileUrl, // Guardamos la URL pública generada por Firebase
                     submittedBy: submitterId,
                     submittedAt: new Date().toISOString()
                 };
@@ -472,9 +374,10 @@
                 showToast("¡Trabajo registrado con éxito!", "success", "fa-file-circle-check");
                 e.target.reset();
             } catch (error) {
-                showToast("Error al registrar (Revisa reglas de Firestore): " + error.message, "error");
+                showToast("Error: " + error.message, "error");
             } finally {
-                btn.innerHTML = 'Registrar Trabajo'; btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Registrar Trabajo'; 
+                btn.disabled = false;
             }
         };
 
@@ -538,10 +441,8 @@
         }
 
         window.toggleApproval = async (uid, status) => {
-            try {
-                await updateDoc(doc(db, basePath + 'users', uid), { approved: !status });
-                showToast(`Acceso ${!status ? 'concedido' : 'revocado'}`, "success");
-            } catch (e) { showToast("Error al actualizar", "error"); }
+            try { await updateDoc(doc(db, basePath + 'users', uid), { approved: !status }); showToast(`Acceso actualizado`, "success"); } 
+            catch (e) { showToast("Error al actualizar", "error"); }
         };
 
         function renderAdminWorks() {
@@ -569,6 +470,9 @@
             `).join('');
         }
 
+        // =========================================================================
+        // MANEJO DE VENTANAS MODALES (ASIGNACIÓN Y VISTA PREVIA)
+        // =========================================================================
         window.openAssignModal = (uid, name) => {
             document.getElementById('modal-assign-name').textContent = name;
             const judge = allUsers.find(u => u.uid === uid);
@@ -607,9 +511,31 @@
                 <p><strong>Categoría:</strong> ${w.category} - ${w.subModality}</p>
                 <p><strong>Eje:</strong> ${w.axis}</p>
             `;
+            
+            const iframe = document.getElementById('pw-iframe');
             const img = document.getElementById('pw-img');
-            if(w.imageUrl) { img.src = w.imageUrl; img.classList.remove('hidden'); }
-            else { img.classList.add('hidden'); }
+            const noimg = document.getElementById('pw-noimg');
+            const downloadBtn = document.getElementById('pw-download');
+            
+            iframe.classList.add('hidden');
+            img.classList.add('hidden');
+            noimg.classList.remove('hidden');
+            downloadBtn.classList.add('hidden');
+
+            if(w.imageUrl) { 
+                noimg.classList.add('hidden');
+                downloadBtn.href = w.imageUrl;
+                downloadBtn.classList.remove('hidden');
+                
+                // Si es PDF, usamos iframe
+                if(w.imageUrl.toLowerCase().includes('.pdf') || w.imageUrl.toLowerCase().includes('alt=media')) {
+                    iframe.src = w.imageUrl;
+                    iframe.classList.remove('hidden');
+                } else {
+                    img.src = w.imageUrl; 
+                    img.classList.remove('hidden'); 
+                }
+            }
             
             document.getElementById('modal-preview').classList.remove('hidden');
         };
@@ -656,9 +582,6 @@
             document.getElementById('cnt-oral').textContent = myWorks.filter(w => w.type === 'oral').length;
         }
 
-        let currentEvalWork = null;
-        let currentCriteria = [];
-
         window.openEvaluation = (workId) => {
             currentEvalWork = allWorks.find(w => w.id === workId);
             currentCriteria = currentEvalWork.type === 'poster' ? POSTER_CRITERIA : ORAL_CRITERIA;
@@ -670,6 +593,18 @@
             const existing = allEvaluations.find(e => e.workId === workId && e.judgeUid === currentUser.uid);
             const scores = existing ? existing.scores : {};
             document.getElementById('ev-obs').value = existing ? existing.observations : '';
+
+            // Configurar vista del material adjunto en la evaluación
+            const evalLink = document.getElementById('eval-pw-link');
+            const evalNoImg = document.getElementById('eval-pw-noimg');
+            if(currentEvalWork.imageUrl) {
+                evalNoImg.classList.add('hidden');
+                evalLink.href = currentEvalWork.imageUrl;
+                evalLink.classList.remove('hidden');
+            } else {
+                evalLink.classList.add('hidden');
+                evalNoImg.classList.remove('hidden');
+            }
 
             const formContainer = document.getElementById('ev-form-container');
             formContainer.innerHTML = '';
@@ -994,9 +929,10 @@
                                 <option value="oral">Exposición Oral</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">URL de Imagen (Opcional pero recomendado)</label>
-                            <input type="url" id="p-url" placeholder="https://..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                        <!-- NUEVO: UPLOAD DE ARCHIVO EN LUGAR DE URL -->
+                        <div class="col-span-full">
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Archivo del Cartel o Presentación (PDF o Imagen, Máx 10MB)</label>
+                            <input type="file" id="p-file" accept=".pdf,image/*" required class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-100 file:text-brand-700 hover:file:bg-brand-200 cursor-pointer">
                         </div>
                     </div>
                     <button type="submit" id="btn-submit-work" class="w-full py-4 mt-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-xl font-bold shadow-lg transition-all"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Registrar Trabajo</button>
@@ -1196,20 +1132,60 @@
                                 </div>
                                 <hr class="border-white/10 my-6">
                                 <p class="text-xs text-brand-300 mb-2 uppercase font-bold tracking-wider">Material de Apoyo</p>
-                                <div class="w-full bg-black/40 rounded-xl overflow-hidden flex items-center justify-center min-h-[200px] border border-white/10">
-                                    <img id="pw-img" src="" class="w-full h-auto object-contain hidden">
-                                    <span id="pw-noimg" class="text-sm text-white/40">El alumno no proporcionó URL de imagen.</span>
+                                <div class="w-full bg-black/40 rounded-xl overflow-hidden flex flex-col items-center justify-center p-6 border border-white/10 text-center min-h-[200px]">
+                                    <i class="fa-solid fa-file-pdf text-5xl text-white/50 mb-4"></i>
+                                    <a id="eval-pw-link" href="#" target="_blank" class="px-5 py-3 bg-brand-600 text-white text-sm font-bold rounded-xl hover:bg-brand-500 transition-colors w-full hidden shadow-lg">
+                                        Ver Archivo Subido
+                                    </a>
+                                    <span id="eval-pw-noimg" class="text-sm text-white/40 mt-2">El alumno no subió archivo.</span>
                                 </div>
-                                <script>
-                                    document.getElementById('pw-img').addEventListener('load', function() { this.classList.remove('hidden'); document.getElementById('pw-noimg').classList.add('hidden'); });
-                                    document.getElementById('pw-img').addEventListener('error', function() { this.classList.add('hidden'); document.getElementById('pw-noimg').classList.remove('hidden'); });
-                                </script>
                             </div>
                         </div>
                     </div>
                 </div>
 
             </main>
+        </div>
+    </div>
+
+    <!-- MODAL: ASIGNACIÓN -->
+    <div id="modal-assign" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in">
+            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-serif font-bold text-gray-900">Asignar a <span id="modal-assign-name" class="text-brand-600"></span></h3>
+                <button onclick="this.closest('#modal-assign').classList.add('hidden')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[50vh] bg-white custom-scrollbar space-y-2" id="modal-assign-list"></div>
+            <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex gap-3">
+                <button onclick="this.closest('#modal-assign').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-colors">Cancelar</button>
+                <button id="btn-save-assign" class="flex-1 py-3 font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-lg transition-colors">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VISTA PREVIA DEL TRABAJO (Admin y Jueces) -->
+    <div id="modal-preview" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[95vh]">
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-start gap-4">
+                <h3 id="pw-title" class="text-xl font-serif font-bold text-gray-900 leading-tight"></h3>
+                <button onclick="this.closest('#modal-preview').classList.add('hidden')" class="shrink-0 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-gray-50 custom-scrollbar flex flex-col gap-6 h-full">
+                <div id="pw-meta" class="grid grid-cols-2 gap-4 text-sm text-gray-600 bg-white p-4 rounded-xl border border-gray-100 shadow-sm"></div>
+                
+                <div class="bg-white rounded-xl border border-gray-200 p-2 min-h-[400px] flex-1 flex flex-col items-center justify-center relative shadow-sm">
+                    <iframe id="pw-iframe" src="" class="w-full h-[55vh] rounded-lg hidden"
+                        frameborder="0"></iframe>
+                    <img id="pw-img" src="" class="w-full h-auto object-contain rounded-lg max-h-[55vh] hidden">
+                    <p id="pw-noimg" class="text-sm text-gray-400 italic absolute hidden">Sin material de apoyo.</p>
+                </div>
+                
+                <div class="text-center">
+                    <a id="pw-download" href="#" target="_blank" class="hidden inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-colors shadow-lg">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir en Pantalla Completa / Descargar
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

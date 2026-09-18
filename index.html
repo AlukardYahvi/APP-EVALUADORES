@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>3er Simposio de Investigación en Medicina</title>
+    <title>3er Simposio de Investigación en Medicina 2026</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,7 +22,7 @@
             theme: {
                 extend: {
                     fontFamily: { 
-                        sans: ['Montserrat', 'sans-serif'], // IPN Official Font style
+                        sans: ['Montserrat', 'sans-serif'],
                         serif: ['Playfair Display', 'serif'] 
                     },
                     colors: {
@@ -32,7 +32,7 @@
                             200: '#e3c0cd',
                             300: '#cd93aa',
                             400: '#b46182',
-                            500: '#6f1d46', /* IPN Guinda - Pantone 222 C */
+                            500: '#6f1d46', /* IPN Guinda */
                             600: '#5c1739',
                             700: '#4a122d',
                             800: '#3a0e23',
@@ -41,12 +41,8 @@
                         },
                         accent: {
                             400: '#fbbf24', 
-                            500: '#f59e0b', /* Gold/Yellow Accent */
+                            500: '#f59e0b',
                             600: '#d97706',
-                        },
-                        ipngray: {
-                            500: '#636569', /* IPN Gray */
-                            100: '#f3f4f6'
                         }
                     }
                 }
@@ -55,117 +51,41 @@
     </script>
 
     <style>
-        body {
-            background-color: #f8fafc;
-            color: #231f20; 
-            overflow-x: hidden;
-        }
-
-        /* Custom Scrollbar */
+        body { background-color: #f8fafc; color: #231f20; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid #f8fafc; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* Background for Auth */
         .poster-bg {
             background: linear-gradient(135deg, rgba(111,29,70,0.95) 0%, rgba(35,31,32,0.95) 100%), url('https://images.unsplash.com/photo-1576091160550-2173ff9e81b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
             position: relative;
         }
-        
-        .poster-bg::before {
-            content: '';
-            position: absolute;
-            top: 0; right: 0; bottom: 0; left: 0;
-            background: radial-gradient(circle at top right, rgba(245,158,11,0.15) 0%, transparent 40%);
-            pointer-events: none;
-        }
 
-        /* Evaluation Buttons styling */
-        .score-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            background-color: white;
-            border: 2px solid #e2e8f0;
-            color: #475569;
-        }
-        .score-btn:hover {
-            background-color: #f8fafc;
-            border-color: #cbd5e1;
-        }
-        .score-btn.selected {
-            background-color: #f9f2f5;
-            border-color: #6f1d46;
-            color: #6f1d46;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(111, 29, 70, 0.15);
-        }
-        
-        .score-btn .tooltip {
-            visibility: hidden;
-            background-color: #231f20;
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 8px 12px;
-            position: absolute;
-            z-index: 50;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 280px;
-            font-size: 12px;
-            font-weight: 500;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .score-btn .tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #231f20 transparent transparent transparent;
-        }
-        .score-btn:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-        }
+        .score-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; background-color: white; border: 2px solid #e2e8f0; color: #475569; }
+        .score-btn:hover { background-color: #f8fafc; border-color: #cbd5e1; }
+        .score-btn.selected { background-color: #f9f2f5; border-color: #6f1d46; color: #6f1d46; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(111, 29, 70, 0.15); }
+        .score-btn .tooltip { visibility: hidden; background-color: #231f20; color: #fff; text-align: center; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 50; bottom: 125%; left: 50%; transform: translateX(-50%); width: 280px; font-size: 12px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .score-btn .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #231f20 transparent transparent transparent; }
+        .score-btn:hover .tooltip { visibility: visible; opacity: 1; }
 
-        /* Toast */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            min-width: 320px; padding: 16px; border-radius: 12px; background: white;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            display: flex; align-items: flex-start; gap: 12px;
-            transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-left: 4px solid #6f1d46;
-        }
+        .toast { min-width: 320px; padding: 16px; border-radius: 12px; background: white; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); display: flex; align-items: flex-start; gap: 12px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #6f1d46; }
         .toast.show { transform: translateX(0); }
-
-        /* Loader */
         .loader { border: 3px solid #f3f4f6; border-top: 3px solid #6f1d46; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Print Styles */
         @media print {
             body { background-color: white !important; color: black !important; }
             #mobile-sidebar, header, .no-print { display: none !important; }
             main { padding: 0 !important; overflow: visible !important; }
             .app-view { display: none !important; }
             #view-results { display: block !important; }
-            
             .print-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
             .print-table th, .print-table td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 11pt; }
             .print-table th { background-color: #f9f2f5 !important; font-weight: bold; -webkit-print-color-adjust: exact; color-adjust: exact; color: #6f1d46 !important;}
-            
             .print-header { display: flex !important; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 3px solid #6f1d46; padding-bottom: 15px; }
             .shadow-sm, .rounded-2xl { box-shadow: none !important; border-radius: 0 !important; border: none !important; }
             .overflow-x-auto { overflow: visible !important; }
@@ -176,7 +96,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =========================================================================
@@ -196,6 +116,10 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
+
+        // Secondary App for Admin to create Suplentes without logging out
+        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+        const secondaryAuth = getAuth(secondaryApp);
 
         const basePath = `artifacts/simposio-liicam-2026/public/data/`;
 
@@ -218,19 +142,19 @@
         // =========================================================================
         const DISCRETE_GUIDANCE = {
             '15-point-discrete': {
-                '0': { emoji: '🔴', label: '0 Pts', tip: 'NO CUMPLE: No se presenta la información o la sección es incoherente/faltante. Evaluación nula.' },
-                '5': { emoji: '🟠', label: '5 Pts', tip: 'BAJO: Cumple mínimamente. La información es básica, incompleta o presenta errores conceptuales.' },
-                '15': { emoji: '🟢', label: '15 Pts', tip: 'EXCELENTE: Cumple totalmente los requisitos. Información clara, precisa y completa.' }
+                '0': { emoji: '🔴', label: '0 Pts', tip: 'NO CUMPLE: No se presenta la información o es incoherente. Evaluación nula.' },
+                '5': { emoji: '🟠', label: '5 Pts', tip: 'BAJO: Cumple mínimamente. Información básica o incompleta.' },
+                '15': { emoji: '🟢', label: '15 Pts', tip: 'EXCELENTE: Cumple totalmente. Información clara, precisa y completa.' }
             },
             '10-point-discrete': {
                 '0': { emoji: '🔴', label: '0 Pts', tip: 'NO CUMPLE: Totalmente deficiente en el aspecto evaluado.' },
-                '5': { emoji: '🟠', label: '5 Pts', tip: 'REGULAR: Presenta deficiencias notables en la organización, claridad, o manejo del tiempo/preguntas.' },
-                '10': { emoji: '🟢', label: '10 Pts', tip: 'EXCELENTE: Criterio cubierto con alta calidad. Comunicación efectiva, estructura sólida y dominio total.' }
+                '5': { emoji: '🟠', label: '5 Pts', tip: 'REGULAR: Deficiencias notables en la organización o claridad.' },
+                '10': { emoji: '🟢', label: '10 Pts', tip: 'EXCELENTE: Criterio cubierto con alta calidad. Dominio total.' }
             },
             '3-point-discrete': {
-                '0': { emoji: '🔴', label: '0 Pts', tip: 'NO CUMPLE: La sección es totalmente deficiente o no es adecuada.' },
-                '3': { emoji: '🟠', label: '3 Pts', tip: 'ADECUADO: Cumple con la función, pero podría ser más conciso o pertinente.' },
-                '5': { emoji: '🟢', label: '5 Pts', tip: 'EXCELENTE: Criterio totalmente cubierto con máxima claridad y relevancia.' }
+                '0': { emoji: '🔴', label: '0 Pts', tip: 'NO CUMPLE: Totalmente deficiente o no es adecuada.' },
+                '3': { emoji: '🟠', label: '3 Pts', tip: 'ADECUADO: Cumple con la función, pero podría ser mejor.' },
+                '5': { emoji: '🟢', label: '5 Pts', tip: 'EXCELENTE: Criterio totalmente cubierto con claridad.' }
             }
         };
 
@@ -254,14 +178,14 @@
             { id: 'introduccion_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
             { id: 'metodologia_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
             { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
-            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura del Mensaje', desc: 'Organización lógica, precisión conceptual y uso de lenguaje adecuado.' },
-            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo y Fluidez', desc: 'Ajuste al tiempo asignado, ritmo adecuado y dicción clara.' },
-            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Capacidad de Respuesta (Q&A)', desc: 'Dominio del tema al responder preguntas y profundidad en las explicaciones.' },
-            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material Visual', desc: 'Diseño, claridad, legibilidad y apoyo visual de las diapositivas.' },
+            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura del Mensaje', desc: 'Organización lógica, precisión conceptual.' },
+            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo y Fluidez', desc: 'Ajuste al tiempo asignado, ritmo adecuado.' },
+            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Capacidad de Respuesta (Q&A)', desc: 'Dominio del tema al responder preguntas.' },
+            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material Visual', desc: 'Diseño, claridad, legibilidad de las diapositivas.' },
             { id: 'titulo_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad y pertinencia.' },
             { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
             { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
-            { id: 'innovacion_o', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
+            { id: 'innovacion_o', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque.' },
             { id: 'tiempo_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Puntos de penalización (Se RESTAN).' },
             { id: 'ortografia_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción/Ortografía (Material)', desc: 'Puntos de penalización (Se RESTAN).' },
         ];
@@ -272,21 +196,19 @@
         let allWorks = [];
         let allUsers = [];
         let allEvaluations = [];
-        let currentEvalWork = null;
         let pendingConfirmAction = null;
+        let currentEvalWork = null;
 
         // =========================================================================
-        // UTILIDADES UI
+        // UTILIDADES Y UI
         // =========================================================================
         window.showToast = (msg, type = 'info') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const icon = type === 'success' ? 'fa-check-circle text-green-500' : type === 'error' ? 'fa-triangle-exclamation text-red-500' : 'fa-info-circle text-brand-500';
-            
             toast.className = `toast animate-fade-in`;
             toast.innerHTML = `<div class="mt-0.5"><i class="fa-solid ${icon} text-xl"></i></div><div class="flex-1 text-sm font-medium text-gray-800">${msg}</div>`;
             container.appendChild(toast);
-            
             setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
         };
@@ -295,15 +217,13 @@
             document.getElementById('view-auth').classList.add('hidden');
             document.getElementById('view-pending').classList.add('hidden');
             document.getElementById('app-layout').classList.add('hidden');
-            
             document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
             
             if (viewId === 'view-auth' || viewId === 'view-pending') {
                 document.getElementById(viewId).classList.remove('hidden');
             } else {
                 document.getElementById('app-layout').classList.remove('hidden');
-                const targetView = document.getElementById(viewId);
-                if (targetView) targetView.classList.remove('hidden');
+                document.getElementById(viewId).classList.remove('hidden');
             }
             window.scrollTo(0,0);
         };
@@ -311,17 +231,37 @@
         window.toggleSidebar = () => document.getElementById('mobile-sidebar').classList.toggle('-translate-x-full');
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
 
-        // Custom Confirm Modal
         window.showConfirm = (msg, callback) => {
             document.getElementById('confirm-msg').textContent = msg;
             pendingConfirmAction = callback;
             document.getElementById('modal-confirm').classList.remove('hidden');
         };
-        
         window.executeConfirm = () => {
             if (pendingConfirmAction) pendingConfirmAction();
             document.getElementById('modal-confirm').classList.add('hidden');
         };
+
+        // Extract thumbnail from Drive Links
+        function getThumbnailUrl(url) {
+            if(!url) return '';
+            const driveMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if(driveMatch && driveMatch[1]) return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w400`;
+            return url;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            populateParticipantForm();
+        });
+
+        function populateParticipantForm() {
+            const selects = [document.getElementById('p-axis'), document.getElementById('mw-axis')];
+            selects.forEach(s => {
+                if (s) {
+                    s.innerHTML = '<option value="">Selecciona el tema eje...</option>';
+                    THEMATIC_AXES.forEach(a => s.innerHTML += `<option value="${a}">${a}</option>`);
+                }
+            });
+        }
 
         // =========================================================================
         // AUTENTICACIÓN
@@ -329,7 +269,6 @@
         async function getOrCreateUserDoc(user, explicitRole = null, explicitName = null) {
             const userRef = doc(db, basePath + 'users', user.uid);
             const snap = await getDoc(userRef);
-            
             if (snap.exists()) return snap.data();
             
             const email = user.email ? user.email.toLowerCase() : '';
@@ -338,34 +277,28 @@
             const displayName = explicitName || user.displayName || 'Usuario ' + (email.split('@')[0] || 'Nuevo');
 
             const newUser = {
-                email: email,
-                name: displayName,
-                role: role,
-                approved: isAdmin || role === 'juez_comodin', // Admins y comodines entran directo
-                assignedWorks: [],
-                createdAt: new Date().toISOString()
+                email: email, name: displayName, role: role,
+                approved: isAdmin, assignedWorks: [], createdAt: new Date().toISOString()
             };
-            
             await setDoc(userRef, newUser);
             return newUser;
         }
 
         onAuthStateChanged(auth, async (user) => {
-            if (user && !user.isAnonymous) {
+            if (user) {
                 currentUser = user;
                 try {
                     currentUserDoc = await getOrCreateUserDoc(user);
                     setupDataListeners();
                     routeUser();
                 } catch(e) {
-                    showToast("Error conectando a BD. Contacte al admin.", "error");
+                    showToast("Error conectando a BD.", "error");
                     await signOut(auth);
                     switchView('view-auth');
                 }
             } else {
                 cleanupListeners();
                 switchView('view-auth');
-                populateParticipantForm(); 
             }
         });
 
@@ -390,7 +323,6 @@
             }
         }
 
-        // Login methods
         window.loginWithEmail = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-login'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
@@ -402,16 +334,12 @@
         window.registerWithEmail = async (e) => {
             e.preventDefault();
             const email = document.getElementById('r-email').value.toLowerCase();
-            const pass = document.getElementById('r-pass').value;
             const name = document.getElementById('r-name').value;
             const btn = document.getElementById('btn-register'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
-            
             try {
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                await getOrCreateUserDoc(cred.user, 'juez', name); // Forzar nombre ingresado
-            } catch (e) {
-                showToast("Error: " + e.message, "error"); btn.innerHTML = 'Crear Cuenta'; btn.disabled = false;
-            }
+                const cred = await createUserWithEmailAndPassword(auth, email, document.getElementById('r-pass').value);
+                await getOrCreateUserDoc(cred.user, 'juez', name);
+            } catch (e) { showToast("Error: " + e.message, "error"); btn.innerHTML = 'Crear Cuenta'; btn.disabled = false; }
         };
 
         window.loginWithGoogle = async () => {
@@ -419,34 +347,36 @@
             catch (e) { if (e.code !== 'auth/popup-closed-by-user') showToast("Error con Google", "error"); }
         };
 
-        // --- JUEZ COMODÍN LOGIC ---
-        window.createGuestJudge = async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('gj-name').value;
-            const btn = document.getElementById('btn-gj'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
-            
-            try {
-                // Iniciar sesión de forma anónima
-                const cred = await signInAnonymously(auth);
-                // Forzar la creación del documento como juez_comodin (entra directo)
-                await getOrCreateUserDoc(cred.user, 'juez_comodin', name);
-                // Fake successful login feedback, routing happens via onAuthStateChanged since an anonymous user becomes auth.currentUser
-                showToast("Ingresando como Suplente", "success");
-                // Note: The onAuthStateChanged listener handles anonymous differently by default in this app, 
-                // so we manually override the flow here since we explicitly assigned them a doc.
-                currentUser = cred.user;
-                currentUserDoc = await getOrCreateUserDoc(cred.user);
-                setupDataListeners();
-                routeUser();
-
-            } catch(e) {
-                showToast("Error al crear cuenta suplente.", "error"); btn.innerHTML = 'Entrar como Suplente'; btn.disabled = false;
-            }
-        };
-
         window.logout = async () => {
             await signOut(auth);
             showToast("Sesión cerrada", "info");
+        };
+
+        // ADMIN: CREAR JUEZ SUPLENTE
+        window.createSuplente = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('suplente-name').value;
+            const btn = document.getElementById('btn-create-suplente'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+            
+            const email = `suplente${Math.floor(Math.random()*10000)}@simposio.com`;
+            const pass = 'Simposio2026';
+            
+            try {
+                const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+                await setDoc(doc(db, basePath + 'users', cred.user.uid), {
+                    email: email, name: name + ' (Suplente)', role: 'juez', approved: true, assignedWorks: [], createdAt: new Date().toISOString()
+                });
+                await signOut(secondaryAuth);
+                closeModal('modal-suplente');
+                showToast("Suplente Creado", "success");
+                
+                // Show credentials to admin
+                document.getElementById('sup-res-email').textContent = email;
+                document.getElementById('sup-res-pass').textContent = pass;
+                document.getElementById('modal-suplente-result').classList.remove('hidden');
+            } catch(e) {
+                showToast("Error creando suplente", "error");
+            } finally { btn.innerHTML = 'Crear Perfil Suplente'; btn.disabled = false; }
         };
 
         // =========================================================================
@@ -454,93 +384,55 @@
         // =========================================================================
         function setupDataListeners() {
             cleanupListeners();
-            // Trabajos
             unsubscribes.push(onSnapshot(collection(db, basePath + 'works'), snap => {
                 allWorks = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                if (currentUserDoc?.role === 'admin') {
-                    renderAdminWorks();
-                    if(!document.getElementById('view-results').classList.contains('hidden')) renderResults();
-                }
-                if (currentUserDoc?.role === 'juez' || currentUserDoc?.role === 'juez_comodin') renderJudgeWorks();
+                if (currentUserDoc?.role === 'admin') { renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
+                if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
             }));
-            
-            // Jueces
             if (currentUserDoc?.role === 'admin') {
                 unsubscribes.push(onSnapshot(collection(db, basePath + 'users'), snap => {
-                    allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()}));
-                    renderAdminJudges();
+                    allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()})); renderAdminJudges();
                 }));
             }
-            
-            // Evaluaciones
             unsubscribes.push(onSnapshot(collection(db, basePath + 'evaluations'), snap => {
                 allEvaluations = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                if (currentUserDoc?.role === 'admin') {
-                    renderAdminWorks(); // Re-render para actualizar badges de evaluaciones
-                    if(!document.getElementById('view-results').classList.contains('hidden')) renderResults();
-                }
-                if (currentUserDoc?.role === 'juez' || currentUserDoc?.role === 'juez_comodin') renderJudgeWorks();
+                if (currentUserDoc?.role === 'admin') { renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
+                if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
             }));
         }
 
         function cleanupListeners() { unsubscribes.forEach(u => u()); unsubscribes = []; }
 
         // =========================================================================
-        // CRUD DE TRABAJOS (ALUMNOS Y ADMIN)
+        // CRUD TRABAJOS
         // =========================================================================
-        function populateParticipantForm() {
-            const selects = [document.getElementById('p-axis'), document.getElementById('mw-axis')];
-            selects.forEach(s => {
-                if (s) {
-                    s.innerHTML = '<option value="">Selecciona el tema eje...</option>';
-                    THEMATIC_AXES.forEach(a => s.innerHTML += `<option value="${a}">${a}</option>`);
-                }
-            });
-        }
-
         window.submitWork = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit-work'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
-
             try {
                 const payload = {
-                    title: document.getElementById('p-title').value,
-                    author: document.getElementById('p-author').value,
-                    institution: document.getElementById('p-inst').value,
-                    category: document.getElementById('p-cat').value,
-                    subModality: document.getElementById('p-submod').value,
-                    axis: document.getElementById('p-axis').value,
-                    type: document.getElementById('p-type').value,
-                    imageUrl: document.getElementById('p-url').value || '',
+                    title: document.getElementById('p-title').value, author: document.getElementById('p-author').value,
+                    institution: document.getElementById('p-inst').value, category: document.getElementById('p-cat').value,
+                    subModality: document.getElementById('p-submod').value, axis: document.getElementById('p-axis').value,
+                    type: document.getElementById('p-type').value, imageUrl: document.getElementById('p-url').value || '',
                     submittedAt: new Date().toISOString()
                 };
                 await addDoc(collection(db, basePath + 'works'), payload);
-                showToast("¡Trabajo registrado con éxito!", "success");
-                e.target.reset();
-            } catch (error) { showToast("Error al registrar.", "error"); } 
-            finally { btn.innerHTML = 'Registrar Trabajo'; btn.disabled = false; }
+                showToast("¡Trabajo registrado con éxito!", "success"); e.target.reset();
+            } catch (error) { showToast("Error al registrar.", "error"); } finally { btn.innerHTML = 'Registrar Trabajo'; btn.disabled = false; }
         };
 
-        // ADMIN: Añadir/Editar Manualmente
         window.openWorkModal = (workId = null) => {
-            const form = document.getElementById('form-manage-work');
-            form.reset();
+            const form = document.getElementById('form-manage-work'); form.reset();
             document.getElementById('mw-id').value = workId || '';
-            
             if (workId) {
                 const w = allWorks.find(x => x.id === workId);
-                document.getElementById('mw-title').value = w.title;
-                document.getElementById('mw-author').value = w.author;
-                document.getElementById('mw-inst').value = w.institution;
-                document.getElementById('mw-cat').value = w.category;
-                document.getElementById('mw-submod').value = w.subModality || 'Básica';
-                document.getElementById('mw-axis').value = w.axis;
-                document.getElementById('mw-type').value = w.type;
-                document.getElementById('mw-url').value = w.imageUrl || '';
+                document.getElementById('mw-title').value = w.title; document.getElementById('mw-author').value = w.author;
+                document.getElementById('mw-inst').value = w.institution; document.getElementById('mw-cat').value = w.category;
+                document.getElementById('mw-submod').value = w.subModality || 'Básica'; document.getElementById('mw-axis').value = w.axis;
+                document.getElementById('mw-type').value = w.type; document.getElementById('mw-url').value = w.imageUrl || '';
                 document.getElementById('modal-work-title').textContent = '✏️ Editar Trabajo';
-            } else {
-                document.getElementById('modal-work-title').textContent = '➕ Añadir Trabajo Manual';
-            }
+            } else { document.getElementById('modal-work-title').textContent = '➕ Añadir Trabajo Manual'; }
             document.getElementById('modal-manage-work').classList.remove('hidden');
         };
 
@@ -548,51 +440,36 @@
             e.preventDefault();
             const id = document.getElementById('mw-id').value;
             const payload = {
-                title: document.getElementById('mw-title').value,
-                author: document.getElementById('mw-author').value,
-                institution: document.getElementById('mw-inst').value,
-                category: document.getElementById('mw-cat').value,
-                subModality: document.getElementById('mw-submod').value,
-                axis: document.getElementById('mw-axis').value,
-                type: document.getElementById('mw-type').value,
-                imageUrl: document.getElementById('mw-url').value || ''
+                title: document.getElementById('mw-title').value, author: document.getElementById('mw-author').value,
+                institution: document.getElementById('mw-inst').value, category: document.getElementById('mw-cat').value,
+                subModality: document.getElementById('mw-submod').value, axis: document.getElementById('mw-axis').value,
+                type: document.getElementById('mw-type').value, imageUrl: document.getElementById('mw-url').value || ''
             };
-            
             try {
-                if (id) {
-                    await updateDoc(doc(db, basePath + 'works', id), payload);
-                    showToast("Trabajo actualizado", "success");
-                } else {
-                    payload.submittedAt = new Date().toISOString();
-                    await addDoc(collection(db, basePath + 'works'), payload);
-                    showToast("Trabajo añadido", "success");
-                }
+                if (id) { await updateDoc(doc(db, basePath + 'works', id), payload); showToast("Trabajo actualizado", "success"); } 
+                else { payload.submittedAt = new Date().toISOString(); await addDoc(collection(db, basePath + 'works'), payload); showToast("Trabajo añadido", "success"); }
                 closeModal('modal-manage-work');
             } catch(e) { showToast("Error al guardar", "error"); }
         };
 
         window.deleteWork = (workId) => {
-            showConfirm('¿Estás seguro de borrar este trabajo? Se perderán sus evaluaciones de forma permanente.', async () => {
-                await deleteDoc(doc(db, basePath + 'works', workId));
-                showToast("Trabajo eliminado", "success");
+            showConfirm('¿Borrar este trabajo? Se perderán sus evaluaciones permanentemente.', async () => {
+                await deleteDoc(doc(db, basePath + 'works', workId)); showToast("Trabajo eliminado", "success");
             });
         };
 
         // =========================================================================
-        // PANEL DE ADMINISTRADOR
+        // ADMIN DASHBOARD
         // =========================================================================
         function renderAdminJudges() {
             const container = document.getElementById('admin-judges-list');
-            const judges = allUsers.filter(u => u.role === 'juez' || u.role === 'juez_comodin');
-            
-            if (judges.length === 0) {
-                container.innerHTML = `<p class="text-sm text-gray-400 italic">No hay jueces registrados.</p>`; return;
-            }
+            const judges = allUsers.filter(u => u.role === 'juez');
+            if (judges.length === 0) { container.innerHTML = `<p class="text-sm text-gray-400 italic">No hay jueces registrados.</p>`; return; }
 
             container.innerHTML = judges.map(j => {
                 const assigned = j.assignedWorks?.length || 0;
                 const completed = allEvaluations.filter(e => e.judgeUid === j.uid).length;
-                const isComodin = j.role === 'juez_comodin';
+                const isComodin = j.name.includes('(Suplente)');
                 
                 return `
                 <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
@@ -601,54 +478,48 @@
                             <h4 class="font-bold text-brand-900">${j.name}</h4>
                             ${isComodin ? `<span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Suplente</span>` : ''}
                         </div>
-                        <p class="text-xs text-gray-500">${j.email || 'Acceso Directo (Comodín)'}</p>
-                        <p class="text-xs font-semibold text-brand-600 mt-1">Progreso: ${completed} de ${assigned} evaluados</p>
+                        <p class="text-xs text-gray-500">${j.email}</p>
+                        <p class="text-xs font-semibold text-brand-600 mt-1">Progreso: ${completed}/${assigned} evaluados</p>
                     </div>
                     <div class="flex gap-2 w-full sm:w-auto">
-                        <button onclick="toggleApproval('${j.uid}', ${j.approved})" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${j.approved ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}">
-                            ${j.approved ? 'Revocar' : 'Aprobar'}
-                        </button>
-                        <button onclick="openAssignModal('${j.uid}', '${j.name}')" ${!j.approved ? 'disabled' : ''} class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-50">
-                            Asignar
-                        </button>
+                        <button onclick="toggleApproval('${j.uid}', ${j.approved})" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold ${j.approved ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}">${j.approved ? 'Revocar' : 'Aprobar'}</button>
+                        <button onclick="openAssignModal('${j.uid}', '${j.name}')" ${!j.approved ? 'disabled' : ''} class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-50">Asignar</button>
                     </div>
                 </div>`;
             }).join('');
-            
             document.getElementById('stat-judges').textContent = judges.length;
         }
 
-        window.toggleApproval = async (uid, status) => {
-            await updateDoc(doc(db, basePath + 'users', uid), { approved: !status });
-        };
+        window.toggleApproval = async (uid, status) => { await updateDoc(doc(db, basePath + 'users', uid), { approved: !status }); };
 
         function renderAdminWorks() {
             const container = document.getElementById('admin-works-list');
-            if (allWorks.length === 0) {
-                container.innerHTML = `<p class="text-sm text-gray-400 italic">No hay trabajos registrados.</p>`; return;
-            }
+            if (allWorks.length === 0) { container.innerHTML = `<p class="text-sm text-gray-400 italic">No hay trabajos.</p>`; return; }
 
             container.innerHTML = allWorks.map(w => {
                 const workEvals = allEvaluations.filter(e => e.workId === w.id);
                 return `
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative pr-20">
-                    <div class="absolute top-4 right-4 flex gap-1">
-                        <button onclick="openWorkModal('${w.id}')" class="w-7 h-7 rounded text-gray-400 hover:text-brand-600 hover:bg-brand-50" title="Editar"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteWork('${w.id}')" class="w-7 h-7 rounded text-gray-400 hover:text-red-600 hover:bg-red-50" title="Borrar"><i class="fa-solid fa-trash text-xs"></i></button>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative pr-20 flex gap-4">
+                    <div class="w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 hidden sm:block">
+                        <img src="${getThumbnailUrl(w.imageUrl)}" onerror="this.src='https://placehold.co/100x100/f8fafc/94a3b8?text=SIM'" class="w-full h-full object-cover">
                     </div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-[10px] font-bold uppercase tracking-wider ${w.type === 'poster' ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50'} px-2 py-0.5 rounded">${w.type}</span>
-                        <span class="text-xs font-bold text-gray-500">${workEvals.length} Evals</span>
-                    </div>
-                    <h4 class="font-bold text-gray-900 text-sm leading-tight mb-1">${w.title}</h4>
-                    <p class="text-xs text-gray-600">${w.author}</p>
-                    
-                    <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                        <button onclick="previewWork('${w.id}')" class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-200 text-gray-600 flex items-center justify-center" title="Ver Info/Enlace"><i class="fa-solid fa-eye"></i></button>
-                        <button onclick="openEvaluation('${w.id}', true)" class="w-8 h-8 rounded-lg bg-brand-50 hover:bg-brand-200 text-brand-700 flex items-center justify-center" title="Evaluar como Admin"><i class="fa-solid fa-pencil"></i></button>
-                        <button onclick="viewEvalsAdmin('${w.id}')" class="flex-1 h-8 rounded-lg bg-ipngray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center gap-2 transition-colors">
-                            <i class="fa-solid fa-ranking-star"></i> Ver Calificaciones
-                        </button>
+                    <div class="flex-1">
+                        <div class="absolute top-4 right-4 flex gap-1">
+                            <button onclick="openWorkModal('${w.id}')" class="w-7 h-7 rounded text-gray-400 hover:text-brand-600 hover:bg-brand-50" title="Editar"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteWork('${w.id}')" class="w-7 h-7 rounded text-gray-400 hover:text-red-600 hover:bg-red-50" title="Borrar"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider ${w.type === 'poster' ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50'} px-2 py-0.5 rounded">${w.type}</span>
+                            <span class="text-xs font-bold text-gray-500">${workEvals.length} Evals</span>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-1">${w.title}</h4>
+                        <p class="text-xs text-gray-600">${w.author}</p>
+                        
+                        <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                            <button onclick="previewWork('${w.id}')" class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-200 text-gray-600 flex items-center justify-center" title="Ver Info"><i class="fa-solid fa-eye"></i></button>
+                            <button onclick="openEvaluation('${w.id}', true)" class="w-8 h-8 rounded-lg bg-brand-50 hover:bg-brand-200 text-brand-700 flex items-center justify-center" title="Evaluar como Admin"><i class="fa-solid fa-pencil"></i></button>
+                            <button onclick="viewEvalsAdmin('${w.id}')" class="flex-1 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-ranking-star"></i> Ver Calificaciones</button>
+                        </div>
                     </div>
                 </div>`;
             }).join('');
@@ -657,15 +528,14 @@
             document.getElementById('stat-evals').textContent = allEvaluations.length;
         }
 
-        // Asignaciones
         window.openAssignModal = (uid, name) => {
             document.getElementById('modal-assign-name').textContent = name;
             const judge = allUsers.find(u => u.uid === uid);
             const assigned = judge.assignedWorks || [];
             
             document.getElementById('modal-assign-list').innerHTML = allWorks.map(w => `
-                <label class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer border border-transparent hover:border-gray-200 transition-colors">
-                    <input type="checkbox" class="assign-cb w-5 h-5 rounded text-brand-600 focus:ring-brand-500" value="${w.id}" ${assigned.includes(w.id) ? 'checked' : ''}>
+                <label class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer border border-transparent hover:border-gray-200">
+                    <input type="checkbox" class="assign-cb w-5 h-5 rounded text-brand-600" value="${w.id}" ${assigned.includes(w.id) ? 'checked' : ''}>
                     <div>
                         <div class="font-semibold text-sm text-gray-800 line-clamp-1">${w.title}</div>
                         <div class="text-xs text-gray-500"><span class="uppercase font-bold ${w.type==='poster'?'text-blue-500':'text-orange-500'}">${w.type}</span> • ${w.author}</div>
@@ -676,29 +546,20 @@
             document.getElementById('btn-save-assign').onclick = async () => {
                 const selected = Array.from(document.querySelectorAll('.assign-cb:checked')).map(cb => cb.value);
                 await updateDoc(doc(db, basePath + 'users', uid), { assignedWorks: selected });
-                showToast("Asignaciones guardadas", "success");
-                closeModal('modal-assign');
+                showToast("Asignaciones guardadas", "success"); closeModal('modal-assign');
             };
             document.getElementById('modal-assign').classList.remove('hidden');
         };
 
-        // Ver Evaluaciones y Reiniciar (Admin)
         window.viewEvalsAdmin = (workId) => {
             const evals = allEvaluations.filter(e => e.workId === workId);
             const container = document.getElementById('modal-reset-list');
-            
-            if(evals.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">Nadie ha evaluado este trabajo aún.</p>';
-            } else {
+            if(evals.length === 0) container.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">Nadie ha evaluado este trabajo aún.</p>';
+            else {
                 container.innerHTML = evals.map(e => `
                     <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-sm text-gray-900">${e.judgeName}</p>
-                            <p class="text-xs font-black text-brand-600">${e.totalScore} Puntos Totales</p>
-                        </div>
-                        <button onclick="resetEvaluation('${e.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors">
-                            <i class="fa-solid fa-rotate-left"></i> Borrar
-                        </button>
+                        <div><p class="font-bold text-sm text-gray-900">${e.judgeName}</p><p class="text-xs font-black text-brand-600">${e.totalScore} Puntos</p></div>
+                        <button onclick="resetEvaluation('${e.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold"><i class="fa-solid fa-rotate-left"></i> Borrar</button>
                     </div>
                 `).join('');
             }
@@ -706,40 +567,28 @@
         };
 
         window.resetEvaluation = (evalId) => {
-            showConfirm("¿Eliminar esta evaluación permanentemente? El juez tendrá que calificar de nuevo.", async () => {
-                await deleteDoc(doc(db, basePath + 'evaluations', evalId));
-                showToast("Evaluación eliminada", "success");
-                closeModal('modal-reset');
+            showConfirm("¿Eliminar evaluación? El juez tendrá que calificar de nuevo.", async () => {
+                await deleteDoc(doc(db, basePath + 'evaluations', evalId)); showToast("Evaluación eliminada", "success"); closeModal('modal-reset');
             });
         };
 
-        // =========================================================================
-        // VISUALIZADOR DE PERFIL / MATERIAL (Vista Previa)
-        // =========================================================================
         window.previewWork = (id) => {
-            const w = allWorks.find(x => x.id === id);
-            if(!w) return;
+            const w = allWorks.find(x => x.id === id); if(!w) return;
             document.getElementById('pw-title').textContent = w.title;
             document.getElementById('pw-meta').innerHTML = `
                 <div class="col-span-2"><p class="text-[10px] uppercase font-bold text-gray-400">Autor Expositor</p><p class="font-semibold text-gray-900">${w.author}</p></div>
                 <div class="col-span-2"><p class="text-[10px] uppercase font-bold text-gray-400">Institución</p><p class="font-semibold text-gray-900">${w.institution}</p></div>
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Categoría</p><p class="font-semibold text-brand-700">${w.category}</p></div>
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Modalidad</p><p class="font-semibold text-brand-700">${w.subModality}</p></div>
-                <div class="col-span-2"><p class="text-[10px] uppercase font-bold text-gray-400">Tema Eje</p><p class="font-semibold text-gray-800">${w.axis}</p></div>
             `;
-            
             const linkDiv = document.getElementById('pw-link-container');
-            if(w.imageUrl) {
-                linkDiv.innerHTML = `<a href="${w.imageUrl}" target="_blank" class="inline-flex items-center justify-center gap-2 w-full py-4 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold rounded-xl border-2 border-dashed border-brand-300 transition-colors"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Material de Apoyo (Drive/Enlace)</a>`;
-            } else {
-                linkDiv.innerHTML = `<div class="text-center p-4 bg-gray-50 rounded-xl border border-gray-200 text-gray-400 text-sm italic">No proporcionó enlace al material.</div>`;
-            }
-            
+            if(w.imageUrl) linkDiv.innerHTML = `<a href="${w.imageUrl}" target="_blank" class="inline-flex items-center justify-center gap-2 w-full py-4 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold rounded-xl border-2 border-dashed border-brand-300 transition-colors"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Material de Apoyo (Cartel/Drive)</a>`;
+            else linkDiv.innerHTML = `<div class="text-center p-4 bg-gray-50 rounded-xl border border-gray-200 text-gray-400 text-sm italic">No proporcionó enlace al material.</div>`;
             document.getElementById('modal-preview').classList.remove('hidden');
         };
 
         // =========================================================================
-        // PANEL DE JUEZ (MIS TRABAJOS)
+        // PANEL JUEZ (MIS TRABAJOS)
         // =========================================================================
         function renderJudgeWorks() {
             const assignedIds = currentUserDoc.assignedWorks || [];
@@ -747,33 +596,33 @@
             
             const renderList = (works, containerId) => {
                 const c = document.getElementById(containerId);
-                if (works.length === 0) {
-                    c.innerHTML = `<div class="col-span-full p-8 text-center bg-white rounded-2xl border border-dashed border-gray-300 text-gray-400"><i class="fa-solid fa-clipboard-check text-4xl mb-3"></i><p>No hay trabajos asignados aquí.</p></div>`;
-                    return;
-                }
+                if (works.length === 0) { c.innerHTML = `<div class="col-span-full p-8 text-center bg-white rounded-2xl border border-dashed border-gray-300 text-gray-400"><i class="fa-solid fa-clipboard-check text-4xl mb-3"></i><p>No hay trabajos asignados aquí.</p></div>`; return; }
                 c.innerHTML = works.map(w => {
                     const ev = allEvaluations.find(e => e.workId === w.id && e.judgeUid === currentUser.uid);
                     return `
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md">
                         <div class="h-2 ${ev ? 'bg-green-500' : 'bg-brand-500'}"></div>
-                        <div class="p-5 flex-1 flex flex-col">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-[10px] font-black uppercase tracking-widest ${w.type==='poster'?'text-blue-600':'text-orange-600'} bg-gray-50 px-2 py-1 rounded">${w.type}</span>
-                                ${ev ? `<span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded border border-green-200 shadow-sm">✅ Finalizado (${ev.totalScore} pts)</span>` : ''}
+                        <div class="p-4 flex gap-4 flex-1">
+                            <div class="w-20 h-24 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 hidden sm:block">
+                                <img src="${getThumbnailUrl(w.imageUrl)}" onerror="this.src='https://placehold.co/100x150/f8fafc/94a3b8?text=SIM'" class="w-full h-full object-cover">
                             </div>
-                            <h4 class="font-bold text-gray-900 leading-tight mb-2 line-clamp-2">${w.title}</h4>
-                            <p class="text-xs text-gray-600 mb-1 font-medium"><i class="fa-solid fa-user-graduate w-4"></i> ${w.author}</p>
-                            <p class="text-xs text-gray-400 line-clamp-1"><i class="fa-solid fa-book-medical w-4"></i> ${w.axis}</p>
-                            
-                            <div class="mt-auto pt-4 flex gap-2">
-                                <button onclick="previewWork('${w.id}')" class="px-4 py-2 bg-gray-50 hover:bg-gray-200 text-gray-700 rounded-xl text-sm transition-colors border border-gray-200" title="Ver Perfil"><i class="fa-solid fa-eye"></i></button>
-                                <button onclick="openEvaluation('${w.id}')" class="flex-1 py-2 ${ev ? 'bg-white border-2 border-brand-500 text-brand-700 hover:bg-brand-50' : 'bg-brand-600 text-white hover:bg-brand-700'} rounded-xl text-sm font-bold shadow-sm transition-all">
-                                    ${ev ? 'Ver Respuestas' : '📝 Evaluar Trabajo'}
-                                </button>
+                            <div class="flex-1 flex flex-col">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-[10px] font-black uppercase tracking-widest ${w.type==='poster'?'text-blue-600':'text-orange-600'} bg-gray-50 px-2 py-1 rounded">${w.type}</span>
+                                    ${ev ? `<span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded border border-green-200 shadow-sm">✅ Finalizado (${ev.totalScore} pts)</span>` : ''}
+                                </div>
+                                <h4 class="font-bold text-gray-900 leading-tight mb-1 line-clamp-2">${w.title}</h4>
+                                <p class="text-xs text-gray-600 font-medium"><i class="fa-solid fa-user-graduate w-4"></i> ${w.author}</p>
+                                
+                                <div class="mt-auto pt-4 flex gap-2">
+                                    <button onclick="previewWork('${w.id}')" class="px-4 py-2 bg-gray-50 hover:bg-gray-200 text-gray-700 rounded-xl text-sm transition-colors border border-gray-200"><i class="fa-solid fa-eye"></i></button>
+                                    <button onclick="openEvaluation('${w.id}')" class="flex-1 py-2 ${ev ? 'bg-white border-2 border-brand-500 text-brand-700 hover:bg-brand-50' : 'bg-brand-600 text-white hover:bg-brand-700'} rounded-xl text-sm font-bold shadow-sm transition-all">
+                                        ${ev ? 'Ver Respuestas' : '📝 Evaluar Trabajo'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    `;
+                    </div>`;
                 }).join('');
             };
 
@@ -784,8 +633,6 @@
         // =========================================================================
         // MOTOR DE EVALUACIÓN
         // =========================================================================
-        let currentCriteria = [];
-
         window.openEvaluation = (workId, isAdminOverride = false) => {
             currentEvalWork = allWorks.find(w => w.id === workId);
             currentCriteria = currentEvalWork.type === 'poster' ? POSTER_CRITERIA : ORAL_CRITERIA;
@@ -794,16 +641,11 @@
             document.getElementById('ev-title').textContent = currentEvalWork.title;
             document.getElementById('ev-author').textContent = currentEvalWork.author;
             
-            // Link visible inside evaluation header
             const matBtn = document.getElementById('ev-material-btn');
-            if(currentEvalWork.imageUrl) {
-                matBtn.href = currentEvalWork.imageUrl;
-                matBtn.classList.remove('hidden');
-            } else { matBtn.classList.add('hidden'); }
+            if(currentEvalWork.imageUrl) { matBtn.href = currentEvalWork.imageUrl; matBtn.classList.remove('hidden'); } 
+            else { matBtn.classList.add('hidden'); }
 
             const existing = allEvaluations.find(e => e.workId === workId && e.judgeUid === currentUser.uid);
-            
-            // Bloquear edición si el juez ya evaluó y no es admin forzando
             const isReadonly = !!existing && !isAdminOverride && currentUserDoc.role !== 'admin'; 
             
             const scores = existing ? existing.scores : {};
@@ -811,8 +653,7 @@
             obsEl.value = existing ? existing.observations : '';
             obsEl.disabled = isReadonly;
 
-            const formContainer = document.getElementById('ev-form-container');
-            formContainer.innerHTML = '';
+            const formContainer = document.getElementById('ev-form-container'); formContainer.innerHTML = '';
             let currentCat = '';
 
             currentCriteria.forEach(item => {
@@ -822,15 +663,13 @@
                 }
 
                 let val = scores[item.id] !== undefined ? scores[item.id] : 0;
-                let displayVal = Math.abs(val); // Mostrar como positivo si es deducción
-                
+                let displayVal = Math.abs(val);
                 let inputHtml = '';
                 const disabledAttr = isReadonly ? 'disabled style="opacity:0.6; pointer-events:none;"' : '';
                 
                 if (item.type.includes('discrete')) {
                     const is15 = item.type === '15-point-discrete';
-                    const opts = is15 ? [0, 5, 15] : [0, 5, 10];
-                    if(item.type === '3-point-discrete') opts.splice(0, opts.length, 0, 3, 5);
+                    const opts = is15 ? [0, 5, 15] : [0, 5, 10]; if(item.type === '3-point-discrete') opts.splice(0, opts.length, 0, 3, 5);
 
                     inputHtml = `<div class="flex gap-2 flex-wrap" ${disabledAttr}>`;
                     opts.forEach(v => {
@@ -840,112 +679,70 @@
                             <button type="button" class="score-btn ${sel} px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm" onclick="setDiscrete(this, '${item.id}', ${v})">
                                 ${guidance.emoji} <span class="ml-1">${v} Pts</span>
                                 <div class="tooltip">${guidance.tip}</div>
-                            </button>
-                        `;
+                            </button>`;
                     });
                     inputHtml += `</div><input type="hidden" id="in-${item.id}" value="${val}">`;
-                } 
-                else if (item.type === 'yes-no') {
-                    inputHtml = `
-                        <select id="in-${item.id}" class="w-full sm:w-48 p-3 bg-white border-2 border-gray-200 text-gray-900 font-semibold rounded-xl focus:border-brand-500 outline-none" onchange="calcTotal()" ${disabledAttr}>
-                            <option value="0" ${val == 0 ? 'selected' : ''}>❌ No (0 pts)</option>
-                            <option value="5" ${val == 5 ? 'selected' : ''}>✅ Sí (5 pts)</option>
-                        </select>
-                    `;
-                }
-                else {
+                } else if (item.type === 'yes-no') {
+                    inputHtml = `<select id="in-${item.id}" class="w-full sm:w-48 p-3 bg-white border-2 border-gray-200 text-gray-900 font-semibold rounded-xl focus:border-brand-500 outline-none" onchange="calcTotal()" ${disabledAttr}><option value="0" ${val == 0 ? 'selected' : ''}>❌ No (0 pts)</option><option value="5" ${val == 5 ? 'selected' : ''}>✅ Sí (5 pts)</option></select>`;
+                } else {
                     const isDed = item.type === 'deduction';
                     inputHtml = `
                         <div class="flex items-center gap-3">
                             <input type="number" id="in-${item.id}" min="0" max="${item.max}" value="${displayVal}" class="w-24 p-3 bg-white border-2 border-gray-200 font-black text-lg text-center rounded-xl outline-none ${isDed ? 'focus:border-red-500 text-red-600' : 'focus:border-green-500 text-green-600'}" oninput="calcTotal()" ${disabledAttr}>
                             <span class="text-sm font-bold text-gray-400">Máx ${item.max} ${isDed ? '<span class="text-red-400">(Se Restará)</span>' : '<span class="text-green-500">(Bonificación)</span>'}</span>
-                        </div>
-                    `;
+                        </div>`;
                 }
 
                 formContainer.innerHTML += `
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-3 hover:border-gray-300 transition-colors">
-                        <div class="mb-3">
-                            <h4 class="text-md font-bold text-gray-900">${item.name}</h4>
-                            <p class="text-xs text-gray-500 mt-1">${item.desc}</p>
-                        </div>
+                        <div class="mb-3"><h4 class="text-md font-bold text-gray-900">${item.name}</h4><p class="text-xs text-gray-500 mt-1">${item.desc}</p></div>
                         ${inputHtml}
-                    </div>
-                `;
+                    </div>`;
             });
 
-            const btnSave = document.getElementById('btn-save-eval');
-            const msgReadonly = document.getElementById('msg-readonly');
-            if (isReadonly) {
-                btnSave.classList.add('hidden');
-                msgReadonly.classList.remove('hidden');
-            } else {
-                btnSave.classList.remove('hidden');
-                msgReadonly.classList.add('hidden');
-            }
+            const btnSave = document.getElementById('btn-save-eval'); const msgReadonly = document.getElementById('msg-readonly');
+            if (isReadonly) { btnSave.classList.add('hidden'); msgReadonly.classList.remove('hidden'); } 
+            else { btnSave.classList.remove('hidden'); msgReadonly.classList.add('hidden'); }
 
-            switchView('view-eval');
-            calcTotal();
+            switchView('view-eval'); calcTotal();
         };
 
         window.setDiscrete = (btn, id, val) => {
             btn.parentElement.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            document.getElementById(`in-${id}`).value = val;
-            calcTotal();
+            btn.classList.add('selected'); document.getElementById(`in-${id}`).value = val; calcTotal();
         };
 
         window.calcTotal = () => {
             let total = 0;
             currentCriteria.forEach(item => {
-                const el = document.getElementById(`in-${item.id}`);
-                let val = parseFloat(el?.value || 0);
-                if (item.type === 'deduction') total -= Math.abs(val);
-                else total += Math.max(0, val);
+                const val = parseFloat(document.getElementById(`in-${item.id}`)?.value || 0);
+                if (item.type === 'deduction') total -= Math.abs(val); else total += Math.max(0, val);
             });
-            total = Math.max(0, total);
-            
-            const display = document.getElementById('ev-total');
-            display.textContent = total;
+            document.getElementById('ev-total').textContent = Math.max(0, total);
         };
 
         window.saveEval = async () => {
-            const btn = document.getElementById('btn-save-eval');
-            btn.innerHTML = '<span class="loader"></span> Guardando...'; btn.disabled = true;
-
+            const btn = document.getElementById('btn-save-eval'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
             try {
                 const scores = {};
                 currentCriteria.forEach(item => {
                     const val = parseFloat(document.getElementById(`in-${item.id}`)?.value || 0);
                     scores[item.id] = item.type === 'deduction' ? -Math.abs(val) : Math.max(0, val);
                 });
-
                 const payload = {
-                    workId: currentEvalWork.id,
-                    judgeUid: currentUser.uid,
-                    judgeName: currentUserDoc.name,
-                    scores: scores,
-                    totalScore: parseInt(document.getElementById('ev-total').textContent),
-                    observations: document.getElementById('ev-obs').value,
-                    timestamp: new Date().toISOString()
+                    workId: currentEvalWork.id, judgeUid: currentUser.uid, judgeName: currentUserDoc.name,
+                    scores: scores, totalScore: parseInt(document.getElementById('ev-total').textContent),
+                    observations: document.getElementById('ev-obs').value, timestamp: new Date().toISOString()
                 };
-
                 const existing = allEvaluations.find(e => e.workId === currentEvalWork.id && e.judgeUid === currentUser.uid);
                 if (existing) await updateDoc(doc(db, basePath + 'evaluations', existing.id), payload);
                 else await addDoc(collection(db, basePath + 'evaluations'), payload);
-
-                showToast("Evaluación Guardada Definitivamente", "success");
-                // Navigate back properly
-                switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge');
-            } catch (error) {
-                showToast("Error al guardar.", "error");
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Evaluación Final'; btn.disabled = false;
-            }
+                showToast("Evaluación Guardada", "success"); switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge');
+            } catch (error) { showToast("Error al guardar.", "error"); } finally { btn.innerHTML = 'Confirmar Evaluación'; btn.disabled = false; }
         };
 
         // =========================================================================
-        // RESULTADOS Y PDF
+        // RESULTADOS PDF
         // =========================================================================
         window.renderResults = () => {
             const container = document.getElementById('results-content');
@@ -953,83 +750,40 @@
             
             const generateTable = (works, title) => {
                 if (works.length === 0) return '';
-                
                 let processedWorks = works.map(w => {
                     const workEvals = allEvaluations.filter(e => e.workId === w.id);
-                    const evalCount = workEvals.length;
-                    const sum = workEvals.reduce((acc, curr) => acc + curr.totalScore, 0);
-                    const avg = evalCount > 0 ? (sum / evalCount).toFixed(2) : 0;
-                    return { ...w, evalCount, average: parseFloat(avg) };
-                });
-
-                // Ordenar mayor a menor promedio
-                processedWorks.sort((a, b) => b.average - a.average);
+                    const avg = workEvals.length > 0 ? (workEvals.reduce((acc, curr) => acc + curr.totalScore, 0) / workEvals.length).toFixed(2) : 0;
+                    return { ...w, evalCount: workEvals.length, average: parseFloat(avg) };
+                }).sort((a, b) => b.average - a.average);
 
                 let html = `
                 <div class="mb-12 page-break-after">
-                    <h3 class="text-2xl font-serif font-bold text-brand-900 mb-4 flex items-center gap-2">
-                        <div class="w-1.5 h-6 bg-brand-500 rounded-full no-print"></div> ${title}
-                    </h3>
+                    <h3 class="text-2xl font-serif font-bold text-brand-900 mb-4 flex items-center gap-2"><div class="w-1.5 h-6 bg-brand-500 rounded-full no-print"></div> ${title}</h3>
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                         <table class="print-table w-full text-left">
                             <thead class="bg-brand-50 border-b border-gray-200">
-                                <tr>
-                                    <th class="py-4 px-6 text-brand-900 font-bold text-sm w-16 text-center">Lugar</th>
-                                    <th class="py-4 px-6 text-brand-900 font-bold text-sm">Autor e Institución</th>
-                                    <th class="py-4 px-6 text-brand-900 font-bold text-sm">Título del Trabajo</th>
-                                    <th class="py-4 px-6 text-brand-900 font-bold text-sm text-center w-24">Jueces</th>
-                                    <th class="py-4 px-6 text-brand-900 font-bold text-sm text-center w-32">Puntaje Final</th>
-                                </tr>
+                                <tr><th class="py-4 px-6 text-brand-900 text-center">Lugar</th><th class="py-4 px-6 text-brand-900">Autor / Institución</th><th class="py-4 px-6 text-brand-900">Título</th><th class="py-4 px-6 text-center">Jueces</th><th class="py-4 px-6 text-center">Promedio</th></tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                 `;
                 
                 processedWorks.forEach((w, i) => {
-                    const hasScore = w.average > 0;
-                    let rankDisplay = (i + 1) + 'º';
-                    let rowClass = 'hover:bg-gray-50 transition-colors';
-                    
-                    if (hasScore) {
-                        if (i === 0) { rankDisplay = '🥇 1º'; rowClass = 'bg-yellow-50/50'; }
-                        if (i === 1) { rankDisplay = '🥈 2º'; rowClass = 'bg-gray-50'; }
-                        if (i === 2) { rankDisplay = '🥉 3º'; rowClass = 'bg-orange-50/30'; }
-                    }
-
+                    const hasScore = w.average > 0; let rank = (i + 1) + 'º'; let rowClass = '';
+                    if (hasScore) { if (i===0){rank='🥇 1º';rowClass='bg-yellow-50/50';} else if (i===1){rank='🥈 2º';rowClass='bg-gray-50';} else if (i===2){rank='🥉 3º';rowClass='bg-orange-50/30';} }
                     html += `
                         <tr class="${rowClass}">
-                            <td class="py-4 px-6 text-center font-black text-gray-900 text-lg">${hasScore ? rankDisplay : '-'}</td>
-                            <td class="py-4 px-6">
-                                <div class="font-bold text-gray-900">${w.author}</div>
-                                <div class="text-xs text-gray-500 mt-0.5">${w.institution}</div>
-                            </td>
-                            <td class="py-4 px-6">
-                                <div class="text-sm font-semibold text-gray-800 line-clamp-2">${w.title}</div>
-                                <div class="text-[10px] uppercase font-bold text-brand-600 mt-1">${w.category} • ${w.subModality}</div>
-                            </td>
+                            <td class="py-4 px-6 text-center font-black text-lg">${hasScore ? rank : '-'}</td>
+                            <td class="py-4 px-6"><div class="font-bold">${w.author}</div><div class="text-xs text-gray-500">${w.institution}</div></td>
+                            <td class="py-4 px-6"><div class="text-sm font-semibold line-clamp-2">${w.title}</div></td>
                             <td class="py-4 px-6 text-center font-bold text-gray-400">${w.evalCount}</td>
-                            <td class="py-4 px-6 text-center">
-                                <span class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg font-black text-sm ${
-                                    !hasScore ? 'bg-gray-100 text-gray-400' :
-                                    (i < 3 ? 'bg-brand-100 text-brand-800 border border-brand-200' : 'bg-brand-50 text-brand-700')
-                                }">${hasScore ? w.average.toFixed(2) : 'N/A'}</span>
-                            </td>
-                        </tr>
-                    `;
+                            <td class="py-4 px-6 text-center"><span class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg font-black text-sm ${!hasScore ? 'bg-gray-100 text-gray-400' : (i < 3 ? 'bg-brand-100 text-brand-800' : 'bg-brand-50 text-brand-700')}">${hasScore ? w.average.toFixed(2) : 'N/A'}</span></td>
+                        </tr>`;
                 });
-
-                html += `</tbody></table></div></div>`;
-                return html;
+                return html + `</tbody></table></div></div>`;
             };
-
-            const posters = allWorks.filter(w => w.type === 'poster');
-            const orals = allWorks.filter(w => w.type === 'oral');
-            
-            container.innerHTML = generateTable(posters, 'Resultados: Carteles Científicos') + 
-                                  generateTable(orals, 'Resultados: Exposiciones Orales');
+            container.innerHTML = generateTable(allWorks.filter(w => w.type === 'poster'), 'Resultados: Carteles Científicos') + generateTable(allWorks.filter(w => w.type === 'oral'), 'Resultados: Exposiciones Orales');
         };
 
-        // Initial boot
-        // The listener onAuthStateChanged will handle routing automatically.
     </script>
 </head>
 <body class="font-sans antialiased text-gray-900 bg-gray-50 selection:bg-brand-200 selection:text-brand-900">
@@ -1040,21 +794,16 @@
     <div id="view-auth" class="app-view min-h-screen flex flex-col lg:flex-row">
         <!-- Left Side: Branding/Poster -->
         <div class="poster-bg w-full lg:w-5/12 flex flex-col justify-between p-10 lg:p-14 text-white">
-            <div class="relative z-10 flex items-center gap-5">
-                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-2xl p-2">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Logo_Instituto_Polit%C3%A9cnico_Nacional.png" alt="IPN Logo" class="w-full h-full object-contain drop-shadow-md">
-                </div>
-                <div>
-                    <h2 class="text-xs font-bold tracking-widest uppercase text-accent-400">Escuela Superior de Medicina</h2>
-                    <h1 class="text-2xl font-black font-serif leading-tight">Instituto Politécnico Nacional</h1>
-                </div>
+            <div class="relative z-10 flex flex-wrap items-center gap-4 bg-white/10 p-4 rounded-2xl backdrop-blur-sm w-fit border border-white/20">
+                <img src="logo_ipn.png" alt="IPN" class="h-10 sm:h-12 object-contain drop-shadow-md">
+                <img src="logo_esm.png" alt="ESM" class="h-10 sm:h-12 object-contain drop-shadow-md border-l border-white/30 pl-4">
+                <img src="logo_licam.png" alt="LICAM" class="h-10 sm:h-12 object-contain drop-shadow-md border-l border-white/30 pl-4">
             </div>
             
             <div class="relative z-10 mt-16 lg:mt-0">
                 <div class="inline-block px-3 py-1 mb-6 border border-white/30 rounded-full text-xs font-bold tracking-widest uppercase bg-white/10 backdrop-blur-sm">Edición 2026</div>
                 <h2 class="text-5xl lg:text-6xl font-black font-serif leading-tight mb-6">3er Simposio de<br><span class="text-accent-400">Investigación</span><br>en Medicina.</h2>
-                <p class="text-lg text-brand-50 font-medium mb-8 max-w-md leading-relaxed border-l-4 border-accent-400 pl-4">Plataforma oficial para la recepción de trabajos libres y evaluación por jurado calificador.</p>
-                
+                <p class="text-lg text-brand-50 font-medium mb-8 max-w-md border-l-4 border-accent-400 pl-4">Plataforma oficial para la recepción de trabajos libres y evaluación por jurado calificador.</p>
                 <div class="flex flex-wrap gap-4 text-sm font-bold text-white/90 bg-black/30 p-4 rounded-xl backdrop-blur-sm w-fit border border-white/10">
                     <span class="flex items-center gap-2"><i class="fa-solid fa-microscope text-accent-400"></i> Licenciatura</span>
                     <span class="flex items-center gap-2"><i class="fa-solid fa-user-doctor text-accent-400"></i> Posgrado</span>
@@ -1065,27 +814,19 @@
         <!-- Right Side: Forms -->
         <div class="w-full lg:w-7/12 p-6 md:p-12 lg:p-20 flex flex-col justify-center bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.05)] z-20">
             <div class="max-w-xl w-full mx-auto">
-                
-                <!-- Tab Navigation -->
                 <div class="flex gap-6 border-b-2 border-gray-100 mb-10 overflow-x-auto custom-scrollbar">
-                    <button onclick="document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.getElementById('form-comodin').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-brand-600 text-brand-800 font-bold transition-colors whitespace-nowrap">Jurado/Admin</button>
-                    
-                    <button onclick="document.getElementById('form-register').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.getElementById('form-comodin').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold transition-colors whitespace-nowrap hover:text-gray-600">Registro Jurado</button>
-                    
-                    <button onclick="document.getElementById('form-comodin').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold transition-colors whitespace-nowrap hover:text-gray-600">Juez Suplente</button>
-
-                    <button onclick="document.getElementById('form-submit').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-comodin').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold transition-colors whitespace-nowrap hover:text-gray-600 text-brand-600 bg-brand-50 px-3 rounded-t-lg">Subir Trabajo</button>
+                    <button onclick="document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-brand-600 text-brand-800 font-bold whitespace-nowrap">Jurado/Admin</button>
+                    <button onclick="document.getElementById('form-register').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold whitespace-nowrap hover:text-gray-600">Registro Jurado</button>
+                    <button onclick="document.getElementById('form-submit').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('border-brand-600','text-brand-800')); this.classList.add('border-brand-600','text-brand-800');" class="tab-btn pb-3 border-b-2 border-transparent text-gray-400 font-bold whitespace-nowrap hover:text-gray-600 text-brand-600 bg-brand-50 px-3 rounded-t-lg">Subir Trabajo</button>
                 </div>
 
                 <!-- LOGIN -->
                 <form id="form-login" onsubmit="loginWithEmail(event)" class="space-y-5 animate-fade-in">
                     <div><h3 class="text-3xl font-black font-serif text-brand-900">Bienvenido</h3><p class="text-gray-500 font-medium">Ingresa a tu panel de control o evaluación.</p></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="l-email" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 focus:bg-white outline-none transition-all font-medium"></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Contraseña</label><input type="password" id="l-pass" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 focus:bg-white outline-none transition-all font-medium"></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="l-email" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Contraseña</label><input type="password" id="l-pass" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
                     <button type="submit" id="btn-login" class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all text-lg">Iniciar Sesión</button>
-                    
                     <div class="relative py-4 flex items-center"><div class="flex-grow border-t border-gray-200"></div><span class="mx-4 text-xs font-bold text-gray-400 uppercase tracking-widest">o mediante</span><div class="flex-grow border-t border-gray-200"></div></div>
-                    
                     <button type="button" onclick="loginWithGoogle()" class="w-full py-4 bg-white border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Continuar con Google
                     </button>
@@ -1094,26 +835,13 @@
                 <!-- REGISTER -->
                 <form id="form-register" onsubmit="registerWithEmail(event)" class="hidden space-y-5 animate-fade-in">
                     <div><h3 class="text-3xl font-black font-serif text-brand-900">Registro (Jurado)</h3><p class="text-gray-500 font-medium">Crea tu cuenta. El administrador validará tu acceso.</p></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Nombre con Título (Ej. Dr. Juan Pérez)</label><input type="text" id="r-name" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 focus:bg-white outline-none transition-all font-medium"></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="r-email" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 focus:bg-white outline-none transition-all font-medium"></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Contraseña (Min 6 caracteres)</label><input type="password" id="r-pass" required minlength="6" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 focus:bg-white outline-none transition-all font-medium"></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Nombre con Título (Ej. Dr. Juan Pérez)</label><input type="text" id="r-name" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="r-email" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-1">Contraseña (Min 6 caracteres)</label><input type="password" id="r-pass" required minlength="6" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
                     <button type="submit" id="btn-register" class="w-full py-4 bg-brand-900 hover:bg-black text-white rounded-xl font-bold shadow-lg transition-all text-lg">Crear Cuenta</button>
                     <button type="button" onclick="loginWithGoogle()" class="w-full py-4 bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Registrarse con Google
                     </button>
-                </form>
-
-                <!-- GUEST JUDGE (COMODÍN) -->
-                <form id="form-comodin" onsubmit="createGuestJudge(event)" class="hidden space-y-5 animate-fade-in">
-                    <div class="bg-purple-50 border border-purple-200 p-6 rounded-2xl mb-4">
-                        <h3 class="text-2xl font-black font-serif text-purple-900 mb-2"><i class="fa-solid fa-user-shield"></i> Juez Suplente / Rápido</h3>
-                        <p class="text-purple-700 text-sm font-medium">Esta opción permite crear un acceso temporal al instante en caso de que un evaluador oficial no asista. Entrarás directo al panel y el Admin podrá asignarte trabajos.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Nombre Completo del Juez Suplente</label>
-                        <input type="text" id="gj-name" required placeholder="Ej. Dra. María González (Suplente)" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-purple-500 focus:bg-white outline-none transition-all font-bold text-lg text-purple-900">
-                    </div>
-                    <button type="submit" id="btn-gj" class="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-black shadow-lg shadow-purple-500/30 transition-all text-lg uppercase tracking-wide">Entrar al Panel de Evaluación</button>
                 </form>
 
                 <!-- SUBMIT WORK (STUDENT) -->
@@ -1124,58 +852,26 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="col-span-full">
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Título del Trabajo</label>
-                            <input type="text" id="p-title" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Nombre del Expositor (1er Autor)</label>
-                            <input type="text" id="p-author" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Institución de Procedencia</label>
-                            <input type="text" id="p-inst" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Categoría</label>
-                            <select id="p-cat" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium">
-                                <option value="Licenciatura">Licenciatura</option>
-                                <option value="Posgrado">Posgrado (Esp, Maestría, Doctorado)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tipo de Investigación</label>
-                            <select id="p-submod" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium">
-                                <option value="Básica">Investigación Básica</option>
-                                <option value="Clínica">Investigación Clínica</option>
-                            </select>
-                        </div>
-                        <div class="col-span-full">
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tema Eje</label>
-                            <select id="p-axis" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"></select>
-                        </div>
-                        <div class="col-span-full">
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Formato de Presentación</label>
+                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Título del Trabajo</label><input type="text" id="p-title" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Nombre del Expositor (1er Autor)</label><input type="text" id="p-author" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Institución de Procedencia</label><input type="text" id="p-inst" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"></div>
+                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Categoría</label><select id="p-cat" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
+                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tipo de Investigación</label><select id="p-submod" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium"><option value="Básica">Investigación Básica</option><option value="Clínica">Investigación Clínica</option></select></div>
+                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Tema Eje</label><select id="p-axis" required class="w-full p-3 bg-white border-2 border-gray-200 rounded-xl focus:border-brand-500 outline-none font-medium text-sm"></select></div>
+                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Formato de Presentación</label>
                             <div class="flex gap-4">
-                                <label class="flex-1 cursor-pointer">
-                                    <input type="radio" name="ptype" value="poster" id="p-type" checked class="peer sr-only">
-                                    <div class="p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:text-brand-800 font-bold transition-all"><i class="fa-solid fa-image text-xl mb-1 block"></i> Cartel Científico</div>
-                                </label>
-                                <label class="flex-1 cursor-pointer">
-                                    <input type="radio" name="ptype" value="oral" onclick="document.getElementById('p-type').value = this.value" class="peer sr-only">
-                                    <div class="p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 font-bold transition-all"><i class="fa-solid fa-microphone text-xl mb-1 block"></i> Exposición Oral</div>
-                                </label>
+                                <label class="flex-1 cursor-pointer"><input type="radio" name="ptype" value="poster" id="p-type" checked class="peer sr-only"><div class="p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:text-brand-800 font-bold transition-all"><i class="fa-solid fa-image text-xl mb-1 block"></i> Cartel Científico</div></label>
+                                <label class="flex-1 cursor-pointer"><input type="radio" name="ptype" value="oral" onclick="document.getElementById('p-type').value = this.value" class="peer sr-only"><div class="p-4 text-center border-2 border-gray-200 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 font-bold transition-all"><i class="fa-solid fa-microphone text-xl mb-1 block"></i> Exposición Oral</div></label>
                             </div>
                         </div>
                         <div class="col-span-full mt-2">
-                            <label class="block text-xs font-bold text-brand-700 mb-1 uppercase tracking-wider"><i class="fa-solid fa-link"></i> Enlace al Material (Obligatorio)</label>
-                            <p class="text-xs text-gray-500 mb-2 font-medium">Sube tu cartel/presentación a Google Drive, Dropbox o OneDrive, asegúrate de que el enlace sea "Público / Cualquier persona con el enlace", y pégalo aquí.</p>
-                            <input type="url" id="p-url" required placeholder="https://drive.google.com/..." class="w-full p-4 bg-brand-50 border-2 border-brand-200 rounded-xl focus:border-brand-600 outline-none text-brand-900 font-bold placeholder-brand-300 transition-colors">
+                            <label class="block text-xs font-bold text-brand-700 mb-1 uppercase tracking-wider"><i class="fa-solid fa-link"></i> Enlace al Material</label>
+                            <p class="text-xs text-gray-500 mb-2 font-medium">Enlace de Google Drive, OneDrive o Dropbox con tu cartel/presentación. Asegúrate de que sea público.</p>
+                            <input type="url" id="p-url" required placeholder="https://..." class="w-full p-4 bg-brand-50 border-2 border-brand-200 rounded-xl focus:border-brand-600 outline-none text-brand-900 font-bold">
                         </div>
                     </div>
                     <button type="submit" id="btn-submit-work" class="w-full py-5 mt-6 bg-brand-900 hover:bg-black text-white rounded-xl font-black shadow-xl shadow-brand-900/20 transition-all text-lg uppercase tracking-widest"><i class="fa-solid fa-paper-plane mr-2"></i> Enviar Registro</button>
                 </form>
-
             </div>
         </div>
     </div>
@@ -1183,12 +879,10 @@
     <!-- VIEW: PENDING APPROVAL -->
     <div id="view-pending" class="app-view hidden min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div class="bg-white p-12 rounded-3xl shadow-2xl max-w-md w-full text-center border border-gray-100">
-            <div class="w-24 h-24 bg-accent-50 text-accent-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-6 shadow-inner border border-accent-100">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
+            <div class="w-24 h-24 bg-accent-50 text-accent-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-6"><i class="fa-solid fa-shield-halved"></i></div>
             <h2 class="text-3xl font-serif font-black text-brand-900 mb-4">Cuenta en Revisión</h2>
-            <p class="text-gray-600 mb-8 font-medium leading-relaxed">Tu cuenta ha sido creada exitosamente. Para proteger la integridad del simposio, el Coordinador (Administrador) debe aprobar tu acceso como jurado.</p>
-            <button onclick="logout()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-bold transition-colors">Volver al inicio</button>
+            <p class="text-gray-600 mb-8 font-medium leading-relaxed">Tu cuenta ha sido creada exitosamente. El Coordinador debe aprobar tu acceso como jurado.</p>
+            <button onclick="logout()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-bold transition-colors">Cerrar sesión</button>
         </div>
     </div>
 
@@ -1198,46 +892,34 @@
         <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-brand-950 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.1)] flex flex-col border-r border-white/5 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-32 bg-brand-800 opacity-20 blur-3xl"></div>
             
-            <div class="p-8 flex items-center gap-4 border-b border-white/10 relative z-10">
-                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg p-1.5 shrink-0">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Logo_Instituto_Polit%C3%A9cnico_Nacional.png" alt="IPN Logo" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <h2 class="font-bold font-serif leading-tight text-lg">Simposio <span class="text-accent-400">2026</span></h2>
-                    <span class="text-[10px] uppercase tracking-widest text-brand-300 font-bold user-role-display"></span>
-                </div>
-                <button onclick="toggleSidebar()" class="lg:hidden ml-auto text-brand-300 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="p-6 flex items-center justify-center gap-2 border-b border-white/10 bg-white relative z-10">
+                <img src="logo_ipn.png" alt="IPN" class="h-12 object-contain">
+                <img src="logo_esm.png" alt="ESM" class="h-12 object-contain border-l border-gray-200 pl-2">
             </div>
             
-            <div class="flex-1 overflow-y-auto p-5 flex flex-col gap-2 relative z-10" id="sidebar-nav">
-                <!-- Navigation inserted by JS -->
+            <div class="p-6 pb-2 relative z-10">
+                <h2 class="font-bold font-serif leading-tight text-xl">Simposio 2026</h2>
+                <span class="text-[10px] uppercase tracking-widest text-brand-300 font-bold user-role-display"></span>
             </div>
+            
+            <div class="flex-1 overflow-y-auto p-5 flex flex-col gap-2 relative z-10" id="sidebar-nav"></div>
 
             <div class="p-6 border-t border-white/10 bg-black/20 relative z-10 backdrop-blur-md">
                 <div class="flex items-center gap-3 mb-5">
-                    <div class="w-12 h-12 rounded-full bg-brand-700 flex items-center justify-center text-lg font-bold shadow-inner border border-brand-500 shrink-0">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                    <div class="overflow-hidden">
-                        <p class="text-[10px] text-brand-300 font-bold uppercase tracking-widest mb-0.5">Sesión Activa</p>
-                        <p class="font-bold text-sm truncate user-name-display text-white"></p>
-                    </div>
+                    <div class="w-10 h-10 rounded-full bg-brand-700 flex items-center justify-center text-sm font-bold shadow-inner"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div class="overflow-hidden"><p class="text-[10px] text-brand-300 font-bold uppercase tracking-widest mb-0.5">Sesión Activa</p><p class="font-bold text-sm truncate user-name-display text-white"></p></div>
                 </div>
-                <button onclick="logout()" class="w-full py-3 bg-brand-900 hover:bg-black text-brand-100 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 border border-brand-700 shadow-sm hover:shadow-md">
-                    <i class="fa-solid fa-right-from-bracket text-accent-400"></i> Cerrar Sesión
-                </button>
+                <button onclick="logout()" class="w-full py-3 bg-brand-900 hover:bg-black text-brand-100 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 border border-brand-700 shadow-sm"><i class="fa-solid fa-right-from-bracket text-accent-400"></i> Cerrar Sesión</button>
             </div>
         </aside>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-h-screen h-screen overflow-hidden bg-[#f4f7f6]">
-            <!-- Header Mobile -->
+        <div class="flex-1 flex flex-col min-h-screen h-screen overflow-hidden bg-gray-50">
             <header class="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 shrink-0 shadow-sm relative z-20">
                 <div class="font-serif font-black text-lg text-brand-900 flex items-center gap-2"><i class="fa-solid fa-microscope text-brand-500"></i> SIMPOSIO 2026</div>
-                <button onclick="toggleSidebar()" class="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center text-brand-700 hover:bg-brand-100 transition-colors"><i class="fa-solid fa-bars"></i></button>
+                <button onclick="toggleSidebar()" class="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center text-brand-700"><i class="fa-solid fa-bars"></i></button>
             </header>
 
-            <!-- Scrollable Content -->
             <main class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative">
                 
                 <!-- VIEW: ADMIN DASHBOARD -->
@@ -1245,44 +927,42 @@
                     <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div>
                             <h2 class="text-3xl lg:text-4xl font-serif font-black text-brand-900">Panel de Control General</h2>
-                            <p class="text-gray-500 font-medium mt-1">Supervisión, asignación y control total del Simposio de Investigación en Medicina.</p>
+                            <p class="text-gray-500 font-medium mt-1">Supervisión, asignación y control total del Simposio.</p>
                         </div>
                     </div>
 
-                    <!-- Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                        <div class="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner border border-blue-100"><i class="fa-solid fa-folder-open"></i></div>
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5">
+                            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-folder-open"></i></div>
                             <div><p class="text-4xl font-black text-gray-900 leading-none" id="stat-works">0</p><p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Trabajos</p></div>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl shadow-inner border border-brand-100"><i class="fa-solid fa-users-viewfinder"></i></div>
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5">
+                            <div class="w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-users-viewfinder"></i></div>
                             <div><p class="text-4xl font-black text-gray-900 leading-none" id="stat-judges">0</p><p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Jurados</p></div>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl shadow-inner border border-green-100"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5">
+                            <div class="w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-clipboard-check"></i></div>
                             <div><p class="text-4xl font-black text-gray-900 leading-none" id="stat-evals">0</p><p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">Evaluaciones</p></div>
                         </div>
                     </div>
 
                     <div class="grid lg:grid-cols-[1fr_1.3fr] gap-8">
-                        <!-- Jurados -->
                         <div class="flex flex-col h-[700px]">
-                            <div class="flex items-center gap-3 mb-5 px-1">
-                                <i class="fa-solid fa-gavel text-brand-500 text-xl"></i>
-                                <h3 class="text-2xl font-bold text-gray-900 font-serif">Gestión de Jurados</h3>
+                            <div class="flex items-center justify-between mb-5 px-1">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-gavel text-brand-500 text-xl"></i><h3 class="text-2xl font-bold text-gray-900 font-serif">Gestión de Jurados</h3>
+                                </div>
+                                <button onclick="document.getElementById('modal-suplente').classList.remove('hidden')" class="px-4 py-2 bg-brand-900 hover:bg-black text-white text-sm font-bold rounded-xl shadow-md transition-colors"><i class="fa-solid fa-user-plus"></i> Crear Suplente</button>
                             </div>
                             <div id="admin-judges-list" class="flex-1 overflow-y-auto pr-3 space-y-4 pb-8 custom-scrollbar"></div>
                         </div>
                         
-                        <!-- Trabajos -->
                         <div class="flex flex-col h-[700px]">
                             <div class="flex items-center justify-between mb-5 px-1">
                                 <div class="flex items-center gap-3">
-                                    <i class="fa-solid fa-file-medical text-brand-500 text-xl"></i>
-                                    <h3 class="text-2xl font-bold text-gray-900 font-serif">Base de Trabajos</h3>
+                                    <i class="fa-solid fa-file-medical text-brand-500 text-xl"></i><h3 class="text-2xl font-bold text-gray-900 font-serif">Base de Trabajos</h3>
                                 </div>
-                                <button onclick="openWorkModal()" class="px-5 py-2.5 bg-brand-900 hover:bg-black text-white text-sm font-bold rounded-xl shadow-md transition-colors flex items-center gap-2"><i class="fa-solid fa-plus"></i> Añadir Manual</button>
+                                <button onclick="openWorkModal()" class="px-4 py-2 bg-brand-900 hover:bg-black text-white text-sm font-bold rounded-xl shadow-md transition-colors"><i class="fa-solid fa-plus"></i> Añadir Manual</button>
                             </div>
                             <div id="admin-works-list" class="flex-1 overflow-y-auto pr-3 space-y-4 pb-8 custom-scrollbar"></div>
                         </div>
@@ -1294,12 +974,11 @@
                     <div class="mb-10 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between gap-6 flex-wrap">
                         <div>
                             <h2 class="text-3xl md:text-4xl font-serif font-black text-brand-900">Panel de Evaluación</h2>
-                            <p class="text-gray-500 font-medium mt-2">Bienvenido, <span class="font-bold text-brand-700 user-name-display"></span>. Estos son los trabajos que se te han asignado.</p>
+                            <p class="text-gray-500 font-medium mt-2">Bienvenido, <span class="font-bold text-brand-700 user-name-display"></span>. Trabajos asignados:</p>
                         </div>
                         <div class="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center text-3xl text-brand-500"><i class="fa-solid fa-list-check"></i></div>
                     </div>
 
-                    <!-- Carteles -->
                     <div class="mb-12">
                         <div class="flex items-center gap-3 mb-6">
                             <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg shadow-inner"><i class="fa-solid fa-image"></i></span>
@@ -1308,7 +987,6 @@
                         <div id="judge-posters" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                     </div>
 
-                    <!-- Orales -->
                     <div>
                         <div class="flex items-center gap-3 mb-6">
                             <span class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-lg shadow-inner"><i class="fa-solid fa-microphone"></i></span>
@@ -1323,93 +1001,68 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 no-print gap-4 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                         <div>
                             <h2 class="text-3xl md:text-4xl font-serif font-black text-brand-900">Resultados Finales</h2>
-                            <p class="text-gray-500 font-medium mt-2">Suma y promedio automático de las evaluaciones de los jueces en tiempo real. Clasificación de mayor a menor.</p>
+                            <p class="text-gray-500 font-medium mt-2">Suma y promedio automático en tiempo real.</p>
                         </div>
-                        <button onclick="window.print()" class="shrink-0 px-8 py-4 bg-brand-900 hover:bg-black text-white rounded-2xl font-black shadow-xl transition-all flex items-center gap-3 text-lg">
-                            <i class="fa-solid fa-print"></i> Generar PDF / Imprimir
-                        </button>
+                        <button onclick="window.print()" class="shrink-0 px-8 py-4 bg-brand-900 hover:bg-black text-white rounded-2xl font-black shadow-xl transition-all flex items-center gap-3 text-lg"><i class="fa-solid fa-print"></i> Generar PDF / Imprimir</button>
                     </div>
 
-                    <!-- Print Only Header -->
                     <div class="print-header">
                         <div>
-                            <h1 class="text-2xl font-black font-serif uppercase tracking-widest text-brand-900 m-0 leading-tight">3er Simposio de Investigación en Medicina</h1>
-                            <h2 class="text-lg font-bold text-gray-700 mt-1 m-0">Reporte Oficial de Calificaciones Promediadas</h2>
+                            <h1 class="text-2xl font-black font-serif uppercase tracking-widest text-brand-900 m-0">3er Simposio de Investigación en Medicina</h1>
+                            <h2 class="text-lg font-bold text-gray-700 mt-1 m-0">Reporte Oficial de Calificaciones</h2>
                             <p class="text-sm text-gray-500 mt-1 font-medium m-0" id="print-date"></p>
                         </div>
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Logo_Instituto_Polit%C3%A9cnico_Nacional.png" style="height: 60px;">
+                        <div style="display:flex; gap:10px;">
+                            <img src="logo_ipn.png" style="height: 60px;">
+                            <img src="logo_esm.png" style="height: 60px;">
+                        </div>
                     </div>
-
                     <div id="results-content"></div>
                 </div>
 
                 <!-- VIEW: EVALUATION FORM -->
                 <div id="view-eval" class="app-view hidden max-w-5xl mx-auto animate-fade-in pb-12">
-                    
-                    <!-- Back Button -->
-                    <button id="btn-back-eval" onclick="switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge')" class="mb-6 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-700 transition-colors shadow-sm flex items-center gap-2 group">
-                        <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> Volver a mi panel
-                    </button>
+                    <button id="btn-back-eval" onclick="switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge')" class="mb-6 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-700 shadow-sm flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Volver a mi panel</button>
 
-                    <!-- Evaluation Header Card -->
                     <div class="bg-brand-950 rounded-3xl p-8 md:p-10 text-white mb-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none"></div>
                         <div class="relative z-10 flex-1">
-                            <div class="inline-block px-3 py-1.5 bg-white/10 border border-white/20 rounded-lg text-xs font-bold uppercase tracking-widest text-accent-400 mb-4 backdrop-blur-sm" id="ev-type"></div>
-                            <h2 id="ev-title" class="text-2xl md:text-3xl font-serif font-black leading-tight mb-4 text-white drop-shadow-md"></h2>
+                            <div class="inline-block px-3 py-1.5 bg-white/10 border border-white/20 rounded-lg text-xs font-bold uppercase tracking-widest text-accent-400 mb-4" id="ev-type"></div>
+                            <h2 id="ev-title" class="text-2xl md:text-3xl font-serif font-black leading-tight mb-4 text-white"></h2>
                             <p class="text-brand-100 font-medium flex items-center gap-3 text-lg"><i class="fa-solid fa-user-graduate opacity-70"></i> <strong id="ev-author" class="text-white"></strong></p>
                         </div>
                         
                         <div class="relative z-10 flex flex-col items-end gap-4 w-full md:w-auto shrink-0">
-                            <!-- Score Display -->
-                            <div class="text-center bg-white p-5 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.3)] min-w-[160px] border border-brand-800 transform rotate-1">
+                            <div class="text-center bg-white p-5 rounded-2xl shadow-xl min-w-[160px] border border-brand-800 transform rotate-1">
                                 <div class="text-[11px] uppercase font-black text-gray-400 tracking-widest mb-1">Puntaje Total</div>
-                                <div class="text-5xl font-black text-brand-700 flex items-baseline justify-center gap-1 transition-all duration-300" id="ev-total-container"><span id="ev-total">0</span><span class="text-xl text-gray-300 font-bold">/100</span></div>
+                                <div class="text-5xl font-black text-brand-700 flex items-baseline justify-center gap-1" id="ev-total-container"><span id="ev-total">0</span><span class="text-xl text-gray-300 font-bold">/100</span></div>
                             </div>
-                            
-                            <!-- Material Button -->
-                            <a href="#" id="ev-material-btn" target="_blank" class="w-full bg-accent-400 hover:bg-accent-500 text-brand-950 font-black py-4 px-6 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
-                                <i class="fa-solid fa-link text-lg"></i> Abrir Material
-                            </a>
+                            <a href="#" id="ev-material-btn" target="_blank" class="w-full bg-accent-400 hover:bg-accent-500 text-brand-950 font-black py-4 px-6 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-sm uppercase tracking-wider"><i class="fa-solid fa-link text-lg"></i> Abrir Material</a>
                         </div>
                     </div>
 
-                    <!-- Warning if already evaluated -->
                     <div id="msg-readonly" class="hidden mb-8 bg-green-50 border-2 border-green-200 p-5 rounded-2xl text-green-800 font-bold flex items-center gap-4 shadow-sm">
                         <i class="fa-solid fa-circle-check text-3xl text-green-500"></i> 
-                        <div>
-                            <p class="text-lg">Evaluación Finalizada</p>
-                            <p class="text-sm font-medium opacity-80">Ya has calificado este trabajo. Las respuestas están bloqueadas por seguridad.</p>
-                        </div>
+                        <div><p class="text-lg">Evaluación Finalizada</p><p class="text-sm font-medium opacity-80">Respuestas bloqueadas por seguridad.</p></div>
                     </div>
 
-                    <!-- Form -->
                     <form id="eval-form" class="space-y-6">
                         <div id="ev-form-container" class="space-y-6"></div>
-                        
                         <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 mt-8">
-                            <label class="block text-xl font-bold text-gray-900 mb-3 font-serif"><i class="fa-solid fa-comment-dots text-brand-500 mr-2"></i> Observaciones Finales del Jurado</label>
-                            <textarea id="ev-obs" rows="4" class="w-full p-5 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-brand-500 focus:bg-white outline-none transition-all font-medium text-gray-700" placeholder="Justificación de la calificación, puntos a mejorar, fortalezas..."></textarea>
+                            <label class="block text-xl font-bold text-gray-900 mb-3 font-serif"><i class="fa-solid fa-comment-dots text-brand-500 mr-2"></i> Observaciones Finales</label>
+                            <textarea id="ev-obs" rows="4" class="w-full p-5 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-brand-500 outline-none font-medium text-gray-700"></textarea>
                         </div>
-
-                        <button type="button" id="btn-save-eval" onclick="saveEval()" class="w-full py-6 mt-4 bg-brand-600 hover:bg-brand-700 text-white rounded-3xl font-black shadow-xl shadow-brand-500/30 transition-all text-xl uppercase tracking-widest flex items-center justify-center gap-3">
-                            <i class="fa-solid fa-check-double"></i> Confirmar Evaluación Final
-                        </button>
+                        <button type="button" id="btn-save-eval" onclick="saveEval()" class="w-full py-6 mt-4 bg-brand-600 hover:bg-brand-700 text-white rounded-3xl font-black shadow-xl transition-all text-xl uppercase tracking-widest flex items-center justify-center gap-3"><i class="fa-solid fa-check-double"></i> Confirmar Evaluación Final</button>
                     </form>
                 </div>
-
             </main>
         </div>
     </div>
 
-    <!-- =========================================================================
-         MODALS (VENTANAS EMERGENTES)
-    ========================================================================== -->
-
-    <!-- Modal: Custom Confirm (Replaces native alert/confirm) -->
+    <!-- MODALS -->
+    <!-- Custom Confirm -->
     <div id="modal-confirm" class="fixed inset-0 bg-brand-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center animate-fade-in border border-gray-100">
-            <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-5 border border-red-100"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-5"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <h3 class="text-2xl font-black font-serif text-gray-900 mb-2">Atención Requerida</h3>
             <p id="confirm-msg" class="text-gray-600 mb-8 font-medium leading-relaxed"></p>
             <div class="flex gap-3">
@@ -1419,7 +1072,40 @@
         </div>
     </div>
 
-    <!-- Modal: Assign to Judge -->
+    <!-- Modal Create Suplente -->
+    <div id="modal-suplente" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in">
+            <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
+                <h3 class="text-xl font-serif font-black text-brand-900">Crear Juez Suplente</h3>
+                <button onclick="closeModal('modal-suplente')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="createSuplente(event)" class="p-8 space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre del Suplente</label>
+                    <input type="text" id="suplente-name" required placeholder="Ej. Dr. Martínez" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none">
+                </div>
+                <button type="submit" id="btn-create-suplente" class="w-full py-4 font-black uppercase tracking-widest bg-brand-900 hover:bg-black text-white rounded-xl shadow-lg transition-colors">Crear Perfil</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Result Suplente -->
+    <div id="modal-suplente-result" class="fixed inset-0 bg-brand-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center animate-fade-in border border-gray-100">
+            <div class="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-5"><i class="fa-solid fa-check-circle"></i></div>
+            <h3 class="text-2xl font-black font-serif text-gray-900 mb-2">Suplente Creado</h3>
+            <p class="text-gray-600 mb-4 font-medium leading-relaxed">Entrega estos datos al juez para que inicie sesión en la plataforma:</p>
+            <div class="bg-gray-50 p-4 rounded-xl text-left border border-gray-200 mb-6">
+                <p class="text-xs font-bold text-gray-400 uppercase">Correo (Usuario):</p>
+                <p class="font-bold text-brand-700 mb-2 select-all" id="sup-res-email"></p>
+                <p class="text-xs font-bold text-gray-400 uppercase">Contraseña:</p>
+                <p class="font-bold text-brand-700 select-all" id="sup-res-pass"></p>
+            </div>
+            <button onclick="closeModal('modal-suplente-result')" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-colors">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Modal Assign -->
     <div id="modal-assign" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
             <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
@@ -1427,39 +1113,22 @@
                     <h3 class="text-xl font-serif font-black text-brand-900">Panel de Asignación</h3>
                     <p class="text-sm font-bold text-brand-600 mt-1" id="modal-assign-name"></p>
                 </div>
-                <button onclick="closeModal('modal-assign')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm border border-gray-100 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('modal-assign')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-white custom-scrollbar flex-1">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Selecciona los trabajos</p>
-                <div id="modal-assign-list" class="space-y-2"></div>
-            </div>
+            <div class="p-6 overflow-y-auto bg-white custom-scrollbar flex-1"><div id="modal-assign-list" class="space-y-2"></div></div>
             <div class="bg-gray-50 px-8 py-6 border-t border-gray-100 flex gap-4">
-                <button onclick="closeModal('modal-assign')" class="flex-1 py-3.5 font-bold text-gray-600 bg-white border-2 border-gray-200 hover:bg-gray-50 rounded-xl transition-colors">Cancelar</button>
-                <button id="btn-save-assign" class="flex-[2] py-3.5 font-black uppercase tracking-wider bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-lg shadow-brand-500/30 transition-colors">Guardar Tareas</button>
+                <button onclick="closeModal('modal-assign')" class="flex-1 py-3.5 font-bold text-gray-600 bg-white border-2 border-gray-200 rounded-xl">Cancelar</button>
+                <button id="btn-save-assign" class="flex-[2] py-3.5 font-black uppercase bg-brand-600 text-white rounded-xl shadow-lg">Guardar Tareas</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: View Work Details & Material (Admin/Judge Info Modal) -->
-    <div id="modal-preview" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
-            <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-start gap-6 bg-brand-50">
-                <h3 id="pw-title" class="text-xl font-serif font-black text-brand-900 leading-tight"></h3>
-                <button onclick="closeModal('modal-preview')" class="shrink-0 w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm transition-colors"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-8 overflow-y-auto bg-white custom-scrollbar flex flex-col gap-8 flex-1">
-                <div id="pw-meta" class="grid grid-cols-2 gap-y-6 gap-x-4 text-sm bg-gray-50 p-6 rounded-2xl border border-gray-100"></div>
-                <div id="pw-link-container"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Manage Single Work (CRUD Admin) -->
+    <!-- Modal Manage Single Work -->
     <div id="modal-manage-work" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[90vh]">
             <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
                 <h3 id="modal-work-title" class="text-xl font-serif font-black text-brand-900">Editar Trabajo</h3>
-                <button onclick="closeModal('modal-manage-work')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm border border-gray-100 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('modal-manage-work')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-manage-work" onsubmit="saveManagedWork(event)" class="flex flex-col flex-1 overflow-hidden">
                 <input type="hidden" id="mw-id">
@@ -1468,42 +1137,39 @@
                         <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Título</label><input type="text" id="mw-title" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></div>
                         <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Autor</label><input type="text" id="mw-author" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></div>
                         <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Institución</label><input type="text" id="mw-inst" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Categoría</label>
-                            <select id="mw-cat" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Modalidad (Clínica/Básica)</label>
-                            <select id="mw-submod" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="Básica">Básica</option><option value="Clínica">Clínica</option></select>
-                        </div>
-                        <div class="col-span-full">
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Formato</label>
-                            <select id="mw-type" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="poster">Cartel</option><option value="oral">Oral</option></select>
-                        </div>
-                        <div class="col-span-full">
-                            <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Eje</label>
-                            <select id="mw-axis" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></select>
-                        </div>
-                        <div class="col-span-full"><label class="block text-xs font-bold text-brand-700 mb-1 uppercase"><i class="fa-solid fa-link"></i> URL Drive/Dropbox</label><input type="url" id="mw-url" class="w-full p-3.5 bg-brand-50 border-2 border-brand-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-brand-700"></div>
+                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Categoría</label><select id="mw-cat" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
+                        <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Modalidad</label><select id="mw-submod" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="Básica">Básica</option><option value="Clínica">Clínica</option></select></div>
+                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Formato</label><select id="mw-type" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"><option value="poster">Cartel</option><option value="oral">Oral</option></select></div>
+                        <div class="col-span-full"><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Eje</label><select id="mw-axis" required class="w-full p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none"></select></div>
+                        <div class="col-span-full"><label class="block text-xs font-bold text-brand-700 mb-1 uppercase"><i class="fa-solid fa-link"></i> URL Drive/Cartel</label><input type="url" id="mw-url" class="w-full p-3.5 bg-brand-50 border-2 border-brand-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-brand-700"></div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-8 py-6 border-t border-gray-100">
-                    <button type="submit" class="w-full py-4 font-black uppercase tracking-widest bg-brand-900 hover:bg-black text-white rounded-xl shadow-lg transition-colors">Guardar Registro</button>
-                </div>
+                <div class="bg-gray-50 px-8 py-6 border-t border-gray-100"><button type="submit" class="w-full py-4 font-black uppercase tracking-widest bg-brand-900 hover:bg-black text-white rounded-xl shadow-lg">Guardar Registro</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Modal: View Admin Evals & Reset -->
+    <!-- Modal View Admin Evals & Reset -->
     <div id="modal-reset" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
             <div class="bg-brand-50 px-8 py-6 border-b border-brand-100 flex justify-between items-center">
                 <h3 class="text-xl font-serif font-black text-brand-900">Estado de Evaluación</h3>
-                <button onclick="closeModal('modal-reset')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm border border-gray-100 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('modal-reset')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-white custom-scrollbar flex-1">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Jueces que han calificado</p>
-                <div id="modal-reset-list" class="space-y-3"></div>
+            <div class="p-6 overflow-y-auto bg-white custom-scrollbar flex-1"><div id="modal-reset-list" class="space-y-3"></div></div>
+        </div>
+    </div>
+
+    <!-- Modal Preview Work Info -->
+    <div id="modal-preview" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
+            <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-start gap-6 bg-brand-50">
+                <h3 id="pw-title" class="text-xl font-serif font-black text-brand-900 leading-tight"></h3>
+                <button onclick="closeModal('modal-preview')" class="shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-brand-600 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-8 overflow-y-auto bg-white custom-scrollbar flex flex-col gap-8 flex-1">
+                <div id="pw-meta" class="grid grid-cols-2 gap-y-6 gap-x-4 text-sm bg-gray-50 p-6 rounded-2xl border border-gray-100"></div>
+                <div id="pw-link-container"></div>
             </div>
         </div>
     </div>

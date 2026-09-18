@@ -27,23 +27,11 @@
                     },
                     colors: {
                         brand: {
-                            50: '#f9f2f5',
-                            100: '#f4e6ec',
-                            200: '#e3c0cd',
-                            300: '#cd93aa',
-                            400: '#b46182',
-                            500: '#6f1d46', /* IPN Guinda */
-                            600: '#5c1739',
-                            700: '#4a122d',
-                            800: '#3a0e23',
-                            900: '#2b0919', 
-                            950: '#1a050e',
+                            50: '#f9f2f5', 100: '#f4e6ec', 200: '#e3c0cd', 300: '#cd93aa',
+                            400: '#b46182', 500: '#6f1d46', /* IPN Guinda */ 600: '#5c1739',
+                            700: '#4a122d', 800: '#3a0e23', 900: '#2b0919', 950: '#1a050e',
                         },
-                        accent: {
-                            400: '#fbbf24', 
-                            500: '#f59e0b',
-                            600: '#d97706',
-                        }
+                        accent: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', }
                     }
                 }
             }
@@ -69,7 +57,7 @@
         .score-btn.selected { background-color: #f9f2f5; border-color: #6f1d46; color: #6f1d46; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(111, 29, 70, 0.15); z-index: 10;}
         .score-btn .tooltip { visibility: hidden; background-color: #231f20; color: #fff; text-align: center; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 50; bottom: 125%; left: 50%; transform: translateX(-50%); width: 280px; font-size: 12px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         .score-btn .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #231f20 transparent transparent transparent; }
-        @media (min-width: 640px) { .score-btn:hover .tooltip { visibility: visible; opacity: 1; } } /* Solo tooltips en PC */
+        @media (min-width: 640px) { .score-btn:hover .tooltip { visibility: visible; opacity: 1; } }
 
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px;}
         @media (min-width: 640px) { #toast-container { right: 20px; left: auto; transform: none; width: auto; max-width: none;} }
@@ -81,13 +69,12 @@
         .loader { border: 3px solid #f3f4f6; border-top: 3px solid #6f1d46; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Scroll horizontal suave para pestañas móviles */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
         @media print {
             body { background-color: white !important; color: black !important; }
-            #mobile-sidebar, header, .no-print { display: none !important; }
+            #mobile-sidebar, header, #sidebar-backdrop, .no-print { display: none !important; }
             main { padding: 0 !important; overflow: visible !important; }
             .app-view { display: none !important; }
             #view-results { display: block !important; }
@@ -107,9 +94,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // =========================================================================
-        // CONFIGURACIÓN OFICIAL FIREBASE
-        // =========================================================================
         const firebaseConfig = {
           apiKey: "AIzaSyAa_UGECUF8_C2TLkpWrF-_3p97o0cr5OU",
           authDomain: "simposio-liicam-2026.firebaseapp.com",
@@ -125,7 +109,6 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // Secondary App for Admin to create Suplentes without logging out
         const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
         const secondaryAuth = getAuth(secondaryApp);
 
@@ -145,9 +128,6 @@
             "Enfermedades transmisibles (infectocontagiosas)"
         ];
 
-        // =========================================================================
-        // CRITERIOS DE EVALUACIÓN ORIGINALES EXACTOS
-        // =========================================================================
         const DISCRETE_GUIDANCE = {
             '15-point-discrete': {
                 '0': { emoji: '🔴', label: '0 Pts', tip: 'NO CUMPLE: No se presenta la información o es incoherente. Evaluación nula.' },
@@ -208,9 +188,6 @@
         let currentEvalWork = null;
         let currentCriteria = []; 
 
-        // =========================================================================
-        // UTILIDADES Y UI
-        // =========================================================================
         window.showToast = (msg, type = 'info') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -235,9 +212,24 @@
                 document.getElementById(viewId).classList.remove('hidden');
             }
             window.scrollTo(0,0);
+            
+            // Close mobile sidebar if open
+            const sidebar = document.getElementById('mobile-sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            if(!sidebar.classList.contains('-translate-x-full')) {
+                 sidebar.classList.add('-translate-x-full');
+                 backdrop.classList.add('hidden');
+            }
         };
 
-        window.toggleSidebar = () => document.getElementById('mobile-sidebar').classList.toggle('-translate-x-full');
+        // NEW: Fixed mobile toggle
+        window.toggleSidebar = () => {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        };
+
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
 
         window.showConfirm = (msg, callback) => {
@@ -250,7 +242,6 @@
             document.getElementById('modal-confirm').classList.add('hidden');
         };
 
-        // Extract thumbnail from Drive Links
         function getThumbnailUrl(url) {
             if(!url) return '';
             const driveMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -272,9 +263,6 @@
             });
         }
 
-        // =========================================================================
-        // AUTENTICACIÓN
-        // =========================================================================
         async function getOrCreateUserDoc(user, explicitRole = null, explicitName = null) {
             const userRef = doc(db, basePath + 'users', user.uid);
             const snap = await getDoc(userRef);
@@ -361,7 +349,6 @@
             showToast("Sesión cerrada", "info");
         };
 
-        // ADMIN: CREAR JUEZ SUPLENTE
         window.createSuplente = async (e) => {
             e.preventDefault();
             const name = document.getElementById('suplente-name').value;
@@ -379,7 +366,6 @@
                 closeModal('modal-suplente');
                 showToast("Suplente Creado", "success");
                 
-                // Show credentials to admin
                 document.getElementById('sup-res-email').textContent = email;
                 document.getElementById('sup-res-pass').textContent = pass;
                 document.getElementById('modal-suplente-result').classList.remove('hidden');
@@ -388,9 +374,6 @@
             } finally { btn.innerHTML = 'Crear Perfil Suplente'; btn.disabled = false; }
         };
 
-        // =========================================================================
-        // SINCRONIZACIÓN DE DATOS
-        // =========================================================================
         function setupDataListeners() {
             cleanupListeners();
             unsubscribes.push(onSnapshot(collection(db, basePath + 'works'), snap => {
@@ -412,9 +395,6 @@
 
         function cleanupListeners() { unsubscribes.forEach(u => u()); unsubscribes = []; }
 
-        // =========================================================================
-        // CRUD TRABAJOS
-        // =========================================================================
         window.submitWork = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit-work'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
@@ -467,9 +447,6 @@
             });
         };
 
-        // =========================================================================
-        // ADMIN DASHBOARD
-        // =========================================================================
         function renderAdminJudges() {
             const container = document.getElementById('admin-judges-list');
             const judges = allUsers.filter(u => u.role === 'juez');
@@ -603,9 +580,6 @@
             document.getElementById('modal-preview').classList.remove('hidden');
         };
 
-        // =========================================================================
-        // PANEL JUEZ (MIS TRABAJOS)
-        // =========================================================================
         function renderJudgeWorks() {
             const assignedIds = currentUserDoc.assignedWorks || [];
             const myWorks = allWorks.filter(w => assignedIds.includes(w.id));
@@ -643,12 +617,11 @@
             };
 
             renderList(myWorks.filter(w => w.type === 'poster'), 'judge-posters');
+            document.getElementById('cnt-poster').textContent = myWorks.filter(w => w.type === 'poster').length;
             renderList(myWorks.filter(w => w.type === 'oral'), 'judge-orals');
+            document.getElementById('cnt-oral').textContent = myWorks.filter(w => w.type === 'oral').length;
         }
 
-        // =========================================================================
-        // MOTOR DE EVALUACIÓN
-        // =========================================================================
         window.openEvaluation = (workId, isAdminOverride = false) => {
             currentEvalWork = allWorks.find(w => w.id === workId);
             currentCriteria = currentEvalWork.type === 'poster' ? POSTER_CRITERIA : ORAL_CRITERIA;
@@ -757,9 +730,6 @@
             } catch (error) { showToast("Error al guardar.", "error"); } finally { btn.innerHTML = 'Confirmar Evaluación'; btn.disabled = false; }
         };
 
-        // =========================================================================
-        // RESULTADOS PDF
-        // =========================================================================
         window.renderResults = () => {
             const container = document.getElementById('results-content');
             document.getElementById('print-date').textContent = "Generado el: " + new Date().toLocaleString();
@@ -809,7 +779,7 @@
     <!-- VIEW: AUTH / PUBLIC -->
     <div id="view-auth" class="app-view min-h-screen flex flex-col lg:flex-row">
         <!-- Left Side: Branding/Poster -->
-        <div class="poster-bg w-full lg:w-5/12 flex flex-col justify-between p-6 sm:p-10 lg:p-14 text-white">
+        <div class="poster-bg w-full lg:w-5/12 flex flex-col justify-between p-6 sm:p-10 lg:p-14 text-white min-h-[30vh]">
             <div class="relative z-10 flex flex-wrap items-center gap-2 sm:gap-4 bg-white/10 p-3 sm:p-4 rounded-2xl backdrop-blur-sm w-fit border border-white/20">
                 <img src="logo_ipn.png" alt="IPN" class="h-8 sm:h-12 object-contain drop-shadow-md">
                 <img src="logo_esm.png" alt="ESM" class="h-8 sm:h-12 object-contain drop-shadow-md border-l border-white/30 pl-2 sm:pl-4">
@@ -903,9 +873,13 @@
     </div>
 
     <!-- MAIN APP LAYOUT -->
-    <div id="app-layout" class="hidden min-h-screen flex">
-        <!-- Sidebar -->
-        <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-brand-950 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.1)] flex flex-col border-r border-white/5 relative overflow-hidden">
+    <div id="app-layout" class="hidden min-h-screen flex relative">
+        
+        <!-- FIX: Mobile Backdrop Overlay. Has high z-index to cover content, but sits under sidebar -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[40] hidden lg:hidden transition-opacity backdrop-blur-sm"></div>
+
+        <!-- FIX: Sidebar now has higher z-index (50) than everything except modals -->
+        <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-[50] w-64 sm:w-72 bg-brand-950 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex flex-col border-r border-white/5 overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-32 bg-brand-800 opacity-20 blur-3xl"></div>
             
             <div class="p-4 sm:p-6 flex items-center justify-center gap-2 border-b border-white/10 bg-white relative z-10">
@@ -933,12 +907,15 @@
         </aside>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-h-screen h-screen overflow-hidden bg-gray-50">
+        <!-- FIX: Ensured the container takes full remaining width properly -->
+        <div class="flex-1 flex flex-col min-h-screen h-screen overflow-hidden bg-gray-50 w-full relative z-0">
+            <!-- Mobile Header -->
             <header class="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 shrink-0 shadow-sm relative z-20">
                 <div class="font-serif font-black text-base sm:text-lg text-brand-900 flex items-center gap-2"><i class="fa-solid fa-microscope text-brand-500"></i> SIMPOSIO 2026</div>
                 <button onclick="toggleSidebar()" class="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center text-brand-700"><i class="fa-solid fa-bars"></i></button>
             </header>
 
+            <!-- Scrollable content area -->
             <main class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative">
                 
                 <!-- VIEW: ADMIN DASHBOARD -->
@@ -965,6 +942,7 @@
                         </div>
                     </div>
 
+                    <!-- Layout side-by-side on large screens, stacked on small -->
                     <div class="grid lg:grid-cols-[1fr_1.3fr] gap-6 sm:gap-8">
                         <div class="flex flex-col h-[500px] sm:h-[700px]">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-5 px-1 gap-2">
@@ -1078,6 +1056,7 @@
     </div>
 
     <!-- MODALS -->
+    
     <!-- Custom Confirm -->
     <div id="modal-confirm" class="fixed inset-0 bg-brand-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white w-[95%] sm:w-full max-w-sm rounded-3xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in border border-gray-100">

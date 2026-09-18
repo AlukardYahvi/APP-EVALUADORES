@@ -26,13 +26,24 @@
                         serif: ['Playfair Display', 'serif']
                     },
                     colors: {
+                        // Paleta basada en IPN/ESM (Guinda, Morado oscuro, acentos dorados)
                         brand: {
-                            50: '#f8f5fa', 100: '#efe6f3', 200: '#dfcce5', 300: '#c7a7d0',
-                            400: '#ab7cb7', 500: '#90579e', 600: '#754381', 700: '#613669',
-                            800: '#512f57', 900: '#442848', 950: '#2b142f',
+                            50: '#f8f5fa',
+                            100: '#efe6f3',
+                            200: '#dfcce5',
+                            300: '#c7a7d0',
+                            400: '#ab7cb7',
+                            500: '#90579e', // IPN/ESM Base
+                            600: '#754381',
+                            700: '#613669',
+                            800: '#512f57',
+                            900: '#442848', // Dark Mode background
+                            950: '#2b142f',
                         },
                         accent: {
-                            400: '#facc15', 500: '#eab308', 600: '#ca8a04',
+                            400: '#facc15', // Gold
+                            500: '#eab308',
+                            600: '#ca8a04',
                         }
                     }
                 }
@@ -41,54 +52,95 @@
     </script>
 
     <style>
-        body { background-color: #f1f5f9; color: #0f172a; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        body {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .glass-dark {
+            background: rgba(43, 20, 47, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Animations */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        
-        .score-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
-        .score-btn.selected { background-color: #f8f5fa; border-color: #90579e; color: #613669; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(144, 87, 158, 0.2); }
-        .score-btn.selected::after { content: ''; position: absolute; top: -1px; right: -1px; bottom: -1px; left: -1px; border-radius: inherit; border: 2px solid #90579e; pointer-events: none; }
-        
-        .auth-bg { background: linear-gradient(135deg, rgba(43,20,47,0.95) 0%, rgba(97,54,105,0.9) 100%), url('https://images.unsplash.com/photo-1576091160550-2173ff9e81b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover; }
-        
+
+        /* Evaluation Buttons */
+        .score-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .score-btn.selected {
+            background-color: #f8f5fa;
+            border-color: #90579e;
+            color: #613669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(144, 87, 158, 0.2);
+        }
+        .score-btn.selected::after {
+            content: '';
+            position: absolute;
+            top: -1px; right: -1px; bottom: -1px; left: -1px;
+            border-radius: inherit;
+            border: 2px solid #90579e;
+            pointer-events: none;
+        }
+
+        /* Tooltip */
+        .tooltip-group:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Background for Auth */
+        .auth-bg {
+            background: linear-gradient(135deg, rgba(43,20,47,0.95) 0%, rgba(97,54,105,0.9) 100%), url('https://images.unsplash.com/photo-1576091160550-2173ff9e81b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
+        }
+
+        /* Toast */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { min-width: 320px; padding: 16px; border-radius: 12px; background: white; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); display: flex; align-items: flex-start; gap: 12px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast {
+            min-width: 320px; padding: 16px; border-radius: 12px; background: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            display: flex; align-items: flex-start; gap: 12px;
+            transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
         .toast.show { transform: translateX(0); }
+
+        /* Loader */
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #90579e; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Print Styles */
-        @media print {
-            body { background-color: white !important; }
-            #mobile-sidebar, header, .no-print, #toast-container { display: none !important; }
-            main { padding: 0 !important; overflow: visible !important; }
-            .app-view { display: none !important; }
-            #view-results { display: block !important; max-width: 100% !important; margin: 0 !important; }
-            .print-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; page-break-inside: auto; }
-            .print-table tr { page-break-inside: avoid; page-break-after: auto; }
-            .print-table th, .print-table td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
-            .print-table th { background-color: #f8f5fa !important; font-weight: bold; -webkit-print-color-adjust: exact; color-adjust: exact; }
-            .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #90579e; padding-bottom: 10px; }
-            .shadow-sm, .rounded-2xl { box-shadow: none !important; border-radius: 0 !important; border: none !important; }
-            .overflow-x-auto { overflow: visible !important; }
-            .page-break-after { page-break-after: always; }
-        }
-        .print-header { display: none; }
     </style>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =========================================================================
-        // CONFIGURACIÓN OFICIAL FIREBASE
+        // CONFIGURACIÓN OFICIAL FIREBASE - SIMPOSIO LIICAM 2026
         // =========================================================================
+        const appId = 'simposio-liicam-2026';
+        
         const firebaseConfig = {
           apiKey: "AIzaSyAa_UGECUF8_C2TLkpWrF-_3p97o0cr5OU",
           authDomain: "simposio-liicam-2026.firebaseapp.com",
@@ -98,20 +150,31 @@
           appId: "1:30650302570:web:80ab9472918e437c500a13",
           measurementId: "G-MS2ZSKP8WQ"
         };
+        // =========================================================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        const basePath = `artifacts/simposio-liicam-2026/public/data/`;
+        // Rutas estrictas (Rule 1)
+        const basePath = `artifacts/${appId}/public/data/`;
 
+        // =========================================================================
+        // SUPER ADMINISTRADORES
+        // =========================================================================
         const ADMIN_EMAILS = [
-            "nnajerag@ipn.mx", "simposioinvestigacionmedicina@gmail.com",
-            "yurimtzmz@gmail.com", "yahvi.edsel.hernandez@gmail.com",
-            "cgomezm310393@gmail.com", "angelito_coa@hotmail.com"
+            "nnajerag@ipn.mx",
+            "simposioinvestigacionmedicina@gmail.com",
+            "yurimtzmz@gmail.com",
+            "yahvi.edsel.hernandez@gmail.com",
+            "cgomezm310393@gmail.com",
+            "angelito_coa@hotmail.com"
         ].map(e => e.toLowerCase());
 
+        // =========================================================================
+        // DATOS DEL SIMPOSIO 2026
+        // =========================================================================
         const THEMATIC_AXES = [
             "Mujer y ciencia: enfermedades de la mujer y salud perinatal",
             "Investigación en biomedicina con perspectiva de género",
@@ -120,38 +183,36 @@
             "Enfermedades transmisibles (infectocontagiosas)"
         ];
 
-        // --- PREGUNTAS ORIGINALES EXACTAS PARA PÓSTER ---
         const POSTER_CRITERIA = [
             { id: 'introduccion', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
             { id: 'metodologia', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
-            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
-            { id: 'titulo', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad, pertinencia, y correcta identificación.' },
-            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
-            { id: 'banner', category: 'II. Forma (Diseño y Formato)', max: 5, type: 'yes-no', name: 'Banner y Elementos', desc: 'Inclusión de logos y cumplimiento de requisitos. (0 o 5 puntos)' },
-            { id: 'diseno', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Diseño y Congruencia Visual', desc: 'Equilibrio, tipografía legible y uso eficiente.' },
-            { id: 'graficas', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Uso de Tablas y Gráficas', desc: 'Claridad, calidad de figuras y citación.' }, 
-            { id: 'referencias', category: 'III. Referencias y Presentación', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
-            { id: 'defensa', category: 'III. Referencias y Presentación', max: 5, type: 'full', name: 'Defensa y Síntesis', desc: 'Dominio del tema y capacidad de síntesis. (Máx 5 pts)' },
-            { id: 'innovacion', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico. (+ Pts)' },
-            { id: 'tiempo', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Puntos de penalización (Se RESTAN).' },
-            { id: 'ortografia', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Puntos de penalización (Se RESTAN).' }
+            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos biológicos.' },
+            { id: 'titulo', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad, pertinencia.' },
+            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados.' },
+            { id: 'banner', category: 'II. Forma (Diseño y Formato)', max: 5, type: 'yes-no', name: 'Formato 90x120cm y Elementos', desc: 'Inclusión de logos, tamaño correcto y cumplimiento de requisitos.' },
+            { id: 'referencias', category: 'III. Referencias y Presentación', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato Vancouver consistente y adecuado.' },
+            { id: 'diseno', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Diseño y Congruencia Visual', desc: 'Equilibrio, tipografía legible.' },
+            { id: 'graficas', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Uso de Tablas y Gráficas', desc: 'Claridad, calidad de figuras.' }, 
+            { id: 'defensa', category: 'III. Referencias y Presentación', max: 5, type: 'full', name: 'Defensa y Síntesis', desc: 'Dominio del tema presencial (respuestas a jurado).' },
+            { id: 'innovacion', category: 'IV. Bonificación', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento.' },
+            { id: 'tiempo', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Ausencia/Retraso', desc: 'No estuvo presente o colocó tarde el cartel (Se RESTAN).' },
+            { id: 'ortografia', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Errores ortográficos evidentes (Se RESTAN).' },
         ];
 
-        // --- PREGUNTAS ORIGINALES EXACTAS PARA ORAL ---
         const ORAL_CRITERIA = [
             { id: 'introduccion_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
             { id: 'metodologia_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
-            { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
+            { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos biológicos.' },
+            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura del Mensaje', desc: 'Organización lógica, precisión.' },
+            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo (10 min)', desc: 'Ajuste estricto al tiempo, ritmo adecuado.' },
+            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Respuestas (5 min Q&A)', desc: 'Dominio del tema al responder al jurado.' },
+            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material Visual', desc: 'Diseño y apoyo visual.' },
             { id: 'titulo_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad y pertinencia.' },
-            { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
-            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura del Mensaje', desc: 'Organización lógica, precisión conceptual y uso de lenguaje adecuado.' },
-            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo y Fluidez', desc: 'Ajuste al tiempo asignado, ritmo adecuado y dicción clara.' },
-            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Capacidad de Respuesta (Q&A)', desc: 'Dominio del tema al responder preguntas y profundidad en las explicaciones.' },
-            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material Visual', desc: 'Diseño, claridad, legibilidad y apoyo visual de las diapositivas.' },
-            { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
-            { id: 'innovacion_o', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
-            { id: 'tiempo_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Puntos de penalización (Se RESTAN).' },
-            { id: 'ortografia_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción/Ortografía (Material)', desc: 'Puntos de penalización (Se RESTAN).' }
+            { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados.' },
+            { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias (Vancouver)', desc: 'Formato consistente y adecuado.' },
+            { id: 'innovacion_o', category: 'IV. Bonificación', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento.' },
+            { id: 'tiempo_o', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Exceso de Tiempo', desc: 'Excedió los 10 minutos (Se RESTAN).' },
+            { id: 'ortografia_o', category: 'V. Deducción', max: 10, type: 'deduction', name: 'Redacción/Ortografía', desc: 'Errores en diapositivas (Se RESTAN).' },
         ];
 
         let currentUser = null;
@@ -165,81 +226,66 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const color = type === 'success' ? 'text-green-500' : type === 'error' ? 'text-red-500' : 'text-brand-500';
+            
             toast.className = `toast animate-fade-in`;
-            toast.innerHTML = `<div class="mt-0.5 ${color}"><i class="fa-solid ${icon} text-xl"></i></div><div class="flex-1 text-sm font-medium text-gray-800">${msg}</div>`;
+            toast.innerHTML = `
+                <div class="mt-0.5 ${color}"><i class="fa-solid ${icon} text-xl"></i></div>
+                <div class="flex-1 text-sm font-medium text-gray-800">${msg}</div>
+            `;
             container.appendChild(toast);
+            
             setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
-        };
-
-        window.switchAuthTab = (formId, btn) => {
-            ['form-login', 'form-comodin', 'form-register', 'form-submit'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById(formId).classList.remove('hidden');
-            document.querySelectorAll('.auth-tab').forEach(b => {
-                b.classList.remove('border-brand-600', 'text-brand-800');
-                b.classList.add('border-transparent', 'text-gray-500');
-            });
-            btn.classList.remove('border-transparent', 'text-gray-500');
-            btn.classList.add('border-brand-600', 'text-brand-800');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
         };
 
         window.switchView = (viewId) => {
-            document.getElementById('view-auth').classList.add('hidden');
-            document.getElementById('view-pending').classList.add('hidden');
-            document.getElementById('app-layout').classList.add('hidden');
             document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
-            
-            if (viewId === 'view-auth' || viewId === 'view-pending') {
-                document.getElementById(viewId).classList.remove('hidden');
-            } else {
-                document.getElementById('app-layout').classList.remove('hidden');
-                document.getElementById(viewId).classList.remove('hidden');
-            }
+            document.getElementById(viewId).classList.remove('hidden');
             window.scrollTo(0,0);
         };
 
-        window.toggleSidebar = () => document.getElementById('mobile-sidebar').classList.toggle('-translate-x-full');
+        window.toggleSidebar = () => {
+            document.getElementById('mobile-sidebar').classList.toggle('-translate-x-full');
+        };
 
-        // Autenticación Principal
+        async function initAuth() {
+            try {
+                // Se elimina la validación del token inicial inyectado ya que causa conflictos
+                // con tu configuración personalizada de Firebase.
+                if (!auth.currentUser) {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) { 
+                console.warn("Auth init (Anónimo):", e.message);
+                console.warn("⚠️ Asegúrate de habilitar 'Anónimo' en Firebase Authentication -> Sign-in method.");
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
                 if (!user.isAnonymous) {
-                    try {
-                        const userRef = doc(db, basePath + 'users', user.uid);
-                        const snap = await getDoc(userRef);
-                        if (snap.exists()) {
-                            currentUserDoc = snap.data();
-                            setupDataListeners();
-                            routeUser();
-                        } else {
-                            // Crear el doc si logueó con Google pero no existe en BD
-                            const email = user.email ? user.email.toLowerCase() : '';
-                            const isAdmin = ADMIN_EMAILS.includes(email);
-                            const newUser = { email: email, name: user.displayName || 'Usuario Google', role: isAdmin ? 'admin' : 'juez', approved: isAdmin, assignedWorks: [], createdAt: new Date().toISOString() };
-                            await setDoc(userRef, newUser);
-                            currentUserDoc = newUser;
-                            setupDataListeners();
-                            routeUser();
-                        }
-                    } catch(e) {
-                        showToast("Error validando usuario. Verifica Reglas de Firestore.", "error", "fa-triangle-exclamation");
-                        await signOut(auth); switchView('view-auth');
+                    const docSnap = await getDoc(doc(db, basePath + 'users', user.uid));
+                    if (docSnap.exists()) {
+                        currentUserDoc = docSnap.data();
+                        setupDataListeners();
+                        routeUser();
+                    } else {
+                        await signOut(auth);
+                        switchView('view-auth');
+                        populateParticipantForm();
                     }
                 } else {
-                    // Es comodín o visitante
-                    try {
-                        const snap = await getDoc(doc(db, basePath + 'users', user.uid));
-                        if(snap.exists()) {
-                            currentUserDoc = snap.data();
-                            setupDataListeners(); routeUser();
-                        } else {
-                            switchView('view-auth'); populateParticipantForm();
-                        }
-                    } catch(e) { switchView('view-auth'); populateParticipantForm(); }
+                    switchView('view-auth');
+                    populateParticipantForm(); // Llenar selects dinámicos
                 }
             } else {
-                cleanupListeners(); switchView('view-auth'); populateParticipantForm();
+                cleanupListeners();
+                switchView('view-auth');
+                populateParticipantForm(); // Asegurar que el formulario cargue incluso si falla la auth anónima
             }
         });
 
@@ -247,103 +293,160 @@
             document.querySelectorAll('.user-name-display').forEach(el => el.textContent = currentUserDoc.name);
             document.querySelectorAll('.user-role-display').forEach(el => el.textContent = currentUserDoc.role === 'admin' ? 'Administrador' : 'Jurado Evaluador');
             
-            const nav = document.getElementById('sidebar-nav');
             if (currentUserDoc.role === 'admin') {
-                nav.innerHTML = `
-                    <button onclick="switchView('view-admin')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-brand-800 transition-colors flex items-center gap-3 text-sm font-medium"><i class="fa-solid fa-house w-5"></i> Panel de Control</button>
-                    <button onclick="switchView('view-results'); renderResults();" class="w-full text-left px-4 py-3 rounded-xl hover:bg-brand-800 transition-colors flex items-center gap-3 text-sm font-medium"><i class="fa-solid fa-chart-bar w-5"></i> Resultados / PDF</button>
-                `;
                 switchView('view-admin');
+                renderAdminStats();
             } else if (currentUserDoc.role === 'juez') {
-                nav.innerHTML = `<button onclick="switchView('view-judge')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-brand-800 transition-colors flex items-center gap-3 text-sm font-medium"><i class="fa-solid fa-clipboard-list w-5"></i> Mis Trabajos</button>`;
-                if (currentUserDoc.approved) { switchView('view-judge'); } 
-                else { switchView('view-pending'); }
+                if (currentUserDoc.approved) {
+                    switchView('view-judge');
+                    renderJudgeWorks();
+                } else {
+                    switchView('view-pending');
+                }
             }
         }
 
         window.loginWithEmail = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btn-login'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
-            try { await signInWithEmailAndPassword(auth, document.getElementById('l-email').value, document.getElementById('l-pass').value); showToast("Acceso correcto", "success"); } 
-            catch (e) { showToast("Credenciales incorrectas", "error"); } 
-            finally { btn.innerHTML = 'Iniciar Sesión'; btn.disabled = false; }
+            const btn = document.getElementById('btn-login');
+            btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('l-email').value, document.getElementById('l-pass').value);
+                showToast("Acceso correcto", "success", "fa-check-circle");
+            } catch (e) {
+                showToast("Credenciales incorrectas", "error", "fa-triangle-exclamation");
+            } finally {
+                btn.innerHTML = 'Iniciar Sesión'; btn.disabled = false;
+            }
         };
 
         window.registerWithEmail = async (e) => {
             e.preventDefault();
             const email = document.getElementById('r-email').value.toLowerCase();
-            const pass = document.getElementById('r-pass').value;
-            const name = document.getElementById('r-name').value;
-            const btn = document.getElementById('btn-register'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+            const btn = document.getElementById('btn-register');
+            btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+            
             try {
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
                 const isAdmin = ADMIN_EMAILS.includes(email);
-                await setDoc(doc(db, basePath + 'users', cred.user.uid), { email: email, name: name, role: isAdmin ? 'admin' : 'juez', approved: isAdmin, assignedWorks: [], createdAt: new Date().toISOString() });
-            } catch (e) { showToast("Error: " + e.message, "error"); btn.innerHTML = 'Crear Cuenta'; btn.disabled = false; }
-        };
-
-        window.loginComodin = async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('c-name').value;
-            const btn = document.getElementById('btn-comodin'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
-            try {
-                const cred = await signInAnonymously(auth);
-                const uid = cred.user.uid;
-                await setDoc(doc(db, basePath + 'users', uid), { email: `comodin_${uid.substring(0,5)}@simposio.local`, name: `${name} (Comodín)`, role: 'juez', approved: true, assignedWorks: [], createdAt: new Date().toISOString() });
-                showToast("Juez comodín activado", "success");
-            } catch (e) { showToast("Error activando comodín", "error"); btn.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Entrar al Panel'; btn.disabled = false; }
+                const cred = await createUserWithEmailAndPassword(auth, email, document.getElementById('r-pass').value);
+                
+                await setDoc(doc(db, basePath + 'users', cred.user.uid), {
+                    email: email,
+                    name: document.getElementById('r-name').value,
+                    role: isAdmin ? 'admin' : 'juez',
+                    approved: isAdmin, // Admins auto-approved
+                    assignedWorks: [],
+                    createdAt: new Date().toISOString()
+                });
+                showToast(isAdmin ? "Cuenta Admin creada" : "Cuenta creada. Esperando aprobación", "success", "fa-check-circle");
+            } catch (e) {
+                showToast("Error: " + e.message, "error", "fa-circle-xmark");
+            } finally {
+                btn.innerHTML = 'Crear Cuenta'; btn.disabled = false;
+            }
         };
 
         window.loginWithGoogle = async () => {
-            try { await signInWithPopup(auth, provider); } catch (e) { if (e.code !== 'auth/popup-closed-by-user') showToast("Error con Google", "error"); }
+            try {
+                const res = await signInWithPopup(auth, provider);
+                const email = res.user.email.toLowerCase();
+                const userRef = doc(db, basePath + 'users', res.user.uid);
+                const snap = await getDoc(userRef);
+                
+                if (!snap.exists()) {
+                    const isAdmin = ADMIN_EMAILS.includes(email);
+                    await setDoc(userRef, {
+                        email: email,
+                        name: res.user.displayName || 'Usuario Google',
+                        role: isAdmin ? 'admin' : 'juez',
+                        approved: isAdmin,
+                        assignedWorks: [],
+                        createdAt: new Date().toISOString()
+                    });
+                    showToast("Cuenta configurada correctamente", "success", "fa-check");
+                } else {
+                    showToast("Acceso correcto", "success", "fa-check");
+                }
+            } catch (e) {
+                if (e.code !== 'auth/popup-closed-by-user') showToast("Error con Google", "error", "fa-xmark");
+            }
         };
 
         window.logout = async () => {
-            await signOut(auth); showToast("Sesión cerrada", "info"); location.reload();
+            await signOut(auth);
+            await signInAnonymously(auth);
+            showToast("Sesión cerrada", "info", "fa-right-from-bracket");
         };
 
         function setupDataListeners() {
             cleanupListeners();
+            // Works
             unsubscribes.push(onSnapshot(collection(db, basePath + 'works'), snap => {
                 allWorks = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                if (currentUserDoc?.role === 'admin') { renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
+                if (currentUserDoc?.role === 'admin') renderAdminWorks();
                 if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
             }));
+            
+            // Users
             if (currentUserDoc?.role === 'admin') {
-                unsubscribes.push(onSnapshot(collection(db, basePath + 'users'), snap => { allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()})); renderAdminJudges(); }));
+                unsubscribes.push(onSnapshot(collection(db, basePath + 'users'), snap => {
+                    allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()}));
+                    renderAdminJudges();
+                }));
             }
+            
+            // Evaluations
             unsubscribes.push(onSnapshot(collection(db, basePath + 'evaluations'), snap => {
                 allEvaluations = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                if (currentUserDoc?.role === 'admin') { renderAdminStats(); renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
+                if (currentUserDoc?.role === 'admin') renderAdminStats();
                 if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
             }));
         }
 
-        function cleanupListeners() { unsubscribes.forEach(u => u()); unsubscribes = []; }
+        function cleanupListeners() {
+            unsubscribes.forEach(u => u());
+            unsubscribes = [];
+        }
 
         function populateParticipantForm() {
             const select = document.getElementById('p-axis');
-            if (select && select.options.length <= 1) THEMATIC_AXES.forEach(a => select.innerHTML += `<option value="${a}">${a}</option>`);
+            select.innerHTML = '<option value="">Selecciona el tema eje...</option>';
+            THEMATIC_AXES.forEach(a => select.innerHTML += `<option value="${a}">${a}</option>`);
         }
 
-        // Subida con URL en lugar de Storage (Sin cobros)
         window.submitWork = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btn-submit-work'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+            
+            const btn = document.getElementById('btn-submit-work');
+            btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+
             try {
-                if(!auth.currentUser) await signInAnonymously(auth);
+                // Si la autenticación anónima está deshabilitada temporalmente, no bloqueamos el envío
+                const submitterId = auth.currentUser ? auth.currentUser.uid : 'unauthenticated_user';
+
                 const payload = {
-                    title: document.getElementById('p-title').value, author: document.getElementById('p-author').value,
-                    institution: document.getElementById('p-inst').value, category: document.getElementById('p-cat').value,
-                    subModality: document.getElementById('p-submod').value, axis: document.getElementById('p-axis').value,
-                    type: document.getElementById('p-type').value, fileUrl: document.getElementById('p-url').value,
-                    submittedBy: auth.currentUser.uid, submittedAt: new Date().toISOString()
+                    title: document.getElementById('p-title').value,
+                    author: document.getElementById('p-author').value,
+                    institution: document.getElementById('p-inst').value,
+                    category: document.getElementById('p-cat').value,
+                    subModality: document.getElementById('p-submod').value,
+                    axis: document.getElementById('p-axis').value,
+                    type: document.getElementById('p-type').value, // 'poster' o 'oral'
+                    imageUrl: document.getElementById('p-url').value || '',
+                    submittedBy: submitterId,
+                    submittedAt: new Date().toISOString()
                 };
+
                 await addDoc(collection(db, basePath + 'works'), payload);
-                showToast("¡Trabajo registrado con éxito!", "success"); e.target.reset();
-            } catch (error) { showToast("Error de conexión", "error"); } 
-            finally { btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Registrar Trabajo Oficialmente'; btn.disabled = false; }
+                showToast("¡Trabajo registrado con éxito!", "success", "fa-file-circle-check");
+                e.target.reset();
+            } catch (error) {
+                showToast("Error al registrar: " + error.message, "error");
+            } finally {
+                btn.innerHTML = 'Registrar Trabajo'; btn.disabled = false;
+            }
         };
+
 
         function renderAdminStats() {
             document.getElementById('stat-works').textContent = allWorks.length;
@@ -354,64 +457,101 @@
         function renderAdminJudges() {
             const container = document.getElementById('admin-judges-list');
             const judges = allUsers.filter(u => u.role === 'juez');
-            if (judges.length === 0) { container.innerHTML = `<div class="p-8 text-center text-gray-400"><p>No hay jueces.</p></div>`; return; }
+            
+            if (judges.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-400"><i class="fa-solid fa-users text-4xl mb-3"></i><p>No hay jueces registrados aún.</p></div>`;
+                return;
+            }
 
             container.innerHTML = judges.map(j => {
                 const assigned = j.assignedWorks?.length || 0;
                 const completed = allEvaluations.filter(e => e.judgeUid === j.uid).length;
                 const pct = assigned > 0 ? Math.round((completed / assigned) * 100) : 0;
+                
                 return `
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold">${j.name.charAt(0)}</div>
-                            <div><h4 class="font-bold text-sm text-gray-900 line-clamp-1">${j.name}</h4><p class="text-[10px] text-gray-500">${j.email}</p></div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xl font-bold">
+                            ${j.name.charAt(0).toUpperCase()}
                         </div>
-                        <button onclick="toggleApproval('${j.uid}', ${j.approved})" class="px-2 py-1 rounded text-xs font-semibold ${j.approved ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}">${j.approved ? 'Revocar' : 'Aprobar'}</button>
+                        <div>
+                            <h4 class="font-bold text-gray-900">${j.name}</h4>
+                            <p class="text-xs text-gray-500 mb-1">${j.email}</p>
+                            ${j.approved ? 
+                                `<span class="px-2.5 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-semibold border border-green-200">Aprobado</span>` : 
+                                `<span class="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold border border-amber-200">Pendiente</span>`
+                            }
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center gap-2">
-                        <div class="w-full bg-gray-100 rounded-full h-1.5"><div class="bg-brand-500 h-1.5 rounded-full" style="width: ${pct}%"></div></div>
-                        <span class="text-[10px] font-bold text-gray-500">${completed}/${assigned}</span>
-                        <button onclick="openAssignModal('${j.uid}', '${j.name}')" ${!j.approved ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-50 transition-colors"><i class="fa-solid fa-plus"></i> Asignar</button>
+                    
+                    <div class="w-full sm:w-1/3 flex flex-col gap-1">
+                        <div class="flex justify-between text-xs text-gray-600 font-medium">
+                            <span>Progreso: ${completed}/${assigned}</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div class="bg-brand-500 h-2 rounded-full transition-all" style="width: ${pct}%"></div>
+                        </div>
                     </div>
-                </div>`;
+
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button onclick="toggleApproval('${j.uid}', ${j.approved})" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${j.approved ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}">
+                            ${j.approved ? '<i class="fa-solid fa-ban"></i> Revocar' : '<i class="fa-solid fa-check"></i> Aprobar'}
+                        </button>
+                        <button onclick="openAssignModal('${j.uid}', '${j.name}')" ${!j.approved ? 'disabled' : ''} class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-semibold bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-50 transition-colors">
+                            <i class="fa-solid fa-clipboard-list"></i> Asignar
+                        </button>
+                    </div>
+                </div>
+                `;
             }).join('');
         }
 
         window.toggleApproval = async (uid, status) => {
-            try { await updateDoc(doc(db, basePath + 'users', uid), { approved: !status }); } catch (e) { showToast("Error", "error"); }
+            try {
+                await updateDoc(doc(db, basePath + 'users', uid), { approved: !status });
+                showToast(`Acceso ${!status ? 'concedido' : 'revocado'}`, "success");
+            } catch (e) { showToast("Error al actualizar", "error"); }
         };
 
         function renderAdminWorks() {
             const container = document.getElementById('admin-works-list');
-            if (allWorks.length === 0) { container.innerHTML = `<div class="p-8 text-center text-gray-400"><p>No hay trabajos.</p></div>`; return; }
+            if (allWorks.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-400"><i class="fa-solid fa-folder-open text-4xl mb-3"></i><p>No hay trabajos registrados.</p></div>`;
+                return;
+            }
 
             container.innerHTML = allWorks.map(w => `
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded text-sm flex items-center justify-center ${w.type === 'poster' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}"><i class="fa-solid ${w.type === 'poster' ? 'fa-image' : 'fa-microphone'}"></i></div>
-                        <div class="flex-1"><h4 class="font-bold text-sm text-gray-900 line-clamp-1">${w.title}</h4><p class="text-[10px] text-gray-500">${w.author} • ${w.category}</p></div>
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex justify-between items-center hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg shadow-inner ${w.type === 'poster' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}">
+                            <i class="fa-solid ${w.type === 'poster' ? 'fa-image' : 'fa-microphone'}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 line-clamp-1" title="${w.title}">${w.title}</h4>
+                            <p class="text-xs text-gray-500">${w.author} • ${w.category} (${w.subModality})</p>
+                        </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="previewWork('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-xs font-semibold text-gray-600 border border-gray-200"><i class="fa-solid fa-eye"></i> Perfil</button>
-                        <button onclick="openEvaluation('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-brand-50 hover:bg-brand-100 text-xs font-bold text-brand-700 border border-brand-200"><i class="fa-solid fa-pen-to-square"></i> Evaluar</button>
-                        <button onclick="openAdminEvalManager('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-accent-50 hover:bg-accent-100 text-xs font-bold text-accent-700 border border-accent-200"><i class="fa-solid fa-chart-pie"></i> Ver Califs</button>
-                    </div>
+                    <button onclick="previewWork('${w.id}')" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
                 </div>
             `).join('');
         }
 
+        // Asignaciones
         window.openAssignModal = (uid, name) => {
             document.getElementById('modal-assign-name').textContent = name;
             const judge = allUsers.find(u => u.uid === uid);
             const assigned = judge.assignedWorks || [];
             
-            document.getElementById('modal-assign-list').innerHTML = allWorks.map(w => `
-                <label class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-xl cursor-pointer">
-                    <input type="checkbox" class="assign-cb w-4 h-4 rounded text-brand-600" value="${w.id}" ${assigned.includes(w.id) ? 'checked' : ''}>
+            const container = document.getElementById('modal-assign-list');
+            container.innerHTML = allWorks.map(w => `
+                <label class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl cursor-pointer border border-transparent hover:border-gray-100 transition-colors">
+                    <input type="checkbox" class="assign-cb w-5 h-5 rounded text-brand-600 focus:ring-brand-500" value="${w.id}" ${assigned.includes(w.id) ? 'checked' : ''}>
                     <div>
-                        <div class="font-semibold text-xs text-gray-800 line-clamp-1">${w.title}</div>
-                        <div class="text-[10px] text-gray-500"><span class="uppercase font-bold ${w.type==='poster'?'text-blue-500':'text-orange-500'}">${w.type}</span></div>
+                        <div class="font-semibold text-sm text-gray-800">${w.title}</div>
+                        <div class="text-xs text-gray-500"><span class="uppercase font-bold ${w.type==='poster'?'text-blue-500':'text-orange-500'}">${w.type}</span> • ${w.author}</div>
                     </div>
                 </label>
             `).join('');
@@ -420,9 +560,11 @@
                 const selected = Array.from(document.querySelectorAll('.assign-cb:checked')).map(cb => cb.value);
                 try {
                     await updateDoc(doc(db, basePath + 'users', uid), { assignedWorks: selected });
-                    showToast("Guardado", "success"); document.getElementById('modal-assign').classList.add('hidden');
+                    showToast("Asignaciones guardadas", "success");
+                    document.getElementById('modal-assign').classList.add('hidden');
                 } catch(e) { showToast("Error", "error"); }
             };
+
             document.getElementById('modal-assign').classList.remove('hidden');
         };
 
@@ -430,46 +572,17 @@
             const w = allWorks.find(x => x.id === id);
             if(!w) return;
             document.getElementById('pw-title').textContent = w.title;
-            document.getElementById('pw-meta').innerHTML = `<p><strong>Autor:</strong> ${w.author}</p><p><strong>Institución:</strong> ${w.institution}</p><p><strong>Categoría:</strong> ${w.category}</p><p><strong>Eje:</strong> ${w.axis}</p>`;
+            document.getElementById('pw-meta').innerHTML = `
+                <p><strong>Autor:</strong> ${w.author}</p>
+                <p><strong>Institución:</strong> ${w.institution}</p>
+                <p><strong>Categoría:</strong> ${w.category} - ${w.subModality}</p>
+                <p><strong>Eje:</strong> ${w.axis}</p>
+            `;
+            const img = document.getElementById('pw-img');
+            if(w.imageUrl) { img.src = w.imageUrl; img.classList.remove('hidden'); }
+            else { img.classList.add('hidden'); }
             
-            const linkContainer = document.getElementById('pw-link-container');
-            if(w.fileUrl && w.fileUrl.trim() !== "") {
-                linkContainer.innerHTML = `<a href="${w.fileUrl}" target="_blank" class="w-full block text-center py-4 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-colors shadow-lg"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir Material de Apoyo (URL)</a>`;
-            } else {
-                linkContainer.innerHTML = `<p class="text-sm text-gray-500 text-center py-4 bg-gray-100 rounded-xl border border-gray-200">El participante no proporcionó un enlace al trabajo.</p>`;
-            }
             document.getElementById('modal-preview').classList.remove('hidden');
-        };
-
-        // ADMIN EVAL MANAGER (Permite al Admin ver quién calificó y Borrar evaluaciones)
-        window.openAdminEvalManager = (workId) => {
-            const w = allWorks.find(x => x.id === workId);
-            document.getElementById('aem-title').textContent = w.title;
-            
-            const evals = allEvaluations.filter(e => e.workId === workId);
-            const container = document.getElementById('aem-list');
-            
-            if(evals.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500 italic p-4 text-center">Nadie ha calificado este trabajo aún.</p>';
-            } else {
-                container.innerHTML = evals.map(ev => `
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
-                        <div><p class="font-bold text-sm">${ev.judgeName}</p><p class="text-xs text-brand-600 font-bold">${ev.totalScore} Puntos</p></div>
-                        <button onclick="deleteEvaluation('${ev.id}')" class="px-3 py-1.5 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash"></i> Borrar</button>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('modal-admin-eval').classList.remove('hidden');
-        };
-
-        window.deleteEvaluation = async (evalId) => {
-            if(confirm("¿Seguro que deseas borrar esta calificación permanentemente? El juez tendrá que evaluar de nuevo.")) {
-                try {
-                    await deleteDoc(doc(db, basePath + 'evaluations', evalId));
-                    showToast("Evaluación eliminada", "success");
-                    document.getElementById('modal-admin-eval').classList.add('hidden');
-                } catch(e) { showToast("Error al borrar", "error"); }
-            }
         };
 
         function renderJudgeWorks() {
@@ -478,104 +591,119 @@
             
             const renderList = (works, containerId) => {
                 const c = document.getElementById(containerId);
-                if (works.length === 0) { c.innerHTML = `<div class="col-span-full p-8 text-center bg-white rounded-2xl text-gray-400"><p>No hay asignaciones.</p></div>`; return; }
-                
+                if (works.length === 0) {
+                    c.innerHTML = `<div class="col-span-full p-8 text-center bg-white rounded-2xl border border-dashed border-gray-300 text-gray-400"><i class="fa-solid fa-clipboard-check text-4xl mb-3"></i><p>No hay trabajos asignados aquí.</p></div>`;
+                    return;
+                }
                 c.innerHTML = works.map(w => {
                     const ev = allEvaluations.find(e => e.workId === w.id && e.judgeUid === currentUser.uid);
                     return `
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col hover:shadow-lg transition-all">
-                        <div class="h-2 ${ev ? 'bg-green-500' : 'bg-brand-500'} rounded-t-2xl"></div>
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-lg">
+                        <div class="h-2 ${ev ? 'bg-green-500' : 'bg-brand-500'}"></div>
                         <div class="p-5 flex-1 flex flex-col">
                             <div class="flex justify-between items-start mb-2">
                                 <span class="text-[10px] font-black uppercase tracking-widest ${w.type==='poster'?'text-blue-600':'text-orange-600'} bg-gray-50 px-2 py-1 rounded">${w.type}</span>
-                                ${ev ? `<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200">✅ Finalizado (${ev.totalScore} Pts)</span>` : ''}
+                                ${ev ? `<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200">✅ ${ev.totalScore} Pts</span>` : ''}
                             </div>
                             <h4 class="font-bold text-gray-900 leading-tight mb-2 line-clamp-2">${w.title}</h4>
-                            <p class="text-xs text-gray-500 mb-4"><i class="fa-solid fa-user-graduate w-4"></i> ${w.author}</p>
-                            <div class="mt-auto flex gap-2">
+                            <p class="text-xs text-gray-500 mb-1"><i class="fa-solid fa-user-graduate w-4"></i> ${w.author}</p>
+                            <p class="text-xs text-gray-400 line-clamp-1"><i class="fa-solid fa-book-medical w-4"></i> ${w.axis}</p>
+                            <div class="mt-auto pt-4 flex gap-2">
                                 <button onclick="previewWork('${w.id}')" class="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold transition-colors"><i class="fa-solid fa-eye"></i></button>
-                                <button onclick="openEvaluation('${w.id}')" class="flex-1 py-2 ${ev ? 'bg-white border-2 border-gray-200 text-gray-600 hover:bg-gray-50' : 'bg-brand-600 text-white hover:bg-brand-700'} rounded-xl text-sm font-bold transition-all">
-                                    ${ev ? 'Ver Evaluación' : 'Evaluar Trabajo'}
+                                <button onclick="openEvaluation('${w.id}')" class="flex-1 py-2 ${ev ? 'bg-white border-2 border-brand-600 text-brand-700 hover:bg-brand-50' : 'bg-brand-600 text-white hover:bg-brand-700'} rounded-xl text-sm font-bold shadow-sm transition-all">
+                                    ${ev ? 'Editar Evaluación' : 'Evaluar Trabajo'}
                                 </button>
                             </div>
                         </div>
-                    </div>`;
+                    </div>
+                    `;
                 }).join('');
             };
 
             renderList(myWorks.filter(w => w.type === 'poster'), 'judge-posters');
             renderList(myWorks.filter(w => w.type === 'oral'), 'judge-orals');
+            
             document.getElementById('cnt-poster').textContent = myWorks.filter(w => w.type === 'poster').length;
             document.getElementById('cnt-oral').textContent = myWorks.filter(w => w.type === 'oral').length;
         }
+
+        let currentEvalWork = null;
+        let currentCriteria = [];
 
         window.openEvaluation = (workId) => {
             currentEvalWork = allWorks.find(w => w.id === workId);
             currentCriteria = currentEvalWork.type === 'poster' ? POSTER_CRITERIA : ORAL_CRITERIA;
             
+            // Header
             document.getElementById('ev-type').textContent = currentEvalWork.type === 'poster' ? 'Póster Científico' : 'Exposición Oral';
             document.getElementById('ev-title').textContent = currentEvalWork.title;
             document.getElementById('ev-author').textContent = currentEvalWork.author;
             
-            const btnLink = document.getElementById('ev-ext-link');
-            if(currentEvalWork.fileUrl && currentEvalWork.fileUrl.trim() !== "") { 
-                btnLink.href = currentEvalWork.fileUrl; 
-                btnLink.classList.remove('hidden'); 
-            } else { 
-                btnLink.classList.add('hidden'); 
-            }
-
+            // Previous Data
             const existing = allEvaluations.find(e => e.workId === workId && e.judgeUid === currentUser.uid);
             const scores = existing ? existing.scores : {};
             document.getElementById('ev-obs').value = existing ? existing.observations : '';
 
-            // BLOQUEO: Si el juez ya evaluó, es solo lectura (readonly)
-            const isReadOnly = existing && currentUserDoc.role !== 'admin';
+            // Render Form
             const formContainer = document.getElementById('ev-form-container');
             formContainer.innerHTML = '';
-            
-            if(isReadOnly) {
-                document.getElementById('view-eval').classList.add('eval-readonly');
-                document.getElementById('btn-save-eval').classList.add('hidden');
-                document.getElementById('readonly-alert').classList.remove('hidden');
-            } else {
-                document.getElementById('view-eval').classList.remove('eval-readonly');
-                document.getElementById('btn-save-eval').classList.remove('hidden');
-                document.getElementById('readonly-alert').classList.add('hidden');
-            }
-
             let currentCat = '';
+
             currentCriteria.forEach(item => {
                 if (item.category !== currentCat) {
                     formContainer.innerHTML += `<h3 class="text-xl font-serif font-bold text-brand-900 mt-8 mb-4 flex items-center gap-2"><div class="w-2 h-6 bg-brand-500 rounded-full"></div> ${item.category}</h3>`;
                     currentCat = item.category;
                 }
 
-                let val = scores[item.id] !== undefined ? scores[item.id] : '';
-                let displayVal = item.type === 'deduction' && val !== '' ? Math.abs(val) : val;
+                let val = scores[item.id] !== undefined ? scores[item.id] : 0;
+                let displayVal = item.type === 'deduction' ? Math.abs(val) : val;
+                
                 let inputHtml = '';
                 
                 if (item.type.includes('discrete')) {
-                    let opts = [];
-                    if(item.type === '15-point-discrete') opts = [0, 5, 15];
-                    else if (item.type === '10-point-discrete') opts = [0, 5, 10];
-                    else if (item.type === '3-point-discrete') opts = [0, 3, 5];
+                    const is15 = item.type === '15-point-discrete';
+                    const opts = is15 ? [0, 5, 15] : [0, 5, 10];
+                    if(item.type === '3-point-discrete') opts.splice(0, opts.length, 0, 3, 5);
 
                     inputHtml = `<div class="flex gap-2 flex-wrap">`;
                     opts.forEach(v => {
-                        const sel = (val !== '' && val == v) ? 'selected' : '';
+                        const sel = val == v ? 'selected' : '';
                         const em = v === 0 ? '🔴' : (v === Math.max(...opts) ? '🟢' : '🟠');
-                        inputHtml += `<button type="button" class="score-btn ${sel} px-4 py-2 rounded-xl border-2 border-gray-100 bg-white text-sm font-bold" onclick="setDiscrete(this, '${item.id}', ${v})">${em} ${v} Pts</button>`;
+                        inputHtml += `
+                            <button type="button" class="score-btn ${sel} px-5 py-3 rounded-xl border-2 border-gray-100 bg-white text-sm font-bold shadow-sm" onclick="setDiscrete(this, '${item.id}', ${v})">
+                                ${em} <span class="ml-1">${v} Pts</span>
+                            </button>
+                        `;
                     });
                     inputHtml += `</div><input type="hidden" id="in-${item.id}" value="${val}">`;
-                } else if (item.type === 'yes-no') {
-                    inputHtml = `<select id="in-${item.id}" class="p-3 border-2 border-gray-100 font-semibold rounded-xl outline-none" onchange="calcTotal()"><option value="" ${val === '' ? 'selected' : ''}>-- Selecciona --</option><option value="0" ${val === 0 ? 'selected' : ''}>❌ No cumple (0 pts)</option><option value="5" ${val === 5 ? 'selected' : ''}>✅ Sí cumple (5 pts)</option></select>`;
-                } else {
+                } 
+                else if (item.type === 'yes-no') {
+                    inputHtml = `
+                        <select id="in-${item.id}" class="w-full sm:w-64 p-3 bg-white border-2 border-gray-100 text-gray-900 font-semibold rounded-xl focus:ring-0 focus:border-brand-500 transition-colors" onchange="calcTotal()">
+                            <option value="0" ${val == 0 ? 'selected' : ''}>❌ No cumple (0 pts)</option>
+                            <option value="5" ${val == 5 ? 'selected' : ''}>✅ Sí cumple (5 pts)</option>
+                        </select>
+                    `;
+                }
+                else {
                     const isDed = item.type === 'deduction';
-                    inputHtml = `<div class="flex items-center gap-3"><input type="number" id="in-${item.id}" min="0" max="${item.max}" value="${displayVal}" class="w-24 p-3 border-2 border-gray-100 font-bold text-center rounded-xl outline-none" oninput="calcTotal()"><span class="text-sm text-gray-500">Máx ${item.max} pts ${isDed ? '<span class="text-red-500 font-bold">(Se restarán)</span>' : ''}</span></div>`;
+                    inputHtml = `
+                        <div class="flex items-center gap-3">
+                            <input type="number" id="in-${item.id}" min="0" max="${item.max}" value="${displayVal}" class="w-24 p-3 bg-white border-2 border-gray-100 font-bold text-center rounded-xl focus:ring-0 ${isDed ? 'focus:border-red-500 text-red-600' : 'focus:border-green-500 text-green-600'} transition-colors" oninput="calcTotal()">
+                            <span class="text-sm text-gray-500 font-medium">Máx ${item.max} pts ${isDed ? '<span class="text-red-400">(Se restarán)</span>' : ''}</span>
+                        </div>
+                    `;
                 }
 
-                formContainer.innerHTML += `<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4"><h4 class="font-bold text-gray-900">${item.name}</h4><p class="text-xs text-gray-500 mb-3">${item.desc}</p>${inputHtml}</div>`;
+                formContainer.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-4 hover:shadow-md transition-shadow">
+                        <div class="mb-4">
+                            <h4 class="text-lg font-bold text-gray-900">${item.name}</h4>
+                            <p class="text-sm text-gray-500 mt-1">${item.desc}</p>
+                        </div>
+                        ${inputHtml}
+                    </div>
+                `;
             });
 
             switchView('view-eval');
@@ -583,7 +711,6 @@
         };
 
         window.setDiscrete = (btn, id, val) => {
-            if(document.getElementById('view-eval').classList.contains('eval-readonly')) return; // Bloquear clic
             btn.parentElement.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             document.getElementById(`in-${id}`).value = val;
@@ -594,74 +721,54 @@
             let total = 0;
             currentCriteria.forEach(item => {
                 const el = document.getElementById(`in-${item.id}`);
-                let val = parseFloat(el?.value);
-                if(!isNaN(val)) {
-                    if (item.type === 'deduction') total -= Math.abs(val);
-                    else total += Math.max(0, val);
-                }
+                let val = parseFloat(el?.value || 0);
+                if (item.type === 'deduction') total -= Math.abs(val);
+                else total += Math.max(0, val);
             });
-            total = Math.max(0, total); // No menor a 0
-            document.getElementById('ev-total').textContent = total;
+            total = Math.max(0, total);
+            
+            const display = document.getElementById('ev-total');
+            display.textContent = total;
+            display.classList.add('scale-110', 'text-brand-500');
+            setTimeout(() => display.classList.remove('scale-110', 'text-brand-500'), 200);
         };
 
         window.saveEval = async () => {
-            const btn = document.getElementById('btn-save-eval'); btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+            const btn = document.getElementById('btn-save-eval');
+            btn.innerHTML = '<span class="loader"></span> Guardando...'; btn.disabled = true;
+
             try {
                 const scores = {};
                 currentCriteria.forEach(item => {
-                    const el = document.getElementById(`in-${item.id}`);
-                    const val = parseFloat(el?.value);
-                    if(!isNaN(val)) {
-                        scores[item.id] = item.type === 'deduction' ? -Math.abs(val) : Math.max(0, val);
-                    } else {
-                        scores[item.id] = 0; // Fallback si dejan vacio
-                    }
+                    const val = parseFloat(document.getElementById(`in-${item.id}`)?.value || 0);
+                    scores[item.id] = item.type === 'deduction' ? -Math.abs(val) : Math.max(0, val);
                 });
 
                 const payload = {
-                    workId: currentEvalWork.id, judgeUid: currentUser.uid, judgeName: currentUserDoc.name,
-                    scores: scores, totalScore: parseInt(document.getElementById('ev-total').textContent),
-                    observations: document.getElementById('ev-obs').value, timestamp: new Date().toISOString()
+                    workId: currentEvalWork.id,
+                    judgeUid: currentUser.uid,
+                    judgeName: currentUserDoc.name,
+                    scores: scores,
+                    totalScore: parseInt(document.getElementById('ev-total').textContent),
+                    observations: document.getElementById('ev-obs').value,
+                    timestamp: new Date().toISOString()
                 };
 
                 const existing = allEvaluations.find(e => e.workId === currentEvalWork.id && e.judgeUid === currentUser.uid);
                 if (existing) await updateDoc(doc(db, basePath + 'evaluations', existing.id), payload);
                 else await addDoc(collection(db, basePath + 'evaluations'), payload);
 
-                showToast("Evaluación Finalizada", "success", "fa-check");
+                showToast("Evaluación Guardada", "success", "fa-check");
                 switchView('view-judge');
-            } catch (e) { showToast("Error al guardar", "error"); } 
-            finally { btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar y Finalizar Evaluación'; btn.disabled = false; }
+            } catch (error) {
+                showToast("Error", "error");
+            } finally {
+                btn.innerHTML = 'Guardar Evaluación'; btn.disabled = false;
+            }
         };
 
-        window.renderResults = () => {
-            const container = document.getElementById('results-content');
-            document.getElementById('print-date').textContent = "Generado el: " + new Date().toLocaleString();
-            
-            const generateTable = (works, title, colorTheme) => {
-                if (works.length === 0) return '';
-                
-                let processedWorks = works.map(w => {
-                    const workEvals = allEvaluations.filter(e => e.workId === w.id);
-                    const sum = workEvals.reduce((acc, curr) => acc + curr.totalScore, 0);
-                    const avg = workEvals.length > 0 ? (sum / workEvals.length).toFixed(2) : 0;
-                    return { ...w, evalCount: workEvals.length, average: parseFloat(avg) };
-                }).sort((a, b) => b.average - a.average);
-
-                let html = `<div class="mb-12 page-break-after"><h3 class="text-2xl font-bold font-serif mb-4 flex items-center gap-3 text-${colorTheme}-700"><div class="w-2 h-6 bg-${colorTheme}-500 rounded-full no-print"></div> ${title}</h3><div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-100"><table class="print-table w-full text-left border-collapse"><thead><tr class="bg-gray-50/80 text-gray-600 text-sm border-b border-gray-100"><th class="py-4 px-4 w-12 text-center">Pos.</th><th class="py-4 px-6 font-semibold">Autor e Institución</th><th class="py-4 px-6 font-semibold">Título del Trabajo</th><th class="py-4 px-4 font-semibold text-center w-24">Jueces</th><th class="py-4 px-6 font-semibold text-center w-32">Promedio</th></tr></thead><tbody>`;
-                
-                processedWorks.forEach((w, index) => {
-                    const hasScore = w.average > 0;
-                    const posMedal = hasScore && index === 0 ? '🥇' : (hasScore && index === 1 ? '🥈' : (hasScore && index === 2 ? '🥉' : `${index+1}º`));
-                    const bgHighlight = hasScore && index < 3 ? 'bg-accent-50/30' : '';
-
-                    html += `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${bgHighlight}"><td class="py-4 px-4 text-center font-bold text-lg text-gray-400">${posMedal}</td><td class="py-4 px-6"><div class="font-bold text-gray-900">${w.author}</div><div class="text-xs text-gray-500">${w.institution}</div></td><td class="py-4 px-6"><div class="text-sm font-medium text-gray-800 line-clamp-2">${w.title}</div><div class="text-xs text-gray-400 mt-1">${w.axis}</div></td><td class="py-4 px-4 text-center font-medium text-gray-600">${w.evalCount}</td><td class="py-4 px-6 text-center"><span class="inline-block px-3 py-1 rounded-lg font-bold text-lg ${w.average === 0 ? 'bg-gray-100 text-gray-400' : 'bg-brand-50 text-brand-700'}">${w.average > 0 ? w.average.toFixed(2) : '-'}</span></td></tr>`;
-                });
-                return html + `</tbody></table></div></div>`;
-            };
-
-            container.innerHTML = generateTable(allWorks.filter(w => w.type === 'poster'), 'Resultados: Carteles Científicos', 'blue') + generateTable(allWorks.filter(w => w.type === 'oral'), 'Resultados: Exposiciones Orales', 'orange');
-        };
+        // Initialize
+        initAuth();
 
     </script>
 </head>
@@ -669,14 +776,18 @@
 
     <div id="toast-container"></div>
 
-    <!-- PANTALLA DE INICIO / AUTH -->
     <div id="view-auth" class="app-view min-h-screen flex flex-col md:flex-row">
-        <!-- Banner Lateral -->
+        <!-- Left Side: Branding -->
         <div class="auth-bg w-full md:w-5/12 flex flex-col justify-between p-10 text-white relative">
-            <div class="absolute inset-0 bg-brand-900/70 backdrop-blur-[2px]"></div>
+            <div class="absolute inset-0 bg-brand-900/60 backdrop-blur-[2px]"></div>
             <div class="relative z-10 flex items-center gap-4">
-                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-2xl"><i class="fa-solid fa-microscope text-2xl text-brand-700"></i></div>
-                <div><h2 class="text-xs font-bold tracking-widest uppercase text-brand-200">ESM • IPN</h2><h1 class="text-xl font-bold font-serif leading-tight">Simposio de Investigación</h1></div>
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
+                    <i class="fa-solid fa-microscope text-2xl text-brand-700"></i>
+                </div>
+                <div>
+                    <h2 class="text-xs font-bold tracking-widest uppercase text-brand-200">ESM • IPN</h2>
+                    <h1 class="text-xl font-bold font-serif leading-tight">Simposio de Investigación</h1>
+                </div>
             </div>
             <div class="relative z-10 mt-20 md:mt-0">
                 <h2 class="text-4xl md:text-5xl font-black font-serif leading-tight mb-4">3er Simposio de<br><span class="text-accent-400">Investigación</span><br>en Medicina.</h2>
@@ -688,167 +799,292 @@
             </div>
         </div>
 
-        <!-- Formularios Interactivos -->
-        <div class="w-full md:w-7/12 p-6 md:p-12 lg:p-20 flex flex-col justify-center bg-white overflow-y-auto">
+        <!-- Right Side: Interaction -->
+        <div class="w-full md:w-7/12 p-6 md:p-12 lg:p-20 flex flex-col justify-center bg-white">
             <div class="max-w-xl w-full mx-auto">
                 
-                <!-- Menú de Pestañas -->
-                <div class="flex gap-4 border-b-2 border-gray-100 mb-8 overflow-x-auto pb-2 custom-scrollbar">
-                    <button onclick="switchAuthTab('form-login', this)" class="auth-tab pb-3 border-b-2 border-brand-600 text-brand-800 font-bold transition-colors whitespace-nowrap">Jurado Oficial</button>
-                    <button onclick="switchAuthTab('form-comodin', this)" class="auth-tab pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors whitespace-nowrap"><i class="fa-solid fa-bolt text-accent-500"></i> Juez Comodín</button>
-                    <button onclick="switchAuthTab('form-register', this)" class="auth-tab pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors whitespace-nowrap">Registro Jurado</button>
-                    <button onclick="switchAuthTab('form-submit', this)" class="auth-tab pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors whitespace-nowrap bg-brand-50 px-3 rounded-t-lg">Subir Trabajo (Alumnos)</button>
+                <!-- Tabs -->
+                <div class="flex gap-8 border-b-2 border-gray-100 mb-8">
+                    <button onclick="document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); this.classList.add('border-brand-600','text-brand-800'); this.nextElementSibling.classList.remove('border-brand-600','text-brand-800'); this.nextElementSibling.nextElementSibling.classList.remove('border-brand-600','text-brand-800');" class="pb-3 border-b-2 border-brand-600 text-brand-800 font-bold transition-colors">Acceso Jurado/Admin</button>
+                    
+                    <button onclick="document.getElementById('form-register').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-submit').classList.add('hidden'); this.classList.add('border-brand-600','text-brand-800'); this.previousElementSibling.classList.remove('border-brand-600','text-brand-800'); this.nextElementSibling.classList.remove('border-brand-600','text-brand-800');" class="pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors">Registro Jurado</button>
+
+                    <button onclick="document.getElementById('form-submit').classList.remove('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.add('hidden'); this.classList.add('border-brand-600','text-brand-800'); this.previousElementSibling.classList.remove('border-brand-600','text-brand-800'); this.previousElementSibling.previousElementSibling.classList.remove('border-brand-600','text-brand-800');" class="pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors">Subir Trabajo (Alumnos)</button>
                 </div>
 
-                <!-- Form 1: Acceso Juez Normal -->
+                <!-- Form Login -->
                 <form id="form-login" onsubmit="loginWithEmail(event)" class="space-y-5 animate-fade-in">
-                    <h3 class="text-2xl font-bold font-serif text-gray-900">Acceso a Jurados y Administradores</h3>
-                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="l-email" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"></div>
-                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label><input type="password" id="l-pass" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"></div>
-                    <button type="submit" id="btn-login" class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg transition-all">Iniciar Sesión</button>
-                    <div class="relative py-2 flex items-center"><div class="flex-grow border-t border-gray-200"></div><span class="mx-4 text-xs font-bold text-gray-400 uppercase">o usa google</span><div class="flex-grow border-t border-gray-200"></div></div>
-                    <button type="button" onclick="loginWithGoogle()" class="w-full py-3.5 bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Continuar con Google</button>
-                </form>
-
-                <!-- Form 2: Juez Comodín -->
-                <form id="form-comodin" onsubmit="loginComodin(event)" class="hidden space-y-5 animate-fade-in">
-                    <h3 class="text-2xl font-bold font-serif text-gray-900">Acceso de Emergencia (Comodín)</h3>
-                    <p class="text-sm text-gray-500 bg-accent-50 p-4 rounded-xl border border-accent-100">Si un jurado titular no asistió, puedes entrar aquí escribiendo tu nombre. El administrador podrá asignarte trabajos inmediatamente.</p>
-                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo del Juez Suplente</label><input type="text" id="c-name" required placeholder="Ej. Dra. María Sánchez" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"></div>
-                    <button type="submit" id="btn-comodin" class="w-full py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-xl font-bold shadow-lg transition-all"><i class="fa-solid fa-bolt mr-2"></i> Entrar al Panel</button>
-                </form>
-
-                <!-- Form 3: Registro Juez -->
-                <form id="form-register" onsubmit="registerWithEmail(event)" class="hidden space-y-5 animate-fade-in">
-                    <h3 class="text-2xl font-bold font-serif text-gray-900">Crear Cuenta de Jurado</h3>
-                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Nombre con Título (Ej. Dr. Juan Pérez)</label><input type="text" id="r-name" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"></div>
-                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label><input type="email" id="r-email" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"></div>
-                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña (Min 6 caracteres)</label><input type="password" id="r-pass" required minlength="6" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"></div>
-                    <button type="submit" id="btn-register" class="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl font-bold shadow-lg transition-all">Registrarse</button>
-                </form>
-
-                <!-- Form 4: Subida de Trabajos (Estudiantes) -->
-                <form id="form-submit" onsubmit="submitWork(event)" class="hidden space-y-4 animate-fade-in bg-brand-50/50 p-6 rounded-2xl border border-brand-100">
-                    <h3 class="text-2xl font-bold font-serif text-brand-700">Registro de Trabajos Libres</h3>
-                    <p class="text-xs text-gray-500 mb-4">Aspirantes: Llena los datos y proporciona un enlace (Google Drive o Dropbox) con tu archivo. Asegúrate de que el enlace sea PÚBLICO.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="col-span-full"><label class="block text-xs font-semibold text-gray-700 mb-1">Título del Trabajo</label><input type="text" id="p-title" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"></div>
-                        <div><label class="block text-xs font-semibold text-gray-700 mb-1">1er Autor (Expositor)</label><input type="text" id="p-author" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"></div>
-                        <div><label class="block text-xs font-semibold text-gray-700 mb-1">Institución</label><input type="text" id="p-inst" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"></div>
-                        <div><label class="block text-xs font-semibold text-gray-700 mb-1">Categoría</label><select id="p-cat" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
-                        <div><label class="block text-xs font-semibold text-gray-700 mb-1">Modalidad</label><select id="p-submod" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"><option value="Básica">Inv. Básica</option><option value="Clínica">Inv. Clínica</option></select></div>
-                        <div class="col-span-full"><label class="block text-xs font-semibold text-gray-700 mb-1">Tema Eje</label><select id="p-axis" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"></select></div>
-                        <div><label class="block text-xs font-semibold text-gray-700 mb-1">Formato</label><select id="p-type" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"><option value="poster">Cartel</option><option value="oral">Oral</option></select></div>
-                        <div><label class="block text-xs font-semibold text-gray-700 mb-1">Enlace a PDF/Imagen (Drive)</label><input type="url" id="p-url" required placeholder="https://drive.google.com/..." class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"></div>
+                    <h3 class="text-2xl font-bold font-serif text-gray-900">Bienvenido de nuevo</h3>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
+                        <input type="email" id="l-email" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all">
                     </div>
-                    <button type="submit" id="btn-submit-work" class="w-full py-4 mt-2 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-xl font-bold shadow-lg transition-all"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Registrar Trabajo Oficialmente</button>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" id="l-pass" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all">
+                    </div>
+                    <button type="submit" id="btn-login" class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all">Iniciar Sesión</button>
+                    
+                    <div class="relative py-2 flex items-center">
+                        <div class="flex-grow border-t border-gray-200"></div><span class="mx-4 text-xs font-bold text-gray-400 uppercase tracking-widest">o</span><div class="flex-grow border-t border-gray-200"></div>
+                    </div>
+                    <button type="button" onclick="loginWithGoogle()" class="w-full py-3.5 bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Continuar con Google
+                    </button>
                 </form>
+
+                <!-- Form Register -->
+                <form id="form-register" onsubmit="registerWithEmail(event)" class="hidden space-y-5 animate-fade-in">
+                    <h3 class="text-2xl font-bold font-serif text-gray-900">Crear Cuenta (Jurado)</h3>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre con Título (Ej. Dr. Juan Pérez)</label>
+                        <input type="text" id="r-name" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
+                        <input type="email" id="r-email" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña (Min 6 caracteres)</label>
+                        <input type="password" id="r-pass" required minlength="6" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                    </div>
+                    <button type="submit" id="btn-register" class="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl font-bold shadow-lg transition-all">Crear Cuenta</button>
+                    
+                    <button type="button" onclick="loginWithGoogle()" class="w-full py-3.5 mt-2 bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-3 transition-colors">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Registrarse con Google
+                    </button>
+                </form>
+
+                <!-- Form Participant Submit -->
+                <form id="form-submit" onsubmit="submitWork(event)" class="hidden space-y-4 animate-fade-in">
+                    <h3 class="text-2xl font-bold font-serif text-gray-900 text-brand-700">Registro de Trabajos Libres</h3>
+                    <p class="text-sm text-gray-500">Llena los datos para generar el perfil de tu cartel/presentación oral.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-full">
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Título del Trabajo</label>
+                            <input type="text" id="p-title" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Nombre del 1er Autor (Expositor)</label>
+                            <input type="text" id="p-author" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Institución</label>
+                            <input type="text" id="p-inst" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Categoría</label>
+                            <select id="p-cat" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="Licenciatura">Licenciatura</option>
+                                <option value="Posgrado">Posgrado (Esp, Maestría, Dr)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Modalidad de Inv.</label>
+                            <select id="p-submod" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="Básica">Investigación Básica</option>
+                                <option value="Clínica">Investigación Clínica</option>
+                            </select>
+                        </div>
+                        <div class="col-span-full">
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Tema Eje</label>
+                            <select id="p-axis" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Formato de Presentación</label>
+                            <select id="p-type" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="poster">Cartel Científico</option>
+                                <option value="oral">Exposición Oral</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">URL de Imagen (Opcional pero recomendado)</label>
+                            <input type="url" id="p-url" placeholder="https://..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-submit-work" class="w-full py-4 mt-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-xl font-bold shadow-lg transition-all"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Registrar Trabajo</button>
+                </form>
+
             </div>
         </div>
     </div>
 
-    <!-- PANTALLA: ESPERANDO APROBACIÓN -->
     <div id="view-pending" class="app-view hidden min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div class="bg-white p-10 rounded-[2rem] shadow-2xl max-w-md w-full text-center border border-gray-100">
-            <div class="w-24 h-24 bg-accent-50 text-accent-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-6 shadow-inner"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div class="w-24 h-24 bg-accent-50 text-accent-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-6 shadow-inner">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
             <h2 class="text-3xl font-serif font-bold text-gray-900 mb-4">Cuenta en Revisión</h2>
-            <p class="text-gray-600 mb-8 leading-relaxed">Tu cuenta ha sido creada. Para proteger la integridad del simposio, el administrador debe aprobar tu acceso.</p>
-            <button onclick="logout()" class="text-brand-600 font-bold underline">Volver al inicio</button>
+            <p class="text-gray-600 mb-8 leading-relaxed">Tu cuenta ha sido creada. Para proteger la integridad del simposio, un administrador debe aprobar tu acceso como jurado.</p>
+            <button onclick="logout()" class="text-brand-600 hover:text-brand-800 font-bold underline transition-colors">Volver al inicio (Cerrar sesión)</button>
         </div>
     </div>
 
-    <!-- ESTRUCTURA PRINCIPAL (APP) -->
     <div id="app-layout" class="hidden min-h-screen flex">
         <!-- Sidebar -->
-        <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-brand-900 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-2xl flex flex-col no-print">
+        <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-brand-900 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-2xl flex flex-col">
             <div class="p-6 flex items-center gap-4 border-b border-brand-800">
-                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl text-accent-400"><i class="fa-solid fa-microscope"></i></div>
-                <div><h2 class="font-bold font-serif leading-tight">Simposio 2026</h2><span class="text-[10px] uppercase tracking-widest text-brand-300 font-semibold user-role-display"></span></div>
+                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl text-accent-400">
+                    <i class="fa-solid fa-microscope"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold font-serif leading-tight">Simposio 2026</h2>
+                    <span class="text-[10px] uppercase tracking-widest text-brand-300 font-semibold user-role-display"></span>
+                </div>
                 <button onclick="toggleSidebar()" class="lg:hidden ml-auto text-brand-300 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2" id="sidebar-nav"></div>
+            
+            <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2" id="sidebar-nav">
+                <!-- Se inyecta clase active dinámicamente o se usan botones genéricos -->
+            </div>
+
             <div class="p-6 border-t border-brand-800 bg-brand-950/50 mt-auto">
-                <p class="font-bold text-sm truncate user-name-display mb-4 text-brand-100"></p>
-                <button onclick="logout()" class="w-full py-2.5 bg-brand-800 hover:bg-brand-700 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-brand-700 flex items-center justify-center text-sm font-bold shadow-inner">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="font-bold text-sm truncate user-name-display"></p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full py-2.5 bg-brand-800 hover:bg-brand-700 text-brand-100 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                </button>
             </div>
         </aside>
 
-        <!-- Main Workspace -->
+        <!-- Main Content -->
         <div class="flex-1 flex flex-col min-h-screen h-screen overflow-hidden bg-gray-50/50">
-            <header class="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 shrink-0 no-print">
+            <!-- Header Mobile -->
+            <header class="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 shrink-0">
                 <div class="font-serif font-bold text-lg text-brand-900">Simposio 2026</div>
-                <button onclick="toggleSidebar()" class="w-10 h-10 bg-gray-100 rounded-lg"><i class="fa-solid fa-bars"></i></button>
+                <button onclick="toggleSidebar()" class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-700"><i class="fa-solid fa-bars"></i></button>
             </header>
 
+            <!-- Scrollable Content -->
             <main class="flex-1 overflow-y-auto p-4 md:p-8">
                 
-                <!-- VISTA: ADMIN PANEL -->
+                <!-- VIEW: ADMIN DASHBOARD -->
                 <div id="view-admin" class="app-view hidden max-w-6xl mx-auto animate-fade-in">
-                    <div class="mb-8"><h2 class="text-3xl font-serif font-black text-gray-900">Centro de Mando</h2></div>
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-serif font-black text-gray-900">Centro de Mando</h2>
+                        <p class="text-gray-500 mt-1">Supervisión general del 3er Simposio de Investigación en Medicina.</p>
+                    </div>
+
+                    <!-- Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-folder-open"></i></div><div><p class="text-3xl font-black text-gray-900 leading-none" id="stat-works">0</p><p class="text-sm font-semibold text-gray-500 mt-1">Trabajos</p></div></div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-users"></i></div><div><p class="text-3xl font-black text-gray-900 leading-none" id="stat-judges">0</p><p class="text-sm font-semibold text-gray-500 mt-1">Jurados</p></div></div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-clipboard-check"></i></div><div><p class="text-3xl font-black text-gray-900 leading-none" id="stat-evals">0</p><p class="text-sm font-semibold text-gray-500 mt-1">Evaluaciones</p></div></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-folder-open"></i></div>
+                            <div><p class="text-3xl font-black text-gray-900 leading-none" id="stat-works">0</p><p class="text-sm font-semibold text-gray-500 mt-1">Trabajos Reg.</p></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-users"></i></div>
+                            <div><p class="text-3xl font-black text-gray-900 leading-none" id="stat-judges">0</p><p class="text-sm font-semibold text-gray-500 mt-1">Jurados</p></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <div><p class="text-3xl font-black text-gray-900 leading-none" id="stat-evals">0</p><p class="text-sm font-semibold text-gray-500 mt-1">Evaluaciones</p></div>
+                        </div>
                     </div>
+
                     <div class="grid lg:grid-cols-2 gap-8">
-                        <div class="flex flex-col h-[600px]"><div class="mb-4"><h3 class="text-xl font-bold font-serif">Jurados</h3></div><div id="admin-judges-list" class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar"></div></div>
-                        <div class="flex flex-col h-[600px]"><div class="mb-4"><h3 class="text-xl font-bold font-serif">Trabajos</h3></div><div id="admin-works-list" class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar"></div></div>
+                        <!-- Jurados -->
+                        <div class="flex flex-col h-[600px]">
+                            <div class="flex justify-between items-end mb-4">
+                                <h3 class="text-xl font-bold text-gray-900 font-serif">Gestión de Jurados</h3>
+                            </div>
+                            <div id="admin-judges-list" class="flex-1 overflow-y-auto pr-2 space-y-3 pb-8 custom-scrollbar"></div>
+                        </div>
+                        <!-- Trabajos -->
+                        <div class="flex flex-col h-[600px]">
+                            <div class="flex justify-between items-end mb-4">
+                                <h3 class="text-xl font-bold text-gray-900 font-serif">Trabajos Recibidos</h3>
+                            </div>
+                            <div id="admin-works-list" class="flex-1 overflow-y-auto pr-2 space-y-3 pb-8 custom-scrollbar"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- VISTA: RESULTADOS Y PDF -->
-                <div id="view-results" class="app-view hidden max-w-6xl mx-auto animate-fade-in pb-12">
-                    <div class="flex justify-between items-end mb-8 no-print">
-                        <div><h2 class="text-3xl font-serif font-black text-gray-900">Resultados Finales</h2></div>
-                        <button onclick="window.print()" class="px-6 py-3 bg-brand-600 text-white rounded-xl font-bold shadow-md"><i class="fa-solid fa-print"></i> PDF</button>
-                    </div>
-                    <div class="print-header"><h1 class="text-2xl font-black font-serif">Simposio 2026</h1><h2>Reporte de Calificaciones Promediadas</h2><p id="print-date"></p></div>
-                    <div id="results-content"></div>
-                </div>
-
-                <!-- VISTA: JUEZ (MIS TRABAJOS) -->
+                <!-- VIEW: JUDGE DASHBOARD -->
                 <div id="view-judge" class="app-view hidden max-w-6xl mx-auto animate-fade-in">
-                    <div class="mb-8"><h2 class="text-3xl font-serif font-black text-gray-900">Panel de Evaluación</h2></div>
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-serif font-black text-gray-900">Panel de Evaluación</h2>
+                        <p class="text-gray-500 mt-1">Trabajos asignados a <span class="font-bold text-brand-700 user-name-display"></span>.</p>
+                    </div>
+
+                    <!-- Carteles -->
                     <div class="mb-10">
-                        <h3 class="text-xl font-bold font-serif mb-4 flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-image"></i></span> Pósters (<span id="cnt-poster">0</span>)</h3>
+                        <h3 class="text-xl font-bold text-gray-900 font-serif mb-4 flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-image"></i></span>
+                            Pósters Científicos (<span id="cnt-poster">0</span>)
+                        </h3>
                         <div id="judge-posters" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                     </div>
+
+                    <!-- Orales -->
                     <div>
-                        <h3 class="text-xl font-bold font-serif mb-4 flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-sm"><i class="fa-solid fa-microphone"></i></span> Orales (<span id="cnt-oral">0</span>)</h3>
+                        <h3 class="text-xl font-bold text-gray-900 font-serif mb-4 flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-sm"><i class="fa-solid fa-microphone"></i></span>
+                            Exposiciones Orales (<span id="cnt-oral">0</span>)
+                        </h3>
                         <div id="judge-orals" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                     </div>
                 </div>
 
-                <!-- VISTA: FORMULARIO DE EVALUACIÓN (Juez y Admin) -->
+                <!-- VIEW: EVALUATION FORM -->
                 <div id="view-eval" class="app-view hidden max-w-6xl mx-auto animate-fade-in pb-12">
-                    <button onclick="switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge')" class="mb-6 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 shadow-sm"><i class="fa-solid fa-arrow-left mr-2"></i> Volver</button>
-                    
-                    <div id="readonly-alert" class="hidden mb-6 bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl flex items-center gap-3 font-medium">
-                        <i class="fa-solid fa-lock text-xl"></i> Has completado esta evaluación. Las respuestas son de solo lectura y no pueden modificarse.
-                    </div>
+                    <button onclick="switchView('view-judge')" class="mb-6 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Volver al panel
+                    </button>
 
                     <div class="grid lg:grid-cols-[1fr_420px] gap-8 items-start">
+                        <!-- Form Area -->
                         <div>
                             <div class="glass p-6 rounded-2xl shadow-sm mb-6 sticky top-0 z-30 flex justify-between items-center">
-                                <div><h2 class="text-2xl font-serif font-black text-gray-900 leading-tight">Hoja de Calificación</h2><p class="text-sm font-bold text-brand-600 mt-1" id="ev-type"></p></div>
-                                <div class="text-right bg-white p-3 rounded-xl border border-gray-100 shadow-inner"><div class="text-[10px] uppercase font-bold text-gray-400">Total</div><div class="text-3xl font-black text-brand-700"><span id="ev-total">0</span><span class="text-lg text-gray-300">/100</span></div></div>
+                                <div>
+                                    <h2 class="text-2xl font-serif font-black text-gray-900 leading-tight">Hoja de Calificación</h2>
+                                    <p class="text-sm font-bold text-brand-600 mt-1" id="ev-type"></p>
+                                </div>
+                                <div class="text-right bg-white p-3 rounded-xl border border-gray-100 shadow-inner">
+                                    <div class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Total</div>
+                                    <div class="text-3xl font-black text-brand-700 transition-all duration-300"><span id="ev-total">0</span><span class="text-lg text-gray-300">/100</span></div>
+                                </div>
                             </div>
+
                             <div id="ev-form-container"></div>
+
                             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mt-6 mb-8">
                                 <label class="block text-lg font-bold text-gray-900 mb-2 font-serif">Observaciones Generales</label>
-                                <textarea id="ev-obs" rows="4" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl outline-none" placeholder="Comentarios..."></textarea>
+                                <textarea id="ev-obs" rows="4" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:ring-0 focus:border-brand-500 outline-none transition-colors" placeholder="Justificación de puntos, comentarios para el alumno..."></textarea>
                             </div>
-                            <button id="btn-save-eval" onclick="saveEval()" class="w-full py-5 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-2xl font-bold shadow-xl text-lg"><i class="fa-solid fa-floppy-disk mr-2"></i> Guardar y Finalizar Evaluación</button>
+
+                            <button id="btn-save-eval" onclick="saveEval()" class="w-full py-5 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-2xl font-bold shadow-xl shadow-brand-500/20 transition-all text-lg">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Evaluación
+                            </button>
                         </div>
+
+                        <!-- Profile Sidebar -->
                         <div class="bg-brand-950 p-6 rounded-3xl shadow-2xl text-white sticky top-24">
-                            <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl text-accent-400 mb-4"><i class="fa-solid fa-file-invoice"></i></div>
-                            <h3 class="text-xs uppercase tracking-widest text-brand-300 font-bold mb-2">Perfil del Trabajo</h3>
-                            <h2 id="ev-title" class="text-xl font-bold leading-snug mb-4"></h2>
-                            <p class="text-sm text-brand-100 flex items-center gap-3"><i class="fa-solid fa-user-graduate w-4 opacity-70"></i> <strong id="ev-author"></strong></p>
-                            <hr class="border-white/10 my-6">
-                            <a id="ev-ext-link" href="#" target="_blank" class="w-full block text-center py-4 bg-white text-brand-900 font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-lg">
-                                <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir Material (URL)
-                            </a>
+                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 rounded-3xl pointer-events-none"></div>
+                            <div class="relative z-10">
+                                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl text-accent-400 mb-4 shadow-inner"><i class="fa-solid fa-file-invoice"></i></div>
+                                <h3 class="text-xs uppercase tracking-widest text-brand-300 font-bold mb-2">Perfil del Trabajo</h3>
+                                <h2 id="ev-title" class="text-xl font-bold leading-snug mb-4 text-white"></h2>
+                                <div class="space-y-2 text-sm text-brand-100">
+                                    <p class="flex items-center gap-3"><i class="fa-solid fa-user-graduate w-4 opacity-70"></i> <strong class="text-white" id="ev-author"></strong></p>
+                                </div>
+                                <hr class="border-white/10 my-6">
+                                <p class="text-xs text-brand-300 mb-2 uppercase font-bold tracking-wider">Material de Apoyo</p>
+                                <div class="w-full bg-black/40 rounded-xl overflow-hidden flex items-center justify-center min-h-[200px] border border-white/10">
+                                    <img id="pw-img" src="" class="w-full h-auto object-contain hidden">
+                                    <span id="pw-noimg" class="text-sm text-white/40">El alumno no proporcionó URL de imagen.</span>
+                                </div>
+                                <script>
+                                    document.getElementById('pw-img').addEventListener('load', function() { this.classList.remove('hidden'); document.getElementById('pw-noimg').classList.add('hidden'); });
+                                    document.getElementById('pw-img').addEventListener('error', function() { this.classList.add('hidden'); document.getElementById('pw-noimg').classList.remove('hidden'); });
+                                </script>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -857,49 +1093,62 @@
         </div>
     </div>
 
-    <!-- MODAL: ASIGNAR TRABAJOS A JUEZ -->
+    <!-- Modal: Assign -->
     <div id="modal-assign" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
-            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-center shrink-0">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in">
+            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-center">
                 <h3 class="text-xl font-serif font-bold text-gray-900">Asignar a <span id="modal-assign-name" class="text-brand-600"></span></h3>
-                <button onclick="document.getElementById('modal-assign').classList.add('hidden')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="this.closest('#modal-assign').classList.add('hidden')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-white custom-scrollbar space-y-2 flex-1" id="modal-assign-list"></div>
-            <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex gap-3 shrink-0">
-                <button onclick="document.getElementById('modal-assign').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-600 bg-white border border-gray-200 rounded-xl">Cancelar</button>
-                <button id="btn-save-assign" class="flex-1 py-3 font-bold bg-brand-600 text-white rounded-xl shadow-lg">Guardar</button>
+            <div class="p-6 overflow-y-auto max-h-[50vh] bg-white custom-scrollbar space-y-2" id="modal-assign-list"></div>
+            <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex gap-3">
+                <button onclick="this.closest('#modal-assign').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-colors">Cancelar</button>
+                <button id="btn-save-assign" class="flex-1 py-3 font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-lg transition-colors">Guardar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: PREVIEW DE TRABAJO -->
+    <!-- Modal: Preview Work (Admin) -->
     <div id="modal-preview" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
-            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-start gap-4 shrink-0">
+        <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[90vh]">
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-start gap-4">
                 <h3 id="pw-title" class="text-xl font-serif font-bold text-gray-900 leading-tight"></h3>
-                <button onclick="document.getElementById('modal-preview').classList.add('hidden')" class="shrink-0 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="this.closest('#modal-preview').classList.add('hidden')" class="shrink-0 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-white flex flex-col gap-6 flex-1">
-                <div id="pw-meta" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-1"></div>
-                <div id="pw-link-container"></div>
+            <div class="p-6 overflow-y-auto bg-gray-50 custom-scrollbar flex flex-col gap-6">
+                <div id="pw-meta" class="grid grid-cols-2 gap-4 text-sm text-gray-600 bg-white p-4 rounded-xl border border-gray-100"></div>
+                <div class="bg-white rounded-xl border border-gray-200 p-2 min-h-[200px] flex items-center justify-center relative">
+                    <img id="pw-img" src="" class="w-full h-auto object-contain rounded-lg max-h-[60vh] hidden">
+                    <p class="text-sm text-gray-400 italic absolute">Sin material de apoyo.</p>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL: VER/BORRAR EVALUACIONES DE UN TRABAJO (Admin Súper Poder) -->
-    <div id="modal-admin-eval" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
-            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-center shrink-0">
-                <h3 class="text-lg font-serif font-bold text-gray-900">Control: <span id="aem-title" class="text-brand-600 line-clamp-1"></span></h3>
-                <button onclick="document.getElementById('modal-admin-eval').classList.add('hidden')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto bg-white space-y-3 flex-1 custom-scrollbar" id="aem-list"></div>
         </div>
     </div>
 
     <script>
-        // Init Check
+        // Check local setup & hide layout if not logged in initially
         document.getElementById('view-auth').classList.remove('hidden');
+        
+        // Custom overriding for switchView to manage layout shell
+        const originalSwitch = window.switchView;
+        window.switchView = (viewId) => {
+            if (viewId === 'view-auth' || viewId === 'view-pending') {
+                document.getElementById('app-layout').classList.add('hidden');
+                originalSwitch(viewId);
+            } else {
+                document.getElementById('view-auth').classList.add('hidden');
+                document.getElementById('view-pending').classList.add('hidden');
+                document.getElementById('app-layout').classList.remove('hidden');
+                
+                // Hide only internal views
+                document.getElementById('view-admin').classList.add('hidden');
+                document.getElementById('view-judge').classList.add('hidden');
+                document.getElementById('view-eval').classList.add('hidden');
+                
+                document.getElementById(viewId).classList.remove('hidden');
+                window.scrollTo(0,0);
+            }
+        };
     </script>
 </body>
 </html>

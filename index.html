@@ -198,6 +198,7 @@
         let allEvaluations = [];
         let pendingConfirmAction = null;
         let currentEvalWork = null;
+        let currentCriteria = []; // Added to fix missing variable scope issue
 
         // =========================================================================
         // UTILIDADES Y UI
@@ -484,6 +485,7 @@
                     <div class="flex gap-2 w-full sm:w-auto">
                         <button onclick="toggleApproval('${j.uid}', ${j.approved})" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold ${j.approved ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}">${j.approved ? 'Revocar' : 'Aprobar'}</button>
                         <button onclick="openAssignModal('${j.uid}', '${j.name}')" ${!j.approved ? 'disabled' : ''} class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-50">Asignar</button>
+                        <button onclick="deleteJudge('${j.uid}')" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-50 text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors" title="Borrar Juez"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>`;
             }).join('');
@@ -491,6 +493,12 @@
         }
 
         window.toggleApproval = async (uid, status) => { await updateDoc(doc(db, basePath + 'users', uid), { approved: !status }); };
+        
+        window.deleteJudge = (uid) => {
+             showConfirm('¿Eliminar perfil de juez? Esto NO borra sus evaluaciones existentes.', async () => {
+                await deleteDoc(doc(db, basePath + 'users', uid)); showToast("Juez eliminado de la lista", "success");
+            });
+        };
 
         function renderAdminWorks() {
             const container = document.getElementById('admin-works-list');
@@ -603,7 +611,7 @@
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md">
                         <div class="h-2 ${ev ? 'bg-green-500' : 'bg-brand-500'}"></div>
                         <div class="p-4 flex gap-4 flex-1">
-                            <div class="w-20 h-24 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 hidden sm:block">
+                            <div class="w-20 h-24 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 hidden sm:block relative">
                                 <img src="${getThumbnailUrl(w.imageUrl)}" onerror="this.src='https://placehold.co/100x150/f8fafc/94a3b8?text=SIM'" class="w-full h-full object-cover">
                             </div>
                             <div class="flex-1 flex flex-col">
@@ -897,9 +905,12 @@
                 <img src="logo_esm.png" alt="ESM" class="h-12 object-contain border-l border-gray-200 pl-2">
             </div>
             
-            <div class="p-6 pb-2 relative z-10">
-                <h2 class="font-bold font-serif leading-tight text-xl">Simposio 2026</h2>
-                <span class="text-[10px] uppercase tracking-widest text-brand-300 font-bold user-role-display"></span>
+            <div class="p-6 pb-2 relative z-10 flex justify-between items-start">
+                <div>
+                    <h2 class="font-bold font-serif leading-tight text-xl">Simposio 2026</h2>
+                    <span class="text-[10px] uppercase tracking-widest text-brand-300 font-bold user-role-display"></span>
+                </div>
+                 <button onclick="toggleSidebar()" class="lg:hidden w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div class="flex-1 overflow-y-auto p-5 flex flex-col gap-2 relative z-10" id="sidebar-nav"></div>

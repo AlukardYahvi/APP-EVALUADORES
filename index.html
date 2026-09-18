@@ -54,10 +54,6 @@
         .score-btn.selected { background-color: #f8f5fa; border-color: #90579e; color: #613669; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(144, 87, 158, 0.2); }
         .score-btn.selected::after { content: ''; position: absolute; top: -1px; right: -1px; bottom: -1px; left: -1px; border-radius: inherit; border: 2px solid #90579e; pointer-events: none; }
         
-        /* Bloqueo visual para modo de solo lectura */
-        .eval-readonly .score-btn:not(.selected) { opacity: 0.5; pointer-events: none; cursor: not-allowed; }
-        .eval-readonly input, .eval-readonly select, .eval-readonly textarea { pointer-events: none; background-color: #f8fafc; opacity: 0.8; }
-        
         .auth-bg { background: linear-gradient(135deg, rgba(43,20,47,0.95) 0%, rgba(97,54,105,0.9) 100%), url('https://images.unsplash.com/photo-1576091160550-2173ff9e81b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover; }
         
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -102,7 +98,6 @@
           appId: "1:30650302570:web:80ab9472918e437c500a13",
           measurementId: "G-MS2ZSKP8WQ"
         };
-        // =========================================================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -125,36 +120,38 @@
             "Enfermedades transmisibles (infectocontagiosas)"
         ];
 
+        // --- PREGUNTAS ORIGINALES EXACTAS PARA PÓSTER ---
         const POSTER_CRITERIA = [
-            { id: 'introduccion', category: 'I. Fondo (Contenido)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación.' },
-            { id: 'metodologia', category: 'I. Fondo (Contenido)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en diseño y procedimientos.' },
-            { id: 'resultados', category: 'I. Fondo (Contenido)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva de datos biológicos.' },
-            { id: 'titulo', category: 'I. Fondo (Contenido)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad y pertinencia.' },
-            { id: 'conclusiones', category: 'I. Fondo (Contenido)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con resultados.' },
-            { id: 'banner', category: 'II. Forma (Diseño)', max: 5, type: 'yes-no', name: 'Formato y Elementos', desc: 'Logos y cumplimiento de requisitos.' },
-            { id: 'referencias', category: 'III. Referencias', max: 5, type: 'yes-no', name: 'Referencias Vancouver', desc: 'Formato adecuado.' },
-            { id: 'diseno', category: 'II. Forma (Diseño)', max: 15, type: '15-point-discrete', name: 'Diseño Visual', desc: 'Equilibrio y legibilidad tipográfica.' },
-            { id: 'graficas', category: 'II. Forma (Diseño)', max: 15, type: '15-point-discrete', name: 'Tablas/Gráficas', desc: 'Claridad y calidad de figuras.' }, 
-            { id: 'defensa', category: 'III. Referencias', max: 5, type: 'full', name: 'Defensa Presencial', desc: 'Dominio del tema y respuestas.' },
-            { id: 'innovacion', category: 'IV. Modificadores (+)', max: 15, type: 'bonus', name: 'Innovación / Originalidad', desc: 'Aporta conocimiento nuevo (+ pts).' },
-            { id: 'tiempo', category: 'IV. Modificadores (-)', max: 10, type: 'deduction', name: 'Ausencia o Retraso', desc: 'Penalización por incumplimiento (- pts).' },
-            { id: 'ortografia', category: 'IV. Modificadores (-)', max: 10, type: 'deduction', name: 'Ortografía y Redacción', desc: 'Errores evidentes (- pts).' }
+            { id: 'introduccion', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
+            { id: 'metodologia', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
+            { id: 'resultados', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
+            { id: 'titulo', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad, pertinencia, y correcta identificación.' },
+            { id: 'conclusiones', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
+            { id: 'banner', category: 'II. Forma (Diseño y Formato)', max: 5, type: 'yes-no', name: 'Banner y Elementos', desc: 'Inclusión de logos y cumplimiento de requisitos. (0 o 5 puntos)' },
+            { id: 'diseno', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Diseño y Congruencia Visual', desc: 'Equilibrio, tipografía legible y uso eficiente.' },
+            { id: 'graficas', category: 'II. Forma (Diseño y Formato)', max: 15, type: '15-point-discrete', name: 'Uso de Tablas y Gráficas', desc: 'Claridad, calidad de figuras y citación.' }, 
+            { id: 'referencias', category: 'III. Referencias y Presentación', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
+            { id: 'defensa', category: 'III. Referencias y Presentación', max: 5, type: 'full', name: 'Defensa y Síntesis', desc: 'Dominio del tema y capacidad de síntesis. (Máx 5 pts)' },
+            { id: 'innovacion', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico. (+ Pts)' },
+            { id: 'tiempo', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Puntos de penalización (Se RESTAN).' },
+            { id: 'ortografia', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción y Ortografía', desc: 'Puntos de penalización (Se RESTAN).' }
         ];
 
+        // --- PREGUNTAS ORIGINALES EXACTAS PARA ORAL ---
         const ORAL_CRITERIA = [
-            { id: 'introduccion_o', category: 'I. Fondo (Contenido)', max: 15, type: '15-point-discrete', name: 'Introducción', desc: 'Contextualización y justificación.' },
-            { id: 'metodologia_o', category: 'I. Fondo (Contenido)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño.' },
-            { id: 'resultados_o', category: 'I. Fondo (Contenido)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva.' },
-            { id: 'claridad_oral', category: 'II. Exposición', max: 10, type: '10-point-discrete', name: 'Claridad del Mensaje', desc: 'Organización lógica.' },
-            { id: 'fluidez_oral', category: 'II. Exposición', max: 10, type: '10-point-discrete', name: 'Manejo del Tiempo', desc: 'Ajuste a los 10 minutos.' },
-            { id: 'respuestas_oral', category: 'II. Exposición', max: 10, type: '10-point-discrete', name: 'Respuestas Q&A', desc: 'Dominio del tema al responder.' },
-            { id: 'material', category: 'II. Exposición', max: 10, type: '10-point-discrete', name: 'Material Visual', desc: 'Diseño de diapositivas.' },
-            { id: 'titulo_o', category: 'I. Fondo (Contenido)', max: 5, type: '3-point-discrete', name: 'Título', desc: 'Pertinencia.' },
-            { id: 'conclusiones_o', category: 'I. Fondo (Contenido)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia.' },
-            { id: 'referencias_o', category: 'III. Referencias', max: 5, type: 'yes-no', name: 'Ref. Vancouver', desc: 'Formato adecuado.' },
-            { id: 'innovacion_o', category: 'IV. Modificadores (+)', max: 15, type: 'bonus', name: 'Innovación', desc: 'Aporta conocimiento nuevo (+ pts).' },
-            { id: 'tiempo_o', category: 'IV. Modificadores (-)', max: 10, type: 'deduction', name: 'Exceso de Tiempo', desc: 'Superó los 10 minutos (- pts).' },
-            { id: 'ortografia_o', category: 'IV. Modificadores (-)', max: 10, type: 'deduction', name: 'Ortografía', desc: 'Errores en material visual (- pts).' }
+            { id: 'introduccion_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Introducción y Antecedentes', desc: 'Contextualización y justificación del tema.' },
+            { id: 'metodologia_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Metodología', desc: 'Claridad en el diseño y procedimientos.' },
+            { id: 'resultados_o', category: 'I. Fondo (Contenido Científico)', max: 15, type: '15-point-discrete', name: 'Resultados', desc: 'Presentación objetiva y completa de datos.' },
+            { id: 'titulo_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Título y Congruencia', desc: 'Claridad y pertinencia.' },
+            { id: 'conclusiones_o', category: 'I. Fondo (Contenido Científico)', max: 5, type: '3-point-discrete', name: 'Conclusiones', desc: 'Consistencia con los resultados obtenidos.' },
+            { id: 'claridad_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Claridad y Estructura del Mensaje', desc: 'Organización lógica, precisión conceptual y uso de lenguaje adecuado.' },
+            { id: 'fluidez_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Manejo de Tiempo y Fluidez', desc: 'Ajuste al tiempo asignado, ritmo adecuado y dicción clara.' },
+            { id: 'respuestas_oral', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Capacidad de Respuesta (Q&A)', desc: 'Dominio del tema al responder preguntas y profundidad en las explicaciones.' },
+            { id: 'material', category: 'II. Exposición Oral y Material', max: 10, type: '10-point-discrete', name: 'Calidad del Material Visual', desc: 'Diseño, claridad, legibilidad y apoyo visual de las diapositivas.' },
+            { id: 'referencias_o', category: 'III. Referencias y Ética', max: 5, type: 'yes-no', name: 'Referencias Bibliográficas', desc: 'Formato consistente y adecuado. (0 o 5 puntos)' },
+            { id: 'innovacion_o', category: 'IV. Bonificación y Deducción', max: 15, type: 'bonus', name: 'Innovación y Originalidad', desc: 'Aporta nuevo conocimiento o enfoque metodológico.' },
+            { id: 'tiempo_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Manejo del Tiempo', desc: 'Puntos de penalización (Se RESTAN).' },
+            { id: 'ortografia_o', category: 'V. Deducción (Restan Puntos)', max: 10, type: 'deduction', name: 'Redacción/Ortografía (Material)', desc: 'Puntos de penalización (Se RESTAN).' }
         ];
 
         let currentUser = null;
@@ -226,7 +223,7 @@
                             routeUser();
                         }
                     } catch(e) {
-                        showToast("Error validando usuario.", "error", "fa-triangle-exclamation");
+                        showToast("Error validando usuario. Verifica Reglas de Firestore.", "error", "fa-triangle-exclamation");
                         await signOut(auth); switchView('view-auth');
                     }
                 } else {
@@ -294,7 +291,7 @@
                 const uid = cred.user.uid;
                 await setDoc(doc(db, basePath + 'users', uid), { email: `comodin_${uid.substring(0,5)}@simposio.local`, name: `${name} (Comodín)`, role: 'juez', approved: true, assignedWorks: [], createdAt: new Date().toISOString() });
                 showToast("Juez comodín activado", "success");
-            } catch (e) { showToast("Error activando comodín", "error"); btn.innerHTML = 'Entrar como Comodín'; btn.disabled = false; }
+            } catch (e) { showToast("Error activando comodín", "error"); btn.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Entrar al Panel'; btn.disabled = false; }
         };
 
         window.loginWithGoogle = async () => {
@@ -339,14 +336,13 @@
                     title: document.getElementById('p-title').value, author: document.getElementById('p-author').value,
                     institution: document.getElementById('p-inst').value, category: document.getElementById('p-cat').value,
                     subModality: document.getElementById('p-submod').value, axis: document.getElementById('p-axis').value,
-                    type: document.getElementById('p-type').value,
-                    fileUrl: document.getElementById('p-url').value, // Guardamos la URL ingresada
+                    type: document.getElementById('p-type').value, fileUrl: document.getElementById('p-url').value,
                     submittedBy: auth.currentUser.uid, submittedAt: new Date().toISOString()
                 };
                 await addDoc(collection(db, basePath + 'works'), payload);
                 showToast("¡Trabajo registrado con éxito!", "success"); e.target.reset();
             } catch (error) { showToast("Error de conexión", "error"); } 
-            finally { btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Registrar Trabajo'; btn.disabled = false; }
+            finally { btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Registrar Trabajo Oficialmente'; btn.disabled = false; }
         };
 
         function renderAdminStats() {
@@ -397,8 +393,9 @@
                         <div class="flex-1"><h4 class="font-bold text-sm text-gray-900 line-clamp-1">${w.title}</h4><p class="text-[10px] text-gray-500">${w.author} • ${w.category}</p></div>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="previewWork('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-xs font-semibold text-gray-600"><i class="fa-solid fa-eye"></i> Perfil</button>
-                        <button onclick="openAdminEvalManager('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-accent-50 hover:bg-accent-100 text-xs font-bold text-accent-700"><i class="fa-solid fa-chart-pie"></i> Ver Calificaciones</button>
+                        <button onclick="previewWork('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-xs font-semibold text-gray-600 border border-gray-200"><i class="fa-solid fa-eye"></i> Perfil</button>
+                        <button onclick="openEvaluation('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-brand-50 hover:bg-brand-100 text-xs font-bold text-brand-700 border border-brand-200"><i class="fa-solid fa-pen-to-square"></i> Evaluar</button>
+                        <button onclick="openAdminEvalManager('${w.id}')" class="flex-1 py-1.5 rounded-lg bg-accent-50 hover:bg-accent-100 text-xs font-bold text-accent-700 border border-accent-200"><i class="fa-solid fa-chart-pie"></i> Ver Califs</button>
                     </div>
                 </div>
             `).join('');
@@ -435,8 +432,12 @@
             document.getElementById('pw-title').textContent = w.title;
             document.getElementById('pw-meta').innerHTML = `<p><strong>Autor:</strong> ${w.author}</p><p><strong>Institución:</strong> ${w.institution}</p><p><strong>Categoría:</strong> ${w.category}</p><p><strong>Eje:</strong> ${w.axis}</p>`;
             
-            const btn = document.getElementById('pw-link');
-            if(w.fileUrl) { btn.href = w.fileUrl; btn.classList.remove('hidden'); } else { btn.classList.add('hidden'); }
+            const linkContainer = document.getElementById('pw-link-container');
+            if(w.fileUrl && w.fileUrl.trim() !== "") {
+                linkContainer.innerHTML = `<a href="${w.fileUrl}" target="_blank" class="w-full block text-center py-4 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-colors shadow-lg"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir Material de Apoyo (URL)</a>`;
+            } else {
+                linkContainer.innerHTML = `<p class="text-sm text-gray-500 text-center py-4 bg-gray-100 rounded-xl border border-gray-200">El participante no proporcionó un enlace al trabajo.</p>`;
+            }
             document.getElementById('modal-preview').classList.remove('hidden');
         };
 
@@ -454,7 +455,7 @@
                 container.innerHTML = evals.map(ev => `
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
                         <div><p class="font-bold text-sm">${ev.judgeName}</p><p class="text-xs text-brand-600 font-bold">${ev.totalScore} Puntos</p></div>
-                        <button onclick="deleteEvaluation('${ev.id}')" class="px-3 py-1.5 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash"></i> Reiniciar (Borrar)</button>
+                        <button onclick="deleteEvaluation('${ev.id}')" class="px-3 py-1.5 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash"></i> Borrar</button>
                     </div>
                 `).join('');
             }
@@ -517,7 +518,12 @@
             document.getElementById('ev-author').textContent = currentEvalWork.author;
             
             const btnLink = document.getElementById('ev-ext-link');
-            if(currentEvalWork.fileUrl) { btnLink.href = currentEvalWork.fileUrl; btnLink.classList.remove('hidden'); } else { btnLink.classList.add('hidden'); }
+            if(currentEvalWork.fileUrl && currentEvalWork.fileUrl.trim() !== "") { 
+                btnLink.href = currentEvalWork.fileUrl; 
+                btnLink.classList.remove('hidden'); 
+            } else { 
+                btnLink.classList.add('hidden'); 
+            }
 
             const existing = allEvaluations.find(e => e.workId === workId && e.judgeUid === currentUser.uid);
             const scores = existing ? existing.scores : {};
@@ -545,27 +551,28 @@
                     currentCat = item.category;
                 }
 
-                let val = scores[item.id] !== undefined ? scores[item.id] : 0;
-                let displayVal = item.type === 'deduction' ? Math.abs(val) : val;
+                let val = scores[item.id] !== undefined ? scores[item.id] : '';
+                let displayVal = item.type === 'deduction' && val !== '' ? Math.abs(val) : val;
                 let inputHtml = '';
                 
                 if (item.type.includes('discrete')) {
-                    const is15 = item.type === '15-point-discrete';
-                    const opts = is15 ? [0, 5, 15] : [0, 5, 10];
-                    if(item.type === '3-point-discrete') opts.splice(0, opts.length, 0, 3, 5);
+                    let opts = [];
+                    if(item.type === '15-point-discrete') opts = [0, 5, 15];
+                    else if (item.type === '10-point-discrete') opts = [0, 5, 10];
+                    else if (item.type === '3-point-discrete') opts = [0, 3, 5];
 
                     inputHtml = `<div class="flex gap-2 flex-wrap">`;
                     opts.forEach(v => {
-                        const sel = val == v ? 'selected' : '';
+                        const sel = (val !== '' && val == v) ? 'selected' : '';
                         const em = v === 0 ? '🔴' : (v === Math.max(...opts) ? '🟢' : '🟠');
                         inputHtml += `<button type="button" class="score-btn ${sel} px-4 py-2 rounded-xl border-2 border-gray-100 bg-white text-sm font-bold" onclick="setDiscrete(this, '${item.id}', ${v})">${em} ${v} Pts</button>`;
                     });
                     inputHtml += `</div><input type="hidden" id="in-${item.id}" value="${val}">`;
                 } else if (item.type === 'yes-no') {
-                    inputHtml = `<select id="in-${item.id}" class="p-3 border-2 border-gray-100 font-semibold rounded-xl outline-none" onchange="calcTotal()"><option value="0" ${val == 0 ? 'selected' : ''}>❌ No cumple (0 pts)</option><option value="5" ${val == 5 ? 'selected' : ''}>✅ Sí cumple (5 pts)</option></select>`;
+                    inputHtml = `<select id="in-${item.id}" class="p-3 border-2 border-gray-100 font-semibold rounded-xl outline-none" onchange="calcTotal()"><option value="" ${val === '' ? 'selected' : ''}>-- Selecciona --</option><option value="0" ${val === 0 ? 'selected' : ''}>❌ No cumple (0 pts)</option><option value="5" ${val === 5 ? 'selected' : ''}>✅ Sí cumple (5 pts)</option></select>`;
                 } else {
                     const isDed = item.type === 'deduction';
-                    inputHtml = `<div class="flex items-center gap-3"><input type="number" id="in-${item.id}" min="0" max="${item.max}" value="${displayVal}" class="w-24 p-3 border-2 border-gray-100 font-bold text-center rounded-xl outline-none" oninput="calcTotal()"><span class="text-sm text-gray-500">Máx ${item.max} pts ${isDed ? '<span class="text-red-400 font-bold">(Restan)</span>' : ''}</span></div>`;
+                    inputHtml = `<div class="flex items-center gap-3"><input type="number" id="in-${item.id}" min="0" max="${item.max}" value="${displayVal}" class="w-24 p-3 border-2 border-gray-100 font-bold text-center rounded-xl outline-none" oninput="calcTotal()"><span class="text-sm text-gray-500">Máx ${item.max} pts ${isDed ? '<span class="text-red-500 font-bold">(Se restarán)</span>' : ''}</span></div>`;
                 }
 
                 formContainer.innerHTML += `<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4"><h4 class="font-bold text-gray-900">${item.name}</h4><p class="text-xs text-gray-500 mb-3">${item.desc}</p>${inputHtml}</div>`;
@@ -576,7 +583,7 @@
         };
 
         window.setDiscrete = (btn, id, val) => {
-            if(document.getElementById('view-eval').classList.contains('eval-readonly')) return; // Bloquear clic si es solo lectura
+            if(document.getElementById('view-eval').classList.contains('eval-readonly')) return; // Bloquear clic
             btn.parentElement.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             document.getElementById(`in-${id}`).value = val;
@@ -587,9 +594,11 @@
             let total = 0;
             currentCriteria.forEach(item => {
                 const el = document.getElementById(`in-${item.id}`);
-                let val = parseFloat(el?.value || 0);
-                if (item.type === 'deduction') total -= Math.abs(val); // Las deducciones SIEMPRE restan
-                else total += Math.max(0, val);
+                let val = parseFloat(el?.value);
+                if(!isNaN(val)) {
+                    if (item.type === 'deduction') total -= Math.abs(val);
+                    else total += Math.max(0, val);
+                }
             });
             total = Math.max(0, total); // No menor a 0
             document.getElementById('ev-total').textContent = total;
@@ -600,8 +609,13 @@
             try {
                 const scores = {};
                 currentCriteria.forEach(item => {
-                    const val = parseFloat(document.getElementById(`in-${item.id}`)?.value || 0);
-                    scores[item.id] = item.type === 'deduction' ? -Math.abs(val) : Math.max(0, val);
+                    const el = document.getElementById(`in-${item.id}`);
+                    const val = parseFloat(el?.value);
+                    if(!isNaN(val)) {
+                        scores[item.id] = item.type === 'deduction' ? -Math.abs(val) : Math.max(0, val);
+                    } else {
+                        scores[item.id] = 0; // Fallback si dejan vacio
+                    }
                 });
 
                 const payload = {
@@ -616,8 +630,8 @@
 
                 showToast("Evaluación Finalizada", "success", "fa-check");
                 switchView('view-judge');
-            } catch (e) { showToast("Error", "error"); } 
-            finally { btn.innerHTML = 'Guardar y Finalizar Evaluación'; btn.disabled = false; }
+            } catch (e) { showToast("Error al guardar", "error"); } 
+            finally { btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar y Finalizar Evaluación'; btn.disabled = false; }
         };
 
         window.renderResults = () => {
@@ -634,7 +648,7 @@
                     return { ...w, evalCount: workEvals.length, average: parseFloat(avg) };
                 }).sort((a, b) => b.average - a.average);
 
-                let html = `<div class="mb-12 page-break-after"><h3 class="text-2xl font-bold font-serif mb-4 flex items-center gap-3 text-${colorTheme}-700"><div class="w-2 h-6 bg-${colorTheme}-500 rounded-full no-print"></div> ${title}</h3><div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-100"><table class="print-table w-full text-left border-collapse"><thead><tr class="bg-gray-50/80 text-gray-600 text-sm border-b border-gray-100"><th class="py-4 px-4 w-12 text-center">Pos.</th><th class="py-4 px-6 font-semibold">Autor e Institución</th><th class="py-4 px-6 font-semibold">Título del Trabajo</th><th class="py-4 px-4 font-semibold text-center w-24">Jueces</th><th class="py-4 px-6 font-semibold text-center w-32">Puntaje Final</th></tr></thead><tbody>`;
+                let html = `<div class="mb-12 page-break-after"><h3 class="text-2xl font-bold font-serif mb-4 flex items-center gap-3 text-${colorTheme}-700"><div class="w-2 h-6 bg-${colorTheme}-500 rounded-full no-print"></div> ${title}</h3><div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-100"><table class="print-table w-full text-left border-collapse"><thead><tr class="bg-gray-50/80 text-gray-600 text-sm border-b border-gray-100"><th class="py-4 px-4 w-12 text-center">Pos.</th><th class="py-4 px-6 font-semibold">Autor e Institución</th><th class="py-4 px-6 font-semibold">Título del Trabajo</th><th class="py-4 px-4 font-semibold text-center w-24">Jueces</th><th class="py-4 px-6 font-semibold text-center w-32">Promedio</th></tr></thead><tbody>`;
                 
                 processedWorks.forEach((w, index) => {
                     const hasScore = w.average > 0;
@@ -683,7 +697,7 @@
                     <button onclick="switchAuthTab('form-login', this)" class="auth-tab pb-3 border-b-2 border-brand-600 text-brand-800 font-bold transition-colors whitespace-nowrap">Jurado Oficial</button>
                     <button onclick="switchAuthTab('form-comodin', this)" class="auth-tab pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors whitespace-nowrap"><i class="fa-solid fa-bolt text-accent-500"></i> Juez Comodín</button>
                     <button onclick="switchAuthTab('form-register', this)" class="auth-tab pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors whitespace-nowrap">Registro Jurado</button>
-                    <button onclick="switchAuthTab('form-submit', this)" class="auth-tab pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors whitespace-nowrap bg-brand-50 px-3 rounded-t-lg">Estudiantes (Subir Trabajo)</button>
+                    <button onclick="switchAuthTab('form-submit', this)" class="auth-tab pb-3 border-b-2 border-transparent text-gray-500 font-bold transition-colors whitespace-nowrap bg-brand-50 px-3 rounded-t-lg">Subir Trabajo (Alumnos)</button>
                 </div>
 
                 <!-- Form 1: Acceso Juez Normal -->
@@ -699,7 +713,7 @@
                 <!-- Form 2: Juez Comodín -->
                 <form id="form-comodin" onsubmit="loginComodin(event)" class="hidden space-y-5 animate-fade-in">
                     <h3 class="text-2xl font-bold font-serif text-gray-900">Acceso de Emergencia (Comodín)</h3>
-                    <p class="text-sm text-gray-500 bg-accent-50 p-4 rounded-xl border border-accent-100">Si un jurado titular no asistió, puedes entrar aquí escribiendo tu nombre. El administrador podrá asignarte trabajos inmediatamente sin necesidad de registrar correo.</p>
+                    <p class="text-sm text-gray-500 bg-accent-50 p-4 rounded-xl border border-accent-100">Si un jurado titular no asistió, puedes entrar aquí escribiendo tu nombre. El administrador podrá asignarte trabajos inmediatamente.</p>
                     <div><label class="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo del Juez Suplente</label><input type="text" id="c-name" required placeholder="Ej. Dra. María Sánchez" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"></div>
                     <button type="submit" id="btn-comodin" class="w-full py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-xl font-bold shadow-lg transition-all"><i class="fa-solid fa-bolt mr-2"></i> Entrar al Panel</button>
                 </form>
@@ -716,7 +730,7 @@
                 <!-- Form 4: Subida de Trabajos (Estudiantes) -->
                 <form id="form-submit" onsubmit="submitWork(event)" class="hidden space-y-4 animate-fade-in bg-brand-50/50 p-6 rounded-2xl border border-brand-100">
                     <h3 class="text-2xl font-bold font-serif text-brand-700">Registro de Trabajos Libres</h3>
-                    <p class="text-xs text-gray-500 mb-4">Aspirantes: Llena los datos para generar el perfil de tu cartel/presentación. Proporciona un enlace (Google Drive o Dropbox) donde el jurado pueda ver tu archivo (Asegúrate de que el enlace sea público).</p>
+                    <p class="text-xs text-gray-500 mb-4">Aspirantes: Llena los datos y proporciona un enlace (Google Drive o Dropbox) con tu archivo. Asegúrate de que el enlace sea PÚBLICO.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="col-span-full"><label class="block text-xs font-semibold text-gray-700 mb-1">Título del Trabajo</label><input type="text" id="p-title" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"></div>
                         <div><label class="block text-xs font-semibold text-gray-700 mb-1">1er Autor (Expositor)</label><input type="text" id="p-author" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none"></div>
@@ -833,7 +847,7 @@
                             <p class="text-sm text-brand-100 flex items-center gap-3"><i class="fa-solid fa-user-graduate w-4 opacity-70"></i> <strong id="ev-author"></strong></p>
                             <hr class="border-white/10 my-6">
                             <a id="ev-ext-link" href="#" target="_blank" class="w-full block text-center py-4 bg-white text-brand-900 font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-lg">
-                                <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir Material (PDF/Drive)
+                                <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir Material (URL)
                             </a>
                         </div>
                     </div>
@@ -858,14 +872,28 @@
         </div>
     </div>
 
+    <!-- MODAL: PREVIEW DE TRABAJO -->
+    <div id="modal-preview" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
+            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-start gap-4 shrink-0">
+                <h3 id="pw-title" class="text-xl font-serif font-bold text-gray-900 leading-tight"></h3>
+                <button onclick="document.getElementById('modal-preview').classList.add('hidden')" class="shrink-0 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-white flex flex-col gap-6 flex-1">
+                <div id="pw-meta" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-1"></div>
+                <div id="pw-link-container"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: VER/BORRAR EVALUACIONES DE UN TRABAJO (Admin Súper Poder) -->
     <div id="modal-admin-eval" class="fixed inset-0 bg-brand-950/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in">
-            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-fade-in max-h-[85vh]">
+            <div class="bg-gray-50 px-6 py-5 border-b border-gray-100 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-serif font-bold text-gray-900">Control: <span id="aem-title" class="text-brand-600 line-clamp-1"></span></h3>
                 <button onclick="document.getElementById('modal-admin-eval').classList.add('hidden')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-white space-y-3" id="aem-list"></div>
+            <div class="p-6 overflow-y-auto bg-white space-y-3 flex-1 custom-scrollbar" id="aem-list"></div>
         </div>
     </div>
 

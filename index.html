@@ -114,10 +114,12 @@
 
         const basePath = `artifacts/simposio-liicam-2026/public/data/`;
 
+        // MODIFIED: Added new admin email
         const ADMIN_EMAILS = [
             "nnajerag@ipn.mx", "simposioinvestigacionmedicina@gmail.com",
-            "yurimtzmz@gmail.com", "yahvi.edsel.hernandez@gmail.com",
-            "cgomezm310393@gmail.com", "angelito_coa@hotmail.com"
+            "yurimtzmz@gmail.com", "yurimtz@live.com.mx",
+            "yahvi.edsel.hernandez@gmail.com", "cgomezm310393@gmail.com", 
+            "angelito_coa@hotmail.com"
         ].map(e => e.toLowerCase());
 
         const THEMATIC_AXES = [
@@ -187,6 +189,11 @@
         let pendingConfirmAction = null;
         let currentEvalWork = null;
         let currentCriteria = []; 
+        
+        // NEW GLOBALS FOR FILTERS
+        window.adminFilterModality = 'all';
+        window.adminFilterMaterial = 'all';
+        window.adminFilterPhase = 'all';
 
         window.showToast = (msg, type = 'info') => {
             const container = document.getElementById('toast-container');
@@ -213,7 +220,6 @@
             }
             window.scrollTo(0,0);
             
-            // Close mobile sidebar if open
             const sidebar = document.getElementById('mobile-sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
             if(!sidebar.classList.contains('-translate-x-full')) {
@@ -222,7 +228,6 @@
             }
         };
 
-        // NEW: Fixed mobile toggle
         window.toggleSidebar = () => {
             const sidebar = document.getElementById('mobile-sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
@@ -384,6 +389,7 @@
             if (currentUserDoc?.role === 'admin') {
                 unsubscribes.push(onSnapshot(collection(db, basePath + 'users'), snap => {
                     allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()})); renderAdminJudges();
+                    renderAdminWorks(); // Ensure work list updates when judges change for semaphore
                 }));
             }
             unsubscribes.push(onSnapshot(collection(db, basePath + 'evaluations'), snap => {
@@ -404,6 +410,7 @@
                     institution: document.getElementById('p-inst').value, category: document.getElementById('p-cat').value,
                     subModality: document.getElementById('p-submod').value, axis: document.getElementById('p-axis').value,
                     type: document.getElementById('p-type').value, imageUrl: document.getElementById('p-url').value || '',
+                    phase: 'Fase 1 (Selección)', // Default phase
                     submittedAt: new Date().toISOString()
                 };
                 await addDoc(collection(db, basePath + 'works'), payload);
@@ -420,8 +427,12 @@
                 document.getElementById('mw-inst').value = w.institution; document.getElementById('mw-cat').value = w.category;
                 document.getElementById('mw-submod').value = w.subModality || 'Básica'; document.getElementById('mw-axis').value = w.axis;
                 document.getElementById('mw-type').value = w.type; document.getElementById('mw-url').value = w.imageUrl || '';
+                document.getElementById('mw-phase').value = w.phase || 'Fase 1 (Selección)';
                 document.getElementById('modal-work-title').textContent = '✏️ Editar Trabajo';
-            } else { document.getElementById('modal-work-title').textContent = '➕ Añadir Trabajo Manual'; }
+            } else { 
+                document.getElementById('mw-phase').value = 'Fase 1 (Selección)';
+                document.getElementById('modal-work-title').textContent = '➕ Añadir Trabajo Manual'; 
+            }
             document.getElementById('modal-manage-work').classList.remove('hidden');
         };
 
@@ -432,7 +443,8 @@
                 title: document.getElementById('mw-title').value, author: document.getElementById('mw-author').value,
                 institution: document.getElementById('mw-inst').value, category: document.getElementById('mw-cat').value,
                 subModality: document.getElementById('mw-submod').value, axis: document.getElementById('mw-axis').value,
-                type: document.getElementById('mw-type').value, imageUrl: document.getElementById('mw-url').value || ''
+                type: document.getElementById('mw-type').value, imageUrl: document.getElementById('mw-url').value || '',
+                phase: document.getElementById('mw-phase').value
             };
             try {
                 if (id) { await updateDoc(doc(db, basePath + 'works', id), payload); showToast("Trabajo actualizado", "success"); } 
@@ -485,12 +497,34 @@
             });
         };
 
-        function renderAdminWorks() {
+        window.renderAdminWorks = () => {
             const container = document.getElementById('admin-works-list');
-            if (allWorks.length === 0) { container.innerHTML = `<p class="text-sm text-gray-400 italic">No hay trabajos.</p>`; return; }
+            
+            let filteredWorks = allWorks.filter(w => {
+                let passModality = window.adminFilterModality === 'all' || w.subModality === window.adminFilterModality;
+                let passMaterial = window.adminFilterMaterial === 'all' || (window.adminFilterMaterial === 'yes' ? w.imageUrl !== '' : w.imageUrl === '');
+                let passPhase = window.adminFilterPhase === 'all' || (w.phase || 'Fase 1 (Selección)') === window.adminFilterPhase;
+                return passModality && passMaterial && passPhase;
+            });
 
-            container.innerHTML = allWorks.map(w => {
+            if (filteredWorks.length === 0) { 
+                container.innerHTML = `<p class="text-sm text-gray-400 italic mt-4">No hay trabajos con estos filtros aplicados.</p>`; 
+                document.getElementById('stat-works').textContent = allWorks.length; // Keep global count
+                return; 
+            }
+
+            container.innerHTML = filteredWorks.map(w => {
                 const workEvals = allEvaluations.filter(e => e.workId === w.id);
+                
+                // Búsqueda inversa de jueces para el semáforo
+                const assignedJudgesCount = allUsers.filter(u => u.role === 'juez' && u.assignedWorks && u.assignedWorks.includes(w.id)).length;
+                let judgeBadge = '';
+                if (assignedJudgesCount >= 2) judgeBadge = `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase"><i class="fa-solid fa-check-double"></i> Listo (${assignedJudgesCount} Jueces)</span>`;
+                else if (assignedJudgesCount === 1) judgeBadge = `<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-black uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Falta 1 Juez</span>`;
+                else judgeBadge = `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-black uppercase"><i class="fa-solid fa-circle-xmark"></i> Faltan 2 Jueces</span>`;
+
+                const workPhase = w.phase || 'Fase 1 (Selección)';
+
                 return `
                 <div class="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm relative pr-2 sm:pr-20 flex gap-4">
                     <div class="w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 hidden sm:block">
@@ -501,9 +535,11 @@
                             <button onclick="openWorkModal('${w.id}')" class="w-8 h-8 sm:w-7 sm:h-7 rounded text-gray-400 hover:text-brand-600 hover:bg-brand-50" title="Editar"><i class="fa-solid fa-pen text-sm sm:text-xs"></i></button>
                             <button onclick="deleteWork('${w.id}')" class="w-8 h-8 sm:w-7 sm:h-7 rounded text-gray-400 hover:text-red-600 hover:bg-red-50" title="Borrar"><i class="fa-solid fa-trash text-sm sm:text-xs"></i></button>
                         </div>
-                        <div class="flex items-center gap-2 mb-1">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
                             <span class="text-[10px] font-bold uppercase tracking-wider ${w.type === 'poster' ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50'} px-2 py-0.5 rounded">${w.type}</span>
-                            <span class="text-xs font-bold text-gray-500">${workEvals.length} Evals</span>
+                            <span class="text-[10px] font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded">${w.subModality}</span>
+                            <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">${workPhase}</span>
+                            ${judgeBadge}
                         </div>
                         <h4 class="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-2 sm:line-clamp-1">${w.title}</h4>
                         <p class="text-xs text-gray-600 truncate">${w.author}</p>
@@ -511,7 +547,7 @@
                         <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
                             <button onclick="previewWork('${w.id}')" class="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-gray-50 hover:bg-gray-200 text-gray-600 flex items-center justify-center" title="Ver Info"><i class="fa-solid fa-eye"></i></button>
                             <button onclick="openEvaluation('${w.id}', true)" class="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-brand-50 hover:bg-brand-200 text-brand-700 flex items-center justify-center" title="Evaluar como Admin"><i class="fa-solid fa-pencil"></i></button>
-                            <button onclick="viewEvalsAdmin('${w.id}')" class="flex-1 h-9 sm:h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-ranking-star"></i> <span class="hidden sm:inline">Ver Calificaciones</span><span class="sm:hidden">Cals.</span></button>
+                            <button onclick="viewEvalsAdmin('${w.id}')" class="flex-1 h-9 sm:h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-ranking-star"></i> <span class="hidden sm:inline">Ver Calificaciones (${workEvals.length})</span><span class="sm:hidden">Cals.</span></button>
                         </div>
                     </div>
                 </div>`;
@@ -573,11 +609,33 @@
                 <div class="col-span-2"><p class="text-[10px] uppercase font-bold text-gray-400">Institución</p><p class="font-semibold text-gray-900">${w.institution}</p></div>
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Categoría</p><p class="font-semibold text-brand-700">${w.category}</p></div>
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Modalidad</p><p class="font-semibold text-brand-700">${w.subModality}</p></div>
+                <div><p class="text-[10px] uppercase font-bold text-gray-400">Fase Actual</p><p class="font-semibold text-purple-700">${w.phase || 'Fase 1 (Selección)'}</p></div>
             `;
             const linkDiv = document.getElementById('pw-link-container');
             if(w.imageUrl) linkDiv.innerHTML = `<a href="${w.imageUrl}" target="_blank" class="inline-flex items-center justify-center gap-2 w-full py-4 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold rounded-xl border-2 border-dashed border-brand-300 transition-colors"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Material de Apoyo (Cartel/Drive)</a>`;
             else linkDiv.innerHTML = `<div class="text-center p-4 bg-gray-50 rounded-xl border border-gray-200 text-gray-400 text-sm italic">No proporcionó enlace al material.</div>`;
             document.getElementById('modal-preview').classList.remove('hidden');
+        };
+        
+        // NEW MODULE: JUDGE ISSUES REPORTING
+        window.reportIssue = async (workId, workTitle) => {
+            const msg = prompt(`Reportar problema con el trabajo:\n"${workTitle}"\nEscribe el motivo (Ej. El enlace no abre, cartel ilegible, datos incorrectos):`);
+            if (!msg || msg.trim() === '') return;
+
+            try {
+                await addDoc(collection(db, basePath + 'work_issues'), {
+                    workId: workId,
+                    workTitle: workTitle,
+                    judgeUid: currentUser.uid,
+                    judgeName: currentUserDoc.name,
+                    message: msg,
+                    status: 'pendiente',
+                    createdAt: new Date().toISOString()
+                });
+                showToast("Reporte enviado al administrador", "success");
+            } catch(e) {
+                showToast("Error al enviar reporte", "error");
+            }
         };
 
         function renderJudgeWorks() {
@@ -597,17 +655,19 @@
                                 <img src="${getThumbnailUrl(w.imageUrl)}" onerror="this.src='https://placehold.co/100x150/f8fafc/94a3b8?text=SIM'" class="w-full h-full object-cover">
                             </div>
                             <div class="flex-1 flex flex-col min-w-0">
-                                <div class="flex justify-between items-start mb-2">
+                                <div class="flex justify-between items-start mb-2 gap-1 flex-wrap">
                                     <span class="text-[10px] font-black uppercase tracking-widest ${w.type==='poster'?'text-blue-600':'text-orange-600'} bg-gray-50 px-2 py-1 rounded">${w.type}</span>
+                                    <span class="text-[9px] font-bold text-purple-700 bg-purple-50 px-2 py-1 rounded border border-purple-100">${w.phase || 'Fase 1'}</span>
                                     ${ev ? `<span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded border border-green-200 shadow-sm">✅ ${ev.totalScore} pts</span>` : ''}
                                 </div>
                                 <h4 class="font-bold text-gray-900 leading-tight mb-1 line-clamp-2">${w.title}</h4>
                                 <p class="text-xs text-gray-600 font-medium truncate"><i class="fa-solid fa-user-graduate w-4"></i> ${w.author}</p>
                                 
                                 <div class="mt-auto pt-4 flex gap-2">
-                                    <button onclick="previewWork('${w.id}')" class="px-3 sm:px-4 py-2 bg-gray-50 hover:bg-gray-200 text-gray-700 rounded-xl text-sm transition-colors border border-gray-200"><i class="fa-solid fa-eye"></i></button>
+                                    <button onclick="previewWork('${w.id}')" class="px-3 py-2 bg-gray-50 hover:bg-gray-200 text-gray-700 rounded-xl text-sm border border-gray-200" title="Ver Info"><i class="fa-solid fa-eye"></i></button>
+                                    <button onclick="reportIssue('${w.id}', '${w.title.replace(/'/g, "\\'")}')" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm border border-red-100 transition-colors" title="Reportar Problema"><i class="fa-solid fa-flag"></i></button>
                                     <button onclick="openEvaluation('${w.id}')" class="flex-1 py-2 ${ev ? 'bg-white border-2 border-brand-500 text-brand-700 hover:bg-brand-50' : 'bg-brand-600 text-white hover:bg-brand-700'} rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all truncate">
-                                        ${ev ? 'Ver Respuestas' : '📝 Evaluar Trabajo'}
+                                        ${ev ? 'Ver Respuestas' : '📝 Evaluar'}
                                     </button>
                                 </div>
                             </div>
@@ -748,7 +808,7 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden overflow-x-auto w-full">
                         <table class="print-table w-full text-left min-w-[600px]">
                             <thead class="bg-brand-50 border-b border-gray-200">
-                                <tr><th class="py-4 px-4 sm:px-6 text-brand-900 text-center">Lugar</th><th class="py-4 px-4 sm:px-6 text-brand-900">Autor / Institución</th><th class="py-4 px-4 sm:px-6 text-brand-900">Título</th><th class="py-4 px-4 sm:px-6 text-center">Jueces</th><th class="py-4 px-4 sm:px-6 text-center">Promedio</th></tr>
+                                <tr><th class="py-4 px-4 sm:px-6 text-brand-900 text-center">Lugar</th><th class="py-4 px-4 sm:px-6 text-brand-900">Autor / Institución</th><th class="py-4 px-4 sm:px-6 text-brand-900">Título</th><th class="py-4 px-4 sm:px-6 text-center">Fase</th><th class="py-4 px-4 sm:px-6 text-center">Jueces</th><th class="py-4 px-4 sm:px-6 text-center">Promedio</th></tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                 `;
@@ -761,6 +821,7 @@
                             <td class="py-4 px-4 sm:px-6 text-center font-black text-base sm:text-lg">${hasScore ? rank : '-'}</td>
                             <td class="py-4 px-4 sm:px-6"><div class="font-bold text-sm sm:text-base">${w.author}</div><div class="text-xs text-gray-500">${w.institution}</div></td>
                             <td class="py-4 px-4 sm:px-6"><div class="text-sm font-semibold line-clamp-2">${w.title}</div></td>
+                            <td class="py-4 px-4 sm:px-6 text-center font-bold text-purple-700 text-xs">${w.phase || 'Fase 1'}</td>
                             <td class="py-4 px-4 sm:px-6 text-center font-bold text-gray-400 text-sm">${w.evalCount}</td>
                             <td class="py-4 px-4 sm:px-6 text-center"><span class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg font-black text-sm ${!hasScore ? 'bg-gray-100 text-gray-400' : (i < 3 ? 'bg-brand-100 text-brand-800' : 'bg-brand-50 text-brand-700')}">${hasScore ? w.average.toFixed(2) : 'N/A'}</span></td>
                         </tr>`;
@@ -875,10 +936,8 @@
     <!-- MAIN APP LAYOUT -->
     <div id="app-layout" class="hidden min-h-screen flex relative">
         
-        <!-- FIX: Mobile Backdrop Overlay. Has high z-index to cover content, but sits under sidebar -->
         <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[40] hidden lg:hidden transition-opacity backdrop-blur-sm"></div>
 
-        <!-- FIX: Sidebar now has higher z-index (50) than everything except modals -->
         <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-[50] w-64 sm:w-72 bg-brand-950 text-white transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex flex-col border-r border-white/5 overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-32 bg-brand-800 opacity-20 blur-3xl"></div>
             
@@ -907,7 +966,6 @@
         </aside>
 
         <!-- Main Content Area -->
-        <!-- FIX: Ensured the container takes full remaining width properly -->
         <div class="flex-1 flex flex-col min-h-screen h-screen overflow-hidden bg-gray-50 w-full relative z-0">
             <!-- Mobile Header -->
             <header class="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 shrink-0 shadow-sm relative z-20">
@@ -942,8 +1000,8 @@
                         </div>
                     </div>
 
-                    <!-- Layout side-by-side on large screens, stacked on small -->
                     <div class="grid lg:grid-cols-[1fr_1.3fr] gap-6 sm:gap-8">
+                        <!-- JUECES COL -->
                         <div class="flex flex-col h-[500px] sm:h-[700px]">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-5 px-1 gap-2">
                                 <div class="flex items-center gap-2 sm:gap-3">
@@ -954,6 +1012,7 @@
                             <div id="admin-judges-list" class="flex-1 overflow-y-auto pr-2 sm:pr-3 space-y-3 sm:space-y-4 pb-8 custom-scrollbar"></div>
                         </div>
                         
+                        <!-- TRABAJOS COL -->
                         <div class="flex flex-col h-[500px] sm:h-[700px]">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-5 px-1 gap-2">
                                 <div class="flex items-center gap-2 sm:gap-3">
@@ -961,6 +1020,27 @@
                                 </div>
                                 <button onclick="openWorkModal()" class="w-full sm:w-auto px-4 py-2 bg-brand-900 hover:bg-black text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition-colors"><i class="fa-solid fa-plus"></i> Añadir Manual</button>
                             </div>
+                            
+                            <!-- Barra de Filtros -->
+                            <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl mb-4 flex flex-wrap gap-2">
+                                <select onchange="window.adminFilterModality = this.value; window.renderAdminWorks();" class="p-2 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none flex-1 min-w-[120px]">
+                                    <option value="all">Todas (Básica/Clínica)</option>
+                                    <option value="Básica">Solo Básica</option>
+                                    <option value="Clínica">Solo Clínica</option>
+                                </select>
+                                <select onchange="window.adminFilterMaterial = this.value; window.renderAdminWorks();" class="p-2 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none flex-1 min-w-[120px]">
+                                    <option value="all">Todos (Con y sin material)</option>
+                                    <option value="yes">Con material subido</option>
+                                    <option value="no">Sin material</option>
+                                </select>
+                                <select onchange="window.adminFilterPhase = this.value; window.renderAdminWorks();" class="p-2 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none flex-1 min-w-[120px]">
+                                    <option value="all">Todas las Fases</option>
+                                    <option value="Fase 1 (Selección)">Fase 1 (Selección)</option>
+                                    <option value="Fase 2 (Concurso)">Fase 2 (Concurso)</option>
+                                    <option value="Rechazado">Rechazados</option>
+                                </select>
+                            </div>
+
                             <div id="admin-works-list" class="flex-1 overflow-y-auto pr-2 sm:pr-3 space-y-3 sm:space-y-4 pb-8 custom-scrollbar"></div>
                         </div>
                     </div>
@@ -1137,6 +1217,17 @@
                         <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Institución</label><input type="text" id="mw-inst" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"></div>
                         <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Categoría</label><select id="mw-cat" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
                         <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Modalidad</label><select id="mw-submod" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="Básica">Básica</option><option value="Clínica">Clínica</option></select></div>
+                        
+                        <!-- NUEVO SELECTOR DE FASE -->
+                        <div class="col-span-full">
+                            <label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Fase del Simposio</label>
+                            <select id="mw-phase" required class="w-full p-3 sm:p-3.5 bg-purple-50 border-2 border-purple-100 rounded-xl focus:border-brand-500 font-bold outline-none text-purple-900 text-sm sm:text-base">
+                                <option value="Fase 1 (Selección)">Fase 1 (Pre-evaluación y Selección)</option>
+                                <option value="Fase 2 (Concurso)">Fase 2 (Evaluación Final Concurso)</option>
+                                <option value="Rechazado">Trabajo Rechazado / Descalificado</option>
+                            </select>
+                        </div>
+                        
                         <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Formato</label><select id="mw-type" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="poster">Cartel</option><option value="oral">Oral</option></select></div>
                         <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Eje</label><select id="mw-axis" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"></select></div>
                         <div class="col-span-full"><label class="block text-[10px] sm:text-xs font-bold text-brand-700 mb-1 uppercase"><i class="fa-solid fa-link"></i> URL Drive/Cartel</label><input type="url" id="mw-url" class="w-full p-3 sm:p-3.5 bg-brand-50 border-2 border-brand-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-brand-700 text-sm sm:text-base"></div>

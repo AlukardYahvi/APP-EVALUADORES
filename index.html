@@ -189,6 +189,7 @@
         let currentEvalWork = null;
         let currentCriteria = []; 
         
+        window.adminFilterCategory = 'all';
         window.adminFilterModality = 'all';
         window.adminFilterMaterial = 'all';
         window.adminFilterPhase = 'all';
@@ -513,10 +514,11 @@
             const container = document.getElementById('admin-works-list');
             
             let filteredWorks = allWorks.filter(w => {
+                let passCategory = window.adminFilterCategory === 'all' || w.category === window.adminFilterCategory;
                 let passModality = window.adminFilterModality === 'all' || w.subModality === window.adminFilterModality;
                 let passMaterial = window.adminFilterMaterial === 'all' || (window.adminFilterMaterial === 'yes' ? w.imageUrl !== '' : w.imageUrl === '');
                 let passPhase = window.adminFilterPhase === 'all' || (w.phase || 'Fase 1 (Selección)') === window.adminFilterPhase;
-                return passModality && passMaterial && passPhase;
+                return passCategory && passModality && passMaterial && passPhase;
             });
 
             if (filteredWorks.length === 0) { 
@@ -667,6 +669,7 @@
                             <div class="flex-1 flex flex-col min-w-0">
                                 <div class="flex justify-between items-start mb-2 gap-1 flex-wrap">
                                     <span class="text-[10px] font-black uppercase tracking-widest ${w.type==='poster'?'text-blue-600':'text-orange-600'} bg-gray-50 px-2 py-1 rounded">${w.type}</span>
+                                    <span class="text-[9px] font-bold text-gray-700 bg-gray-100 px-2 py-1 rounded border border-gray-200">${w.category}</span>
                                     <span class="text-[9px] font-bold text-purple-700 bg-purple-50 px-2 py-1 rounded border border-purple-100">${w.phase || 'Fase 1'}</span>
                                     ${ev ? `<span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded border border-green-200 shadow-sm">✅ ${ev.totalScore} pts</span>` : ''}
                                 </div>
@@ -686,10 +689,17 @@
                 }).join('');
             };
 
-            renderList(myWorks.filter(w => w.type === 'poster'), 'judge-posters');
-            document.getElementById('cnt-poster').textContent = myWorks.filter(w => w.type === 'poster').length;
-            renderList(myWorks.filter(w => w.type === 'oral'), 'judge-orals');
-            document.getElementById('cnt-oral').textContent = myWorks.filter(w => w.type === 'oral').length;
+            renderList(myWorks.filter(w => w.type === 'poster' && w.category === 'Licenciatura'), 'judge-posters-lic');
+            document.getElementById('cnt-poster-lic').textContent = myWorks.filter(w => w.type === 'poster' && w.category === 'Licenciatura').length;
+
+            renderList(myWorks.filter(w => w.type === 'poster' && w.category === 'Posgrado'), 'judge-posters-pos');
+            document.getElementById('cnt-poster-pos').textContent = myWorks.filter(w => w.type === 'poster' && w.category === 'Posgrado').length;
+
+            renderList(myWorks.filter(w => w.type === 'oral' && w.category === 'Licenciatura'), 'judge-orals-lic');
+            document.getElementById('cnt-oral-lic').textContent = myWorks.filter(w => w.type === 'oral' && w.category === 'Licenciatura').length;
+
+            renderList(myWorks.filter(w => w.type === 'oral' && w.category === 'Posgrado'), 'judge-orals-pos');
+            document.getElementById('cnt-oral-pos').textContent = myWorks.filter(w => w.type === 'oral' && w.category === 'Posgrado').length;
         }
 
         window.openEvaluation = (workId, isAdminOverride = false) => {
@@ -844,7 +854,12 @@
                 });
                 return html + `</tbody></table></div></div>`;
             };
-            container.innerHTML = generateTable(allWorks.filter(w => w.type === 'poster'), 'Resultados: Carteles Científicos') + generateTable(allWorks.filter(w => w.type === 'oral'), 'Resultados: Exposiciones Orales');
+            
+            container.innerHTML = 
+                generateTable(allWorks.filter(w => w.type === 'poster' && w.category === 'Licenciatura'), 'Carteles Científicos - Licenciatura') + 
+                generateTable(allWorks.filter(w => w.type === 'poster' && w.category === 'Posgrado'), 'Carteles Científicos - Posgrado') +
+                generateTable(allWorks.filter(w => w.type === 'oral' && w.category === 'Licenciatura'), 'Exposiciones Orales - Licenciatura') +
+                generateTable(allWorks.filter(w => w.type === 'oral' && w.category === 'Posgrado'), 'Exposiciones Orales - Posgrado');
         };
 
     </script>
@@ -1039,6 +1054,11 @@
                             
                             <!-- Barra de Filtros -->
                             <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl mb-4 flex flex-wrap gap-2">
+                                <select onchange="window.adminFilterCategory = this.value; window.renderAdminWorks();" class="p-2 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none flex-1 min-w-[120px]">
+                                    <option value="all">Todas (Lic. y Posg.)</option>
+                                    <option value="Licenciatura">Licenciatura</option>
+                                    <option value="Posgrado">Posgrado</option>
+                                </select>
                                 <select onchange="window.adminFilterModality = this.value; window.renderAdminWorks();" class="p-2 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none flex-1 min-w-[120px]">
                                     <option value="all">Todas (Básica/Clínica)</option>
                                     <option value="Básica">Solo Básica</option>
@@ -1075,17 +1095,29 @@
                     <div class="mb-8 sm:mb-12">
                         <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                             <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-base sm:text-lg shadow-inner"><i class="fa-solid fa-image"></i></span>
-                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Pósters Científicos (<span id="cnt-poster">0</span>)</h3>
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Pósters (Licenciatura) <span class="text-base text-gray-500 font-medium">(<span id="cnt-poster-lic">0</span>)</span></h3>
                         </div>
-                        <div id="judge-posters" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+                        <div id="judge-posters-lic" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8"></div>
+                        
+                        <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                            <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-base sm:text-lg shadow-inner"><i class="fa-solid fa-image"></i></span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Pósters (Posgrado) <span class="text-base text-gray-500 font-medium">(<span id="cnt-poster-pos">0</span>)</span></h3>
+                        </div>
+                        <div id="judge-posters-pos" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
                     </div>
 
                     <div>
                         <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                             <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-base sm:text-lg shadow-inner"><i class="fa-solid fa-microphone"></i></span>
-                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Exposiciones Orales (<span id="cnt-oral">0</span>)</h3>
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Orales (Licenciatura) <span class="text-base text-gray-500 font-medium">(<span id="cnt-oral-lic">0</span>)</span></h3>
                         </div>
-                        <div id="judge-orals" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+                        <div id="judge-orals-lic" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8"></div>
+                        
+                        <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                            <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-base sm:text-lg shadow-inner"><i class="fa-solid fa-microphone"></i></span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 font-serif">Orales (Posgrado) <span class="text-base text-gray-500 font-medium">(<span id="cnt-oral-pos">0</span>)</span></h3>
+                        </div>
+                        <div id="judge-orals-pos" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
                     </div>
                 </div>
 

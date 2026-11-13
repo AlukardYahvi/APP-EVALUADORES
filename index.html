@@ -114,7 +114,6 @@
 
         const basePath = `artifacts/simposio-liicam-2026/public/data/`;
 
-        // MODIFIED: Added new admin email
         const ADMIN_EMAILS = [
             "nnajerag@ipn.mx", "simposioinvestigacionmedicina@gmail.com",
             "yurimtzmz@gmail.com", "yurimtz@live.com.mx",
@@ -190,10 +189,10 @@
         let currentEvalWork = null;
         let currentCriteria = []; 
         
-        // NEW GLOBALS FOR FILTERS
         window.adminFilterModality = 'all';
         window.adminFilterMaterial = 'all';
         window.adminFilterPhase = 'all';
+        window.isEvaluatingAsAdminOverride = false; // Variable para saber a dónde regresar
 
         window.showToast = (msg, type = 'info') => {
             const container = document.getElementById('toast-container');
@@ -304,14 +303,18 @@
             }
         });
 
+        // MODIFIED: Fix routeUser to allow admins to see the Judge view
         function routeUser() {
+            const isAdmin = currentUserDoc.role === 'admin' || ADMIN_EMAILS.includes(currentUserDoc.email);
+            
             document.querySelectorAll('.user-name-display').forEach(el => el.textContent = currentUserDoc.name);
-            document.querySelectorAll('.user-role-display').forEach(el => el.textContent = currentUserDoc.role === 'admin' ? 'Administrador' : 'Jurado Evaluador');
+            document.querySelectorAll('.user-role-display').forEach(el => el.textContent = isAdmin ? 'Administrador / Jurado' : 'Jurado Evaluador');
             
             const nav = document.getElementById('sidebar-nav');
-            if (currentUserDoc.role === 'admin') {
+            if (isAdmin) {
                 nav.innerHTML = `
                     <button onclick="switchView('view-admin')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-brand-800 transition-colors flex items-center gap-3 text-sm font-medium"><i class="fa-solid fa-house w-5 text-accent-400"></i> Panel de Control</button>
+                    <button onclick="switchView('view-judge')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-brand-800 transition-colors flex items-center gap-3 text-sm font-medium"><i class="fa-solid fa-clipboard-list w-5 text-accent-400"></i> Mis Asignaciones</button>
                     <button onclick="switchView('view-results'); renderResults();" class="w-full text-left px-4 py-3 rounded-xl hover:bg-brand-800 transition-colors flex items-center gap-3 text-sm font-medium"><i class="fa-solid fa-ranking-star w-5 text-accent-400"></i> Resultados / PDF</button>
                 `;
                 switchView('view-admin');
@@ -381,21 +384,26 @@
 
         function setupDataListeners() {
             cleanupListeners();
+            const isAdmin = currentUserDoc?.role === 'admin' || ADMIN_EMAILS.includes(currentUserDoc?.email);
+            
             unsubscribes.push(onSnapshot(collection(db, basePath + 'works'), snap => {
                 allWorks = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                if (currentUserDoc?.role === 'admin') { renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
-                if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
+                if (isAdmin) { window.renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
+                if (isAdmin || (currentUserDoc?.role === 'juez' && currentUserDoc?.approved)) renderJudgeWorks();
             }));
-            if (currentUserDoc?.role === 'admin') {
+            
+            if (isAdmin) {
                 unsubscribes.push(onSnapshot(collection(db, basePath + 'users'), snap => {
-                    allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()})); renderAdminJudges();
-                    renderAdminWorks(); // Ensure work list updates when judges change for semaphore
+                    allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()})); 
+                    renderAdminJudges();
+                    window.renderAdminWorks(); 
                 }));
             }
+            
             unsubscribes.push(onSnapshot(collection(db, basePath + 'evaluations'), snap => {
                 allEvaluations = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                if (currentUserDoc?.role === 'admin') { renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
-                if (currentUserDoc?.role === 'juez' && currentUserDoc?.approved) renderJudgeWorks();
+                if (isAdmin) { window.renderAdminWorks(); if(!document.getElementById('view-results').classList.contains('hidden')) renderResults(); }
+                if (isAdmin || (currentUserDoc?.role === 'juez' && currentUserDoc?.approved)) renderJudgeWorks();
             }));
         }
 
@@ -410,7 +418,7 @@
                     institution: document.getElementById('p-inst').value, category: document.getElementById('p-cat').value,
                     subModality: document.getElementById('p-submod').value, axis: document.getElementById('p-axis').value,
                     type: document.getElementById('p-type').value, imageUrl: document.getElementById('p-url').value || '',
-                    phase: 'Fase 1 (Selección)', // Default phase
+                    phase: 'Fase 1 (Selección)', 
                     submittedAt: new Date().toISOString()
                 };
                 await addDoc(collection(db, basePath + 'works'), payload);
@@ -459,21 +467,25 @@
             });
         };
 
+        // MODIFIED: Fix renderAdminJudges to show admins so they can be assigned works
         function renderAdminJudges() {
             const container = document.getElementById('admin-judges-list');
-            const judges = allUsers.filter(u => u.role === 'juez');
+            const judges = allUsers.filter(u => u.role === 'juez' || u.role === 'admin' || ADMIN_EMAILS.includes(u.email));
+            
             if (judges.length === 0) { container.innerHTML = `<p class="text-sm text-gray-400 italic">No hay jueces registrados.</p>`; return; }
 
             container.innerHTML = judges.map(j => {
                 const assigned = j.assignedWorks?.length || 0;
                 const completed = allEvaluations.filter(e => e.judgeUid === j.uid).length;
                 const isComodin = j.name.includes('(Suplente)');
+                const isAdminBadge = j.role === 'admin' || ADMIN_EMAILS.includes(j.email);
                 
                 return `
                 <div class="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
                     <div>
                         <div class="flex items-center gap-2">
                             <h4 class="font-bold text-brand-900">${j.name}</h4>
+                            ${isAdminBadge ? `<span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Admin</span>` : ''}
                             ${isComodin ? `<span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Suplente</span>` : ''}
                         </div>
                         <p class="text-xs text-gray-500 truncate max-w-[200px] sm:max-w-full">${j.email}</p>
@@ -509,15 +521,14 @@
 
             if (filteredWorks.length === 0) { 
                 container.innerHTML = `<p class="text-sm text-gray-400 italic mt-4">No hay trabajos con estos filtros aplicados.</p>`; 
-                document.getElementById('stat-works').textContent = allWorks.length; // Keep global count
+                document.getElementById('stat-works').textContent = allWorks.length;
                 return; 
             }
 
             container.innerHTML = filteredWorks.map(w => {
                 const workEvals = allEvaluations.filter(e => e.workId === w.id);
                 
-                // Búsqueda inversa de jueces para el semáforo
-                const assignedJudgesCount = allUsers.filter(u => u.role === 'juez' && u.assignedWorks && u.assignedWorks.includes(w.id)).length;
+                const assignedJudgesCount = allUsers.filter(u => (u.role === 'juez' || u.role === 'admin' || ADMIN_EMAILS.includes(u.email)) && u.assignedWorks && u.assignedWorks.includes(w.id)).length;
                 let judgeBadge = '';
                 if (assignedJudgesCount >= 2) judgeBadge = `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase"><i class="fa-solid fa-check-double"></i> Listo (${assignedJudgesCount} Jueces)</span>`;
                 else if (assignedJudgesCount === 1) judgeBadge = `<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-black uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Falta 1 Juez</span>`;
@@ -617,7 +628,6 @@
             document.getElementById('modal-preview').classList.remove('hidden');
         };
         
-        // NEW MODULE: JUDGE ISSUES REPORTING
         window.reportIssue = async (workId, workTitle) => {
             const msg = prompt(`Reportar problema con el trabajo:\n"${workTitle}"\nEscribe el motivo (Ej. El enlace no abre, cartel ilegible, datos incorrectos):`);
             if (!msg || msg.trim() === '') return;
@@ -683,6 +693,7 @@
         }
 
         window.openEvaluation = (workId, isAdminOverride = false) => {
+            window.isEvaluatingAsAdminOverride = isAdminOverride; 
             currentEvalWork = allWorks.find(w => w.id === workId);
             currentCriteria = currentEvalWork.type === 'poster' ? POSTER_CRITERIA : ORAL_CRITERIA;
             
@@ -695,6 +706,9 @@
             else { matBtn.classList.add('hidden'); }
 
             const existing = allEvaluations.find(e => e.workId === workId && e.judgeUid === currentUser.uid);
+            
+            // Allow admin to override ANY evaluation OR just save their own evaluation. 
+            // In this setup, we just use the current user's UID to track the evaluation.
             const isReadonly = !!existing && !isAdminOverride && currentUserDoc.role !== 'admin'; 
             
             const scores = existing ? existing.scores : {};
@@ -786,7 +800,9 @@
                 const existing = allEvaluations.find(e => e.workId === currentEvalWork.id && e.judgeUid === currentUser.uid);
                 if (existing) await updateDoc(doc(db, basePath + 'evaluations', existing.id), payload);
                 else await addDoc(collection(db, basePath + 'evaluations'), payload);
-                showToast("Evaluación Guardada", "success"); switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge');
+                
+                showToast("Evaluación Guardada", "success"); 
+                switchView(window.isEvaluatingAsAdminOverride ? 'view-admin' : 'view-judge');
             } catch (error) { showToast("Error al guardar.", "error"); } finally { btn.innerHTML = 'Confirmar Evaluación'; btn.disabled = false; }
         };
 
@@ -1099,7 +1115,7 @@
 
                 <!-- VIEW: EVALUATION FORM -->
                 <div id="view-eval" class="app-view hidden max-w-5xl mx-auto animate-fade-in pb-12">
-                    <button id="btn-back-eval" onclick="switchView(currentUserDoc.role === 'admin' ? 'view-admin' : 'view-judge')" class="mb-4 sm:mb-6 px-4 py-2 sm:px-5 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-700 shadow-sm flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Volver a mi panel</button>
+                    <button id="btn-back-eval" onclick="switchView(window.isEvaluatingAsAdminOverride ? 'view-admin' : 'view-judge')" class="mb-4 sm:mb-6 px-4 py-2 sm:px-5 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-700 shadow-sm flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Volver a mi panel</button>
 
                     <div class="bg-brand-950 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-white mb-6 sm:mb-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 sm:gap-8">
                         <div class="relative z-10 flex-1 w-full">
@@ -1218,7 +1234,6 @@
                         <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Categoría</label><select id="mw-cat" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="Licenciatura">Licenciatura</option><option value="Posgrado">Posgrado</option></select></div>
                         <div><label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Modalidad</label><select id="mw-submod" required class="w-full p-3 sm:p-3.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-brand-500 font-semibold outline-none text-sm sm:text-base"><option value="Básica">Básica</option><option value="Clínica">Clínica</option></select></div>
                         
-                        <!-- NUEVO SELECTOR DE FASE -->
                         <div class="col-span-full">
                             <label class="block text-[10px] sm:text-xs font-bold text-gray-700 mb-1 uppercase">Fase del Simposio</label>
                             <select id="mw-phase" required class="w-full p-3 sm:p-3.5 bg-purple-50 border-2 border-purple-100 rounded-xl focus:border-brand-500 font-bold outline-none text-purple-900 text-sm sm:text-base">
